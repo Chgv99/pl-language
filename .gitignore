@@ -1,6 +1,7 @@
 # Flex
 /lex.yy.c
 *.h
+makefile
 
 # Prerequisites
 *.d
