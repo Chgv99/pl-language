@@ -28,6 +28,10 @@ int lines = 0;
 
 [0-9]+ { yylval = atoi(yytext); return INT; }
 
+learn { return LEARN; }
+return { return RET; }
+end { return END; }
+next { return NEXT; }
 terminate { return TERM; }
 
 [ \t] { /* ignore whitespaces */ }
