@@ -13,6 +13,7 @@ enum yytokentype {
 	
 	ARR = 267,
 	STR = 268,
+	EOL = 269,
 };
 
 int yylval;
@@ -37,7 +38,7 @@ terminate { return TERM; }
 [ \t] { /* ignore whitespaces */ }
 
 [a-zA-Z]+  { words++; chars += strlen(yytext); }
-\n         { chars++; lines++; }
+\n         { chars++; lines++; return EOL; }
 .          { chars++; }
 
 %%
