@@ -1,18 +1,18 @@
 %{
 enum yytokentype {
-	INT = 258,
-	FLOAT = 259,
-	BOOL = 260,
-	CHAR = 261,
-	
-	ARR = 262,
-	STR = 263,
+	LEARN = 258,
+	RET = 259,
+	END = 260,
+	NEXT = 261,
+	TERM = 262,
 
-	ADD = 264,
-	SUB = 265,
-	MUL = 266,
-	DIV = 267,
-	POW = 268
+	INT = 263,
+	FLOAT = 264,
+	BOOL = 265,
+	CHAR = 266,
+	
+	ARR = 267,
+	STR = 268,
 };
 
 int yylval;
@@ -24,13 +24,11 @@ int lines = 0;
 
 %%
 
-"+" { return ADD; }
-"-" { return SUB; }
-"*" { return MUL; }
-"/" { return DIV; }
-"^" { return POW; }
+[-+*/\^] { return yytext[0]; }
 
 [0-9]+ { yylval = atoi(yytext); return INT; }
+
+terminate { return TERM; }
 
 [ \t] { /* ignore whitespaces */ }
 
