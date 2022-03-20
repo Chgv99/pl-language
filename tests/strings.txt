@@ -1,0 +1,12 @@
+hola
+'hola'
+"hola"
+"hola"a
+"hola
+hola"
+hola"a"
+"""
+""""
+"''"
+"'"
+'""'

@@ -1,4 +1,5 @@
 %{
+#include <stdio.h>
 enum yytokentype {
 	LEARN = 258,
 	RET = 259,
@@ -34,16 +35,21 @@ enum yytokentype {
 	EQ = 284,
 	NEQ = 285,
 	//GT = 286,
-	GTE = 287,
+	GTE = 286,
 	//LT = 288,
-	LTE = 289,
+	LTE = 287,
+	
+	NAME = 288,
 };
 
 int yylval;
 
 int chars = 0;
 int words = 0;
-int lines = 0;
+int lines = 1;
+
+void error(char*, char*);
+
 %}
 
 %%
@@ -80,25 +86,42 @@ until { return UNTIL; }
 
 
 [ \t] { /* ignore whitespaces */ }
-
-[a-zA-Z]+  { words++; chars += strlen(yytext); }
+\"[^"]*\" { words++; chars += strlen(yytext); return STR; }
+[a-zA-Z]+  { words++; chars += strlen(yytext); return NAME; }
 \n         { chars++; lines++; return EOL; }
-.          { chars++; }
+
+.          { chars++; error("unexpected token ", yytext); }
 
 %%
+
+void error(char* msg, char* token){
+	printf("Error on line %i: %s \"%s\".\n", lines, msg, token);
+}
+/*void error(char* msg, char* token){
+	msg = strcat(msg, token);
+	char str[100];
+
+	snprintf(str, sizeof str, "Error on line %i:", lines);
+	printf("e.e");
+	msg = strcat(&str[0], msg);
+	perror(msg);
+}*/
 
 main(int argc, char **argv)
 {
 	int tok;
-	//if (argv > 1) printf("Has args");
 	while (tok = yylex()){
-		printf("%d", tok);
+		//printf("line %i: %d ", lines, tok);
 		if (tok == INT){ 
-			printf(" = %d\n", yylval);
-		} else {
-			printf("\n");
+			//printf("= %d\n", yylval);
+			//printf("line %i: %d ", lines, tok);
 		}
+		if (tok == 269){
+			printf("line %i: %d\n", lines-1, tok);
+		}
+		else printf("line %i: %d ", lines, tok);
 
   	}
+	return 0;
 	//printf("%8d%8d%8d\n", lines, words, chars);
 }
