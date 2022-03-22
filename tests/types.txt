@@ -1,0 +1,9 @@
+int
+float
+bool
+char
+
+int a = 0
+float b
+bool enable = false
+char caracter
