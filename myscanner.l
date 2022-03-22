@@ -96,6 +96,8 @@ loop { return LOOP; }
 for { return FOR; }
 while { return WHILE; }
 until { return UNTIL; }
+and { return AND; }
+or { return OR; }
 
 true { return TRUE; }
 false { return FALSE; }
