@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include <stdbool.h>
 enum yytokentype {
 	LEARN = 258,
 	RET = 259,
@@ -40,6 +41,9 @@ enum yytokentype {
 	LTE = 287,
 	
 	NAME = 288,
+	
+	TRUE = 289,
+	FALSE = 290,
 };
 
 int yylval;
@@ -47,6 +51,8 @@ int yylval;
 int chars = 0;
 int words = 0;
 int lines = 1;
+
+bool newline = true;
 
 void error(char*, char*);
 
@@ -65,12 +71,17 @@ void error(char*, char*);
 
 [0-9]+ { yylval = atoi(yytext); return INT; }
 
+int { return INT; }
+float { return FLOAT; }
+bool { return BOOL; }
+char { return CHAR; }
+
 learn { return LEARN; }
 return { return RET; }
 end { return END; }
 next { return NEXT; }
 terminate { return TERM; }
-~~ { return COMM; }
+~~.* { return COMM; }
 range { return RANGE; }
 len { return LEN; }
 print { return PRINT; }
@@ -84,9 +95,11 @@ for { return FOR; }
 while { return WHILE; }
 until { return UNTIL; }
 
+true { return TRUE; }
+false { return FALSE; }
 
 [ \t] { /* ignore whitespaces */ }
-\"[^"]*\" { words++; chars += strlen(yytext); return STR; }
+\"([^"\n]|\\.)*\" { words++; chars += strlen(yytext); return STR; }
 [a-zA-Z]+  { words++; chars += strlen(yytext); return NAME; }
 \n         { chars++; lines++; return EOL; }
 
@@ -112,14 +125,19 @@ main(int argc, char **argv)
 	int tok;
 	while (tok = yylex()){
 		//printf("line %i: %d ", lines, tok);
+		if (newline) {
+			printf("line %i: ", lines);
+			newline = false;
+		}
 		if (tok == INT){ 
 			//printf("= %d\n", yylval);
 			//printf("line %i: %d ", lines, tok);
 		}
-		if (tok == 269){
-			printf("line %i: %d\n", lines-1, tok);
+		if (tok == 269){ //EOL
+			newline = true;
+			printf("%d\n", tok);
 		}
-		else printf("line %i: %d ", lines, tok);
+		else printf("%d ", tok);
 
   	}
 	return 0;
