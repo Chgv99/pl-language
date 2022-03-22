@@ -1,0 +1,5 @@
+~~ test file for comments
+a = b + c ~~ this is a comment
+~~ this is another comment with some "indications": a != c + d
+
+~~ this is a weird comment ~~ hehe
