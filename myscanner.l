@@ -44,6 +44,8 @@ enum yytokentype {
 	
 	TRUE = 289,
 	FALSE = 290,
+	
+	VOID = 291,
 };
 
 int yylval;
@@ -97,6 +99,7 @@ until { return UNTIL; }
 
 true { return TRUE; }
 false { return FALSE; }
+void { return VOID; }
 
 [ \t] { /* ignore whitespaces */ }
 \"([^"\n]|\\.)*\" { words++; chars += strlen(yytext); return STR; }

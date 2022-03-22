@@ -3,6 +3,8 @@ float
 bool
 char
 
+void
+
 int a = 0
 float b
 bool enable = false
