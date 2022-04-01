@@ -125,7 +125,8 @@ void error(char* msg, char* token){
 	perror(msg);
 }*/
 
-main(int argc, char **argv)
+//int main(int argc, char **argv)
+yywrap()
 {
 	int tok;
 	while (tok = yylex()){
