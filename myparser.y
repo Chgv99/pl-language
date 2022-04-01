@@ -11,7 +11,7 @@ int yyerror(char *s);
 %token /*<num>*/ INT FLOAT BOOL 
 %token CHAR
 %token ARR STR EOL
-%token /*<name>*/ NAME
+%token NAME
 %token COMM RANGE LEN PRINT
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
 %token EQ NEQ GTE LTE
