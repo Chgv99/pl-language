@@ -28,12 +28,14 @@ int yyerror(char *s);
 
 %%
 
-statements: statements statement
+statements: INT
+	  | statements statement
 	  | statement
 	  ;
 
 statement: NAME '=' expression EOL
 	 | NAME EOL
+	 | NAME
 	 ;
 
 expression: INT
@@ -46,12 +48,14 @@ expression: INT
 
 %%
 
-main (int argc, char **argv){
+int main (int argc, char **argv){
 	//Antes del análisis
+	printf("Comienza el análisis\n");
 	yyparse();
 	//Después del análisis
+	printf("Análisis finalizado\n");
 }
 
-yyerror(char *s){
+int yyerror(char *s){
 	fprintf(stderr, "error: %s\n", s);
 }

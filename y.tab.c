@@ -504,7 +504,7 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  6
+#define YYFINAL  7
 /* YYLAST -- Last index in YYTABLE.  */
 #define YYLAST   20
 
@@ -513,9 +513,9 @@ union yyalloc
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  4
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  8
+#define YYNRULES  10
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  15
+#define YYNSTATES  16
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   288
@@ -565,7 +565,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    31,    31,    32,    35,    36,    39,    40,    41
+       0,    31,    31,    32,    33,    36,    37,    38,    41,    42,
+      43
 };
 #endif
 
@@ -594,7 +595,7 @@ static const yytype_int16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF (-34)
+#define YYPACT_NINF (-33)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -608,8 +609,8 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -11,   -14,     1,   -34,   -34,    -3,   -34,   -34,   -33,    -8,
-      -1,     0,   -34,   -34,   -34
+      -6,   -33,   -14,     1,   -33,   -33,    -3,   -33,   -33,   -32,
+      -8,    -1,     0,   -33,   -33,   -33
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -617,20 +618,20 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     0,     3,     5,     0,     1,     2,     6,     0,
-       0,     0,     4,     7,     8
+       0,     2,     7,     0,     4,     6,     0,     1,     3,     8,
+       0,     0,     0,     5,     9,    10
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -34,   -34,     7,   -34
+     -33,   -33,     7,   -33
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     3,     9
+      -1,     3,     4,    10
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -638,15 +639,15 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       4,     6,    10,    11,     1,     8,    12,    13,    14,     7,
-       0,     0,     0,     0,     0,     0,     1,     0,     0,     0,
-       5
+       5,     7,     1,    11,    12,     9,    13,    14,    15,     2,
+       8,     0,     0,     0,     0,     0,     2,     0,     0,     0,
+       6
 };
 
 static const yytype_int8 yycheck[] =
 {
-      14,     0,    35,    36,    15,     8,    14,     8,     8,     2,
-      -1,    -1,    -1,    -1,    -1,    -1,    15,    -1,    -1,    -1,
+      14,     0,     8,    35,    36,     8,    14,     8,     8,    15,
+       3,    -1,    -1,    -1,    -1,    -1,    15,    -1,    -1,    -1,
       34
 };
 
@@ -654,20 +655,22 @@ static const yytype_int8 yycheck[] =
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    15,    38,    39,    14,    34,     0,    39,     8,    40,
-      35,    36,    14,     8,     8
+       0,     8,    15,    38,    39,    14,    34,     0,    39,     8,
+      40,    35,    36,    14,     8,     8
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    37,    38,    38,    39,    39,    40,    40,    40
+       0,    37,    38,    38,    38,    39,    39,    39,    40,    40,
+      40
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     2,     1,     4,     2,     1,     3,     3
+       0,     2,     1,     2,     1,     4,     2,     1,     1,     3,
+       3
 };
 
 
@@ -1363,7 +1366,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 1367 "y.tab.c"
+#line 1370 "y.tab.c"
 
       default: break;
     }
@@ -1595,15 +1598,17 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 47 "myparser.y"
+#line 49 "myparser.y"
 
 
-main (int argc, char **argv){
+int main (int argc, char **argv){
 	//Antes del análisis
+	printf("Comienza el análisis\n");
 	yyparse();
 	//Después del análisis
+	printf("Análisis finalizado\n");
 }
 
-yyerror(char *s){
+int yyerror(char *s){
 	fprintf(stderr, "error: %s\n", s);
 }

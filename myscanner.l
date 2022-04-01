@@ -126,9 +126,9 @@ void error(char* msg, char* token){
 }*/
 
 //int main(int argc, char **argv)
-yywrap()
+int yywrap()
 {
-	int tok;
+	/*int tok;
 	while (tok = yylex()){
 		//printf("line %i: %d ", lines, tok);
 		if (newline) {
@@ -145,7 +145,7 @@ yywrap()
 		}
 		else printf("%d ", tok);
 
-  	}
+  	}*/
 	return 0;
 	//printf("%8d%8d%8d\n", lines, words, chars);
 }
