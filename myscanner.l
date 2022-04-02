@@ -1,52 +1,52 @@
 %{
 #include <stdio.h>
 #include <stdbool.h>
-enum yytokentype {
-	LEARN = 258,
-	RET = 259,
-	END = 260,
-	NEXT = 261,
-	TERM = 262,
 
-	INT = 263,
-	FLOAT = 264,
-	BOOL = 265,
-	CHAR = 266,
-	
-	ARR = 267,
-	STR = 268,
-	EOL = 269,
+#define LEARN 258
+#define RET 259
+#define END 260
+#define NEXT 261
+#define TERM 262
 
-	COMM = 270,
-	RANGE = 271,
-	LEN = 272,
-	PRINT = 273,
+#define INT 263
+#define FLOAT 264
+#define BOOL 265
+#define CHAR 266
+	
+#define ARR 267
+#define STR 268
+#define EOL 269
 
-	METH = 274,
-	IF = 275,
-	AND = 276,
-	OR = 277,
-	NOT = 278,
-	ELSE = 279,
-	LOOP = 280,
-	FOR = 281,
-	WHILE = 282,
-	UNTIL = 283,
+#define COMM 270
+#define RANGE 271
+#define LEN 272
+#define PRINT 273
 
-	EQ = 284,
-	NEQ = 285,
-	//GT = 286,
-	GTE = 286,
-	//LT = 288,
-	LTE = 287,
-	
-	NAME = 288,
-	
-	TRUE = 289,
-	FALSE = 290,
-	
-	VOID = 291,
-};
+#define METH 274
+#define IF 275
+#define AND 276
+#define OR 277
+#define NOT 278
+#define ELSE 279
+#define LOOP 280
+#define FOR 281
+#define WHILE 282
+#define UNTIL 283
+
+#define EQ 284
+#define NEQ 285
+//GT = 286,
+#define GTE 286
+//LT = 288,
+#define LTE 287
+
+#define NAME 288
+
+#define TRUE 289
+#define FALSE 290
+
+#define VOID 291
+
 
 int yylval;
 
@@ -112,9 +112,14 @@ void { return VOID; }
 
 %%
 
-void error(char* msg, char* token){
+/*int yywrap() {
+	return 1;
+}*/
+
+/*void error(char* msg, char* token){
 	printf("Error on line %i: %s \"%s\".\n", lines, msg, token);
-}
+}*/
+
 /*void error(char* msg, char* token){
 	msg = strcat(msg, token);
 	char str[100];
@@ -126,9 +131,9 @@ void error(char* msg, char* token){
 }*/
 
 //int main(int argc, char **argv)
-int yywrap()
+/*int yywrap() 
 {
-	/*int tok;
+	int tok;
 	while (tok = yylex()){
 		//printf("line %i: %d ", lines, tok);
 		if (newline) {
@@ -145,7 +150,7 @@ int yywrap()
 		}
 		else printf("%d ", tok);
 
-  	}*/
+  	}
 	return 0;
 	//printf("%8d%8d%8d\n", lines, words, chars);
-}
+}*/

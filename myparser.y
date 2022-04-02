@@ -1,28 +1,20 @@
 %{
 #include <stdio.h>
-//#include "y.tab.h"
+#include "y.tab.h"
 
-int yylex();
-int yyerror(char *s);
+extern int yylex();
+extern int yyparse(void);
+extern int yyerror(char *s);
 %}
 
-/* tokens */
 %token LEARN RET END NEXT TERM
-%token /*<num>*/ INT FLOAT BOOL 
+%token INT FLOAT BOOL 
 %token CHAR
 %token ARR STR EOL
 %token NAME
 %token COMM RANGE LEN PRINT
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
 %token EQ NEQ GTE LTE
-
-/*%union {
-  struct ast *a;
-  char[] name;
-  double num;
-}*/
-
-//%type <a> exp factor term
 
 %start statements
 
@@ -33,8 +25,7 @@ statements: INT
 	  | statement
 	  ;
 
-statement: NAME '=' expression EOL
-	 | NAME EOL
+statement: NAME '=' expression
 	 | NAME
 	 ;
 
