@@ -1,0 +1,7 @@
+float
+char
+bool
+int
+a
+a
+a

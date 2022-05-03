@@ -129,9 +129,10 @@ void error(char* msg, char* token){
 	msg = strcat(&str[0], msg);
 	perror(msg);
 }*/
-/*
-int main(int argc, char **argv)
+
+//int main(int argc, char **argv)
 //int yywrap() 
+/**int ()
 {
 	int tok;
 	while (tok = yylex()){
@@ -153,5 +154,4 @@ int main(int argc, char **argv)
   	}
 	return 0;
 	//printf("%8d%8d%8d\n", lines, words, chars);
-}
-*/
+}*/

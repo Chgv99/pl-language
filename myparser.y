@@ -17,11 +17,23 @@ extern int lines;   /* lexico le da valores */
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
 %token EQ NEQ GTE LTE
 
-%start statements
+%start statement //cambiar a statementS?
 
 %%
 
-statements: INT
+initialization: INT NAME
+|	FLOAT NAME
+|	BOOL NAME
+|	CHAR NAME
+
+expression: ; //
+
+statement: initialization '=' expression //punto y coma??
+|	NAME '=' expression
+|	//NAME '=' //valor
+;
+
+/*statements: INT
 	  | statements statement
 	  | statement
 	  ;
@@ -33,7 +45,7 @@ statement: NAME '=' expression
 expression: INT
 	  | INT '+' INT
 	  | INT '-' INT
-	  ;
+	  ;*/
 //line:
 //    | line exp EOL { printf("= %d\n", $2); }
 //;
