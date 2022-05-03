@@ -109,16 +109,16 @@ void { return VOID; }
 \n         { chars++; lines++; return EOL; }
 
 .          { chars++; error("unexpected token ", yytext); }
-
+<<EOF>> { return 0; }
 %%
 
-/*int yywrap() {
+int yywrap() {
 	return 1;
-}*/
+}
 
-/*void error(char* msg, char* token){
+void error(char* msg, char* token){
 	printf("Error on line %i: %s \"%s\".\n", lines, msg, token);
-}*/
+}
 
 /*void error(char* msg, char* token){
 	msg = strcat(msg, token);
@@ -129,28 +129,29 @@ void { return VOID; }
 	msg = strcat(&str[0], msg);
 	perror(msg);
 }*/
-
-//int main(int argc, char **argv)
-/*int yywrap() 
+/*
+int main(int argc, char **argv)
+//int yywrap() 
 {
 	int tok;
 	while (tok = yylex()){
 		//printf("line %i: %d ", lines, tok);
 		if (newline) {
-			printf("line %i: ", lines);
+			//printf("line %i: ", lines);
 			newline = false;
 		}
 		if (tok == INT){ 
-			//printf("= %d\n", yylval);
-			//printf("line %i: %d ", lines, tok);
+			////printf("= %d\n", yylval);
+			////printf("line %i: %d ", lines, tok);
 		}
 		if (tok == 269){ //EOL
 			newline = true;
-			printf("%d\n", tok);
+			//printf("%d\n", tok);
 		}
-		else printf("%d ", tok);
+		//else //printf("%d ", tok);
 
   	}
 	return 0;
 	//printf("%8d%8d%8d\n", lines, words, chars);
-}*/
+}
+*/

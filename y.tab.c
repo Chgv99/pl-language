@@ -69,13 +69,14 @@
 #line 1 "myparser.y"
 
 #include <stdio.h>
-#include "y.tab.h"
+//#include "y.tab.h"
 
-extern int yylex();
-extern int yyparse(void);
-extern int yyerror(char *s);
+int yylex();
+int yyparse(void);
+int yyerror(char const *s);
+extern int lines;   /* lexico le da valores */
 
-#line 79 "y.tab.c"
+#line 80 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -566,7 +567,7 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    23,    23,    24,    25,    28,    29,    32,    33,    34
+       0,    24,    24,    25,    26,    29,    30,    33,    34,    35
 };
 #endif
 
@@ -1362,7 +1363,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 1366 "y.tab.c"
+#line 1367 "y.tab.c"
 
       default: break;
     }
@@ -1594,7 +1595,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 40 "myparser.y"
+#line 41 "myparser.y"
 
 
 int main (int argc, char **argv){
@@ -1605,6 +1606,6 @@ int main (int argc, char **argv){
 	printf("Análisis finalizado\n");
 }
 
-int yyerror(char *s){
-	fprintf(stderr, "error: %s\n", s);
+int yyerror(char const *s){
+	fprintf(stderr, "error in line %d: %s\n", lines, s);
 }

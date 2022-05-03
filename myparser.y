@@ -1,10 +1,11 @@
 %{
 #include <stdio.h>
-#include "y.tab.h"
+//#include "y.tab.h"
 
-extern int yylex();
-extern int yyparse(void);
-extern int yyerror(char *s);
+int yylex();
+int yyparse(void);
+int yyerror(char const *s);
+extern int lines;   /* lexico le da valores */
 %}
 
 %token LEARN RET END NEXT TERM
@@ -47,6 +48,6 @@ int main (int argc, char **argv){
 	printf("Análisis finalizado\n");
 }
 
-int yyerror(char *s){
-	fprintf(stderr, "error: %s\n", s);
+int yyerror(char const *s){
+	fprintf(stderr, "error in line %d: %s\n", lines, s);
 }
