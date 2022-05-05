@@ -72,7 +72,7 @@ void error(char*, char*);
 \>\= { return GTE; }
 \<\=] { return LTE; }
 
-[0-9]+ { yylval = atoi(yytext); return INT; }
+[0-9]+ { yylval = atoi(yytext); return DIGIT; }
 
 int { return INT; }
 float { return FLOAT; }
