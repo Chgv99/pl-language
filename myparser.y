@@ -21,30 +21,30 @@ extern int lines;   /* lexico le da valores */
 
 %%
 type: INT 
-|    FLOAT 
-|    BOOL 
-|    CHAR 
-|    STR
-|    ARR
+|    	FLOAT 
+|    	BOOL 
+|    	CHAR 
+|    	STR
+|    	ARR
 ;
 
 initialization: type NAME
 ;
 
 initializations: initialization
-|initialization ',' initializations
+|	initialization ',' initializations
 ;
 
 expression: DIGIT
-|    DIGIT '+' expression
-|    DIGIT '-' expression
-|    DIGIT '*' expression
-|    DIGIT '/' expression
+|    	DIGIT '+' expression
+|    	DIGIT '-' expression
+|    	DIGIT '*' expression
+|    	DIGIT '/' expression
 ;
 
 statement: initialization '=' expression
-|    NAME '=' expression  
-|    RETURN NAME 
+|    	NAME '=' expression  
+|    	RETURN NAME 
 ;
 
 /**
@@ -57,13 +57,13 @@ controlStructure:     //if, for, while...
 ;
 
 content: statement        // keywords?
-|     controlStructure
-|     statement EOL content
-|     controlStructure EOL content
+|     	controlStructure
+|     	statement EOL content
+|     	controlStructure EOL content
 ;
 
 method: METH NAME '('initializations')'':' type'{'content'}'     // RETURN isnt forced to be use
-|     METH NAME '('initializations')'':' type'{'content'}'
+|     	METH NAME '('initializations')'':' type'{'content'}'
 
 %%
 
