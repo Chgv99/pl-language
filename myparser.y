@@ -20,35 +20,50 @@ extern int lines;   /* lexico le da valores */
 %start statement //cambiar a statementS?
 
 %%
-
-initialization: INT NAME
-|	FLOAT NAME
-|	BOOL NAME
-|	CHAR NAME
-
-expression: ; //
-
-statement: initialization '=' expression //punto y coma??
-|	NAME '=' expression
-|	//NAME '=' //valor
+type: INT 
+|    FLOAT 
+|    BOOL 
+|    CHAR 
+|    STR
+|    ARR
 ;
 
-/*statements: INT
-	  | statements statement
-	  | statement
-	  ;
+initialization: type NAME
+;
 
-statement: NAME '=' expression
-	 | NAME
-	 ;
+initializations: initialization
+|initialization ',' initializations
+;
 
-expression: INT
-	  | INT '+' INT
-	  | INT '-' INT
-	  ;*/
-//line:
-//    | line exp EOL { printf("= %d\n", $2); }
-//;
+expression: DIGIT
+|    DIGIT '+' expression
+|    DIGIT '-' expression
+|    DIGIT '*' expression
+|    DIGIT '/' expression
+;
+
+statement: initialization '=' expression
+|    NAME '=' expression  
+|    RETURN NAME 
+;
+
+/**
+    statements: statement 
+    |    statement EOL statements
+    ;
+*/
+
+controlStructure:     //if, for, while...
+;
+
+content: statement        // keywords?
+|     controlStructure
+|     statement EOL content
+|     controlStructure EOL content
+;
+
+method: METH NAME '('initializations')'':' type'{'content'}'     // RETURN isnt forced to be use
+|     METH NAME '('initializations')'':' type'{'content'}'
 
 %%
 
