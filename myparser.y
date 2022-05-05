@@ -22,11 +22,11 @@ extern int lines;   /* lexico le da valores */
 
 %%
 type: INT 
-|    	FLOAT 
-|    	BOOL 
-|    	CHAR 
-|    	STR
-|    	ARR
+|   FLOAT 
+|   BOOL 
+|   CHAR 
+|   STR
+|   ARR
 ;
 
 initialization: type NAME
@@ -37,35 +37,54 @@ initializations: initialization
 ;
 
 expression: DIGIT
-|    	DIGIT '+' expression
-|    	DIGIT '-' expression
-|    	DIGIT '*' expression
-|    	DIGIT '/' expression
+|	DIGIT '+' expression
+|	DIGIT '-' expression
+|	DIGIT '*' expression
+|	DIGIT '/' expression
 ;
 
 statement: initialization '=' expression
-|    	NAME '=' expression  
-|    	RET NAME 
+|   	NAME '=' expression  
+|   	RETURN NAME 
 ;
 
 /**
-    statements: statement 
-    |    statement EOL statements
-    ;
+	statements: statement 
+	|    statement EOL statements
+	;
 */
 
-controlStructure:     //if, for, while...
+comparator: '=='
+|	'!='
+|	'>'
+|	'<'
+|	'>='
+|	'<='
+|	AND
+|	OR
 ;
 
-content: statement        // keywords?
-|     	controlStructure
-|     	statement EOL content
-|     	controlStructure EOL content
+comparation: NAME
+|	NAME comparator comparation
+|	NOT comparation
 ;
 
-method: METH NAME '('initializations')'':' type'{'content'}'     // RETURN isnt forced to be use
-|     	METH NAME '('initializations')'':' type'{'content'}'
+controlStructure: IF '('comparation')''{'content'}'
+|	LOOP'('DIGIT')''{'content'}'
+|	LOOP FOR'('INT NAME',' RANGE'('DIGIT ',' DIGIT')'',' DIGIT')''{'content'}'
+|	LOOP WHILE '('comparation')''{'content'}'
+|	LOOP UNTIL '('comparation')''{'content'}'
+;
 
+content: statement		// keywords?
+|	controlStructure
+|	EOL
+|	statement EOL content
+|	controlStructure EOL content
+;
+
+method: METH NAME '('initializations')'':' type'{'content'}' 	// RETURN isnt forced to be use
+|	METH NAME '('initializations')'':' type'{'content'}'
 %%
 
 int main (int argc, char **argv){
