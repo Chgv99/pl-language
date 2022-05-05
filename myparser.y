@@ -8,6 +8,7 @@ int yyerror(char const *s);
 extern int lines;   /* lexico le da valores */
 %}
 
+%token DIGIT
 %token LEARN RET END NEXT TERM
 %token INT FLOAT BOOL 
 %token CHAR
@@ -44,7 +45,7 @@ expression: DIGIT
 
 statement: initialization '=' expression
 |    	NAME '=' expression  
-|    	RETURN NAME 
+|    	RET NAME 
 ;
 
 /**
