@@ -1,8 +1,9 @@
 %{
 #include <stdio.h>
 #include <stdbool.h>
+#include "y.tab.h"
 
-#define LEARN 258
+/*#define LEARN 258
 #define RET 259
 #define END 260
 #define NEXT 261
@@ -45,7 +46,7 @@
 #define TRUE 289
 #define FALSE 290
 
-#define VOID 291
+#define VOID 291*/
 
 
 int yylval;
