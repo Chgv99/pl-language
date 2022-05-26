@@ -10,13 +10,13 @@ extern int lines;   /* lexico le da valores */
 
 %token DIGIT
 %token LEARN RET END NEXT TERM
-%token INT FLOAT BOOL 
-%token CHAR
+%token INT FLOAT BOOL CHAR VOID
 %token ARR STR EOL
 %token NAME
 %token COMM RANGE LEN PRINT
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
 %token EQ NEQ GT LT GTE LTE
+%token TRUE FALSE
 
 %start statement //cambiar a statementS?
 
