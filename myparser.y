@@ -5,7 +5,10 @@
 int yylex();
 int yyparse(void);
 int yyerror(char const *s);
+extern FILE *yyin;
 extern int lines;   /* lexico le da valores */
+
+#define YYDEBUG 1 //debugging
 %}
 
 %token DIGIT
@@ -18,15 +21,28 @@ extern int lines;   /* lexico le da valores */
 %token EQ NEQ GT LT GTE LTE
 %token TRUE FALSE
 
-%start statement //cambiar a statementS?
+%left '+' '-'
+%left '*' '/'
+%left '^'
+
+%start program //cambiar a statementS?
 
 %%
-type: INT 
-|   FLOAT 
-|   BOOL 
-|   CHAR 
-|   STR
-|   ARR
+
+program: content;
+
+content: /* empty */ { printf("Empty input\n"); }
+|	content statement		// keywords?
+//|	controlStructure
+//|	method
+//|	EOL
+//|	statement EOL content
+//|	controlStructure EOL content
+;
+
+statement: initialization '=' expression
+|   	NAME '=' expression  
+|   	RET NAME 
 ;
 
 initialization: type NAME
@@ -43,10 +59,26 @@ expression: DIGIT
 |	DIGIT '/' expression
 ;
 
-statement: initialization '=' expression
-|   	NAME '=' expression  
-|   	RET NAME 
+controlStructure: IF '('comparation')''{'content'}'
+|	LOOP'('DIGIT')''{'content'}'
+|	LOOP FOR'('INT NAME',' RANGE'('DIGIT ',' DIGIT')'',' DIGIT')''{'content'}'
+|	LOOP WHILE '('comparation')''{'content'}'
+|	LOOP UNTIL '('comparation')''{'content'}'
 ;
+
+method: METH NAME '('initialization')'':' type'{'content'}' 	// RETURN isnt forced to be use
+|	METH NAME '('initializations')'':' type'{'content'}'
+
+type: INT 
+|   FLOAT 
+|   BOOL 
+|   CHAR 
+|   STR
+|   ARR
+;
+
+
+
 
 /**
 	statements: statement 
@@ -69,30 +101,23 @@ comparation: NAME
 |	NOT comparation
 ;
 
-controlStructure: IF '('comparation')''{'content'}'
-|	LOOP'('DIGIT')''{'content'}'
-|	LOOP FOR'('INT NAME',' RANGE'('DIGIT ',' DIGIT')'',' DIGIT')''{'content'}'
-|	LOOP WHILE '('comparation')''{'content'}'
-|	LOOP UNTIL '('comparation')''{'content'}'
-;
-
-content: statement		// keywords?
-|	controlStructure
-|	EOL
-|	statement EOL content
-|	controlStructure EOL content
-;
-
-method: METH NAME '('initializations')'':' type'{'content'}' 	// RETURN isnt forced to be use
-|	METH NAME '('initializations')'':' type'{'content'}'
 %%
 
-int main (int argc, char **argv){
+/*int main (int argc, char **argv){
+	yydebug = 1; //debugging
 	//Antes del análisis
 	printf("Comienza el análisis\n");
 	yyparse();
 	//Después del análisis
 	printf("Análisis finalizado\n");
+}*/
+int main (int argc, char **argv){
+	yydebug = 0; //1 = enabled
+	if (argc == 2){
+		yyin = fopen(argv[1], "r");
+		yyparse();
+	}
+	return 0;
 }
 
 int yyerror(char const *s){
