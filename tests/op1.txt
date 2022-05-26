@@ -1,7 +1,7 @@
-float
-char
-bool
-int
-a
-a
-a
+float a
+char b
+bool c
+int d
+a = 3
+b = 2
+c = 1

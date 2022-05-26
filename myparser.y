@@ -40,9 +40,10 @@ content: /* empty */ { printf("Empty input\n"); }
 //|	controlStructure EOL content
 ;
 
-statement: initialization '=' expression
-|   	NAME '=' expression  
-|   	RET NAME 
+statement: initialization
+| 	initialization '=' expression
+|   NAME '=' expression  
+|   RET NAME 
 ;
 
 initialization: type NAME
@@ -112,7 +113,7 @@ comparation: NAME
 	printf("Análisis finalizado\n");
 }*/
 int main (int argc, char **argv){
-	yydebug = 0; //1 = enabled
+	yydebug = 1; //1 = enabled
 	if (argc == 2){
 		yyin = fopen(argv[1], "r");
 		yyparse();

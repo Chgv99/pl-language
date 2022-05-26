@@ -70,7 +70,7 @@ void error(char*, char*);
 \=\= { return EQ; }
 \!\= { return NEQ; }
 \>\= { return GTE; }
-\<\=] { return LTE; }
+\<\= { return LTE; }
 
 [0-9]+ { yylval = atoi(yytext); return DIGIT; }
 
@@ -107,7 +107,7 @@ void { return VOID; }
 [ \t] { /* ignore whitespaces */ }
 \"([^"\n]|\\.)*\" { words++; chars += strlen(yytext); return STR; }
 [a-zA-Z]+  { words++; chars += strlen(yytext); return NAME; }
-\n         { chars++; lines++; return EOL; }
+\n         { chars++; lines++;}
 
 .          { chars++; error("unexpected token ", yytext); }
 <<EOF>> { return 0; }
@@ -117,9 +117,9 @@ int yywrap() {
 	return 1;
 }
 
-void error(char* msg, char* token){
+/*void error(char* msg, char* token){
 	printf("Error on line %i: %s \"%s\".\n", lines, msg, token);
-}
+}*/
 
 /*void error(char* msg, char* token){
 	msg = strcat(msg, token);

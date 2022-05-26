@@ -1,0 +1,404 @@
+Nonterminals useless in grammar
+
+    initializations
+    comparator
+    comparation
+    controlStructure
+    content
+    method
+
+
+Terminals unused in grammar
+
+    LEARN
+    END
+    NEXT
+    TERM
+    VOID
+    EOL
+    COMM
+    RANGE
+    LEN
+    PRINT
+    METH
+    IF
+    AND
+    OR
+    NOT
+    ELSE
+    LOOP
+    FOR
+    WHILE
+    UNTIL
+    EQ
+    NEQ
+    GT
+    LT
+    GTE
+    LTE
+    TRUE
+    FALSE
+    ','
+    '('
+    ')'
+    '{'
+    '}'
+    ':'
+
+
+Rules useless in grammar
+
+   16 initializations: initialization
+   17                | initialization ',' initializations
+
+   18 comparator: EQ
+   19           | NEQ
+   20           | GT
+   21           | LT
+   22           | GTE
+   23           | LTE
+   24           | AND
+   25           | OR
+
+   26 comparation: NAME
+   27            | NAME comparator comparation
+   28            | NOT comparation
+
+   29 controlStructure: IF '(' comparation ')' '{' content '}'
+   30                 | LOOP '(' DIGIT ')' '{' content '}'
+   31                 | LOOP FOR '(' INT NAME ',' RANGE '(' DIGIT ',' DIGIT ')' ',' DIGIT ')' '{' content '}'
+   32                 | LOOP WHILE '(' comparation ')' '{' content '}'
+   33                 | LOOP UNTIL '(' comparation ')' '{' content '}'
+
+   34 content: statement
+   35        | controlStructure
+   36        | EOL
+   37        | statement EOL content
+   38        | controlStructure EOL content
+
+   39 method: METH NAME '(' initializations ')' ':' type '{' content '}'
+   40       | METH NAME '(' initializations ')' ':' type '{' content '}'
+
+
+Grammar
+
+    0 $accept: statement $end
+
+    1 type: INT
+    2     | FLOAT
+    3     | BOOL
+    4     | CHAR
+    5     | STR
+    6     | ARR
+
+    7 initialization: type NAME
+
+    8 expression: DIGIT
+    9           | DIGIT '+' expression
+   10           | DIGIT '-' expression
+   11           | DIGIT '*' expression
+   12           | DIGIT '/' expression
+
+   13 statement: initialization '=' expression
+   14          | NAME '=' expression
+   15          | RET NAME
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '(' (40)
+    ')' (41)
+    '*' (42) 11
+    '+' (43) 9
+    ',' (44)
+    '-' (45) 10
+    '/' (47) 12
+    ':' (58)
+    '=' (61) 13 14
+    '{' (123)
+    '}' (125)
+    error (256)
+    DIGIT (258) 8 9 10 11 12
+    LEARN (259)
+    RET (260) 15
+    END (261)
+    NEXT (262)
+    TERM (263)
+    INT (264) 1
+    FLOAT (265) 2
+    BOOL (266) 3
+    CHAR (267) 4
+    VOID (268)
+    ARR (269) 6
+    STR (270) 5
+    EOL (271)
+    NAME (272) 7 14 15
+    COMM (273)
+    RANGE (274)
+    LEN (275)
+    PRINT (276)
+    METH (277)
+    IF (278)
+    AND (279)
+    OR (280)
+    NOT (281)
+    ELSE (282)
+    LOOP (283)
+    FOR (284)
+    WHILE (285)
+    UNTIL (286)
+    EQ (287)
+    NEQ (288)
+    GT (289)
+    LT (290)
+    GTE (291)
+    LTE (292)
+    TRUE (293)
+    FALSE (294)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (51)
+        on left: 0
+    type (52)
+        on left: 1 2 3 4 5 6
+        on right: 7
+    initialization (53)
+        on left: 7
+        on right: 13
+    expression (54)
+        on left: 8 9 10 11 12
+        on right: 9 10 11 12 13 14
+    statement (55)
+        on left: 13 14 15
+        on right: 0
+
+
+State 0
+
+    0 $accept: . statement $end
+
+    RET    shift, and go to state 1
+    INT    shift, and go to state 2
+    FLOAT  shift, and go to state 3
+    BOOL   shift, and go to state 4
+    CHAR   shift, and go to state 5
+    ARR    shift, and go to state 6
+    STR    shift, and go to state 7
+    NAME   shift, and go to state 8
+
+    type            go to state 9
+    initialization  go to state 10
+    statement       go to state 11
+
+
+State 1
+
+   15 statement: RET . NAME
+
+    NAME  shift, and go to state 12
+
+
+State 2
+
+    1 type: INT .
+
+    $default  reduce using rule 1 (type)
+
+
+State 3
+
+    2 type: FLOAT .
+
+    $default  reduce using rule 2 (type)
+
+
+State 4
+
+    3 type: BOOL .
+
+    $default  reduce using rule 3 (type)
+
+
+State 5
+
+    4 type: CHAR .
+
+    $default  reduce using rule 4 (type)
+
+
+State 6
+
+    6 type: ARR .
+
+    $default  reduce using rule 6 (type)
+
+
+State 7
+
+    5 type: STR .
+
+    $default  reduce using rule 5 (type)
+
+
+State 8
+
+   14 statement: NAME . '=' expression
+
+    '='  shift, and go to state 13
+
+
+State 9
+
+    7 initialization: type . NAME
+
+    NAME  shift, and go to state 14
+
+
+State 10
+
+   13 statement: initialization . '=' expression
+
+    '='  shift, and go to state 15
+
+
+State 11
+
+    0 $accept: statement . $end
+
+    $end  shift, and go to state 16
+
+
+State 12
+
+   15 statement: RET NAME .
+
+    $default  reduce using rule 15 (statement)
+
+
+State 13
+
+   14 statement: NAME '=' . expression
+
+    DIGIT  shift, and go to state 17
+
+    expression  go to state 18
+
+
+State 14
+
+    7 initialization: type NAME .
+
+    $default  reduce using rule 7 (initialization)
+
+
+State 15
+
+   13 statement: initialization '=' . expression
+
+    DIGIT  shift, and go to state 17
+
+    expression  go to state 19
+
+
+State 16
+
+    0 $accept: statement $end .
+
+    $default  accept
+
+
+State 17
+
+    8 expression: DIGIT .
+    9           | DIGIT . '+' expression
+   10           | DIGIT . '-' expression
+   11           | DIGIT . '*' expression
+   12           | DIGIT . '/' expression
+
+    '+'  shift, and go to state 20
+    '-'  shift, and go to state 21
+    '*'  shift, and go to state 22
+    '/'  shift, and go to state 23
+
+    $default  reduce using rule 8 (expression)
+
+
+State 18
+
+   14 statement: NAME '=' expression .
+
+    $default  reduce using rule 14 (statement)
+
+
+State 19
+
+   13 statement: initialization '=' expression .
+
+    $default  reduce using rule 13 (statement)
+
+
+State 20
+
+    9 expression: DIGIT '+' . expression
+
+    DIGIT  shift, and go to state 17
+
+    expression  go to state 24
+
+
+State 21
+
+   10 expression: DIGIT '-' . expression
+
+    DIGIT  shift, and go to state 17
+
+    expression  go to state 25
+
+
+State 22
+
+   11 expression: DIGIT '*' . expression
+
+    DIGIT  shift, and go to state 17
+
+    expression  go to state 26
+
+
+State 23
+
+   12 expression: DIGIT '/' . expression
+
+    DIGIT  shift, and go to state 17
+
+    expression  go to state 27
+
+
+State 24
+
+    9 expression: DIGIT '+' expression .
+
+    $default  reduce using rule 9 (expression)
+
+
+State 25
+
+   10 expression: DIGIT '-' expression .
+
+    $default  reduce using rule 10 (expression)
+
+
+State 26
+
+   11 expression: DIGIT '*' expression .
+
+    $default  reduce using rule 11 (expression)
+
+
+State 27
+
+   12 expression: DIGIT '/' expression .
+
+    $default  reduce using rule 12 (expression)
