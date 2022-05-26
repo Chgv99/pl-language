@@ -45,7 +45,7 @@ expression: DIGIT
 
 statement: initialization '=' expression
 |   	NAME '=' expression  
-|   	RETURN NAME 
+|   	RET NAME 
 ;
 
 /**
