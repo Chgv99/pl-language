@@ -16,7 +16,7 @@ extern int lines;   /* lexico le da valores */
 %token NAME
 %token COMM RANGE LEN PRINT
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
-%token EQ NEQ GTE LTE
+%token EQ NEQ GT LT GTE LTE
 
 %start statement //cambiar a statementS?
 
@@ -54,12 +54,12 @@ statement: initialization '=' expression
 	;
 */
 
-comparator: '=='
-|	'!='
-|	'>'
-|	'<'
-|	'>='
-|	'<='
+comparator: EQ
+|	NEQ
+|	GT
+|	LT
+|	GTE
+|	LTE
 |	AND
 |	OR
 ;
