@@ -1,0 +1,4 @@
+float a = 3
+float b = 4
+float c = 5
+float d = 6
