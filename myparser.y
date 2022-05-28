@@ -12,29 +12,43 @@ extern int lines;   /* lexico le da valores */
 %}
 
 %token DIGIT
-%token LEARN RET END NEXT TERM
-%token INT FLOAT BOOL CHAR VOID
-%token ARR STR EOL
+%token INC DEC MULT_ASSIGN DIV_ASSIGN
+%token LEARN ARROW RET END NEXT TERM
+%token INT FLOAT BOOL CHAR VOID ARR STR
+%token V_INT V_FLOAT V_BOOL V_CHAR V_VOID V_ARR V_STR
 %token NAME
 %token COMM RANGE LEN PRINT
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
 %token EQ NEQ GT LT GTE LTE
 %token TRUE FALSE
 
+%right '=' INC DEC MULT_ASSIGN DIV_ASSIGN
+//lógicas primero or luego and
+//equals
+//comparativas
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' '%' //Comprobar si módulo va aquí
 %left '^'
+//not
 
 %start program //cambiar a statementS?
 
 %%
 
-program: content;
+program: /* empty */ { printf("Empty input\n"); }
+|	import program
+|	content;
 
-content: /* empty */ { printf("Empty input\n"); }
+import: LEARN ARROW V_STR
+;
+
+content: /*initialization content		// keywords?
+|*/	statement
 |	content statement		// keywords?
-//|	controlStructure
-//|	method
+|	controlStructure
+|	content controlStructure
+|	method
+|	content method
 //|	EOL
 //|	statement EOL content
 //|	controlStructure EOL content
@@ -43,32 +57,79 @@ content: /* empty */ { printf("Empty input\n"); }
 statement: initialization
 | 	initialization '=' expression
 |   NAME '=' expression  
-|   RET NAME 
+| 	initialization INC expression
+|   NAME INC expression  
+| 	initialization DEC expression
+|   NAME DEC expression   
+|   RET 
+|	RET expression
+|	END 
+|	NEXT
+|	TERM
 ;
 
-initialization: type NAME
+initialization: typeContainer nameContainer
 ;
 
-initializations: initialization
-|	initialization ',' initializations
+nameContainer: NAME
+|	NAME ',' nameContainer
 ;
 
-expression: DIGIT
+param: typeContainer NAME
+|	typeContainer NAME ',' param
+;
+
+/*expression: DIGIT
 |	DIGIT '+' expression
 |	DIGIT '-' expression
 |	DIGIT '*' expression
 |	DIGIT '/' expression
+;*/
+
+expression: operand
+|	operand '+' expression
+|	operand '-' expression
+|	operand '*' expression
+|	operand '/' expression
+|	operand '%' expression
+|	operand '^' expression
+|	'{' list '}'
 ;
 
-controlStructure: IF '('comparation')''{'content'}'
-|	LOOP'('DIGIT')''{'content'}'
-|	LOOP FOR'('INT NAME',' RANGE'('DIGIT ',' DIGIT')'',' DIGIT')''{'content'}'
-|	LOOP WHILE '('comparation')''{'content'}'
-|	LOOP UNTIL '('comparation')''{'content'}'
+list: DIGIT
+|	DIGIT ',' list;
+
+operand: DIGIT
+|	NAME
+|	NAME '[' DIGIT ']'
+|	NAME '[' NAME ']' //multidimensionales?
+|	NAME '(' nameContainer ')' //function call
 ;
 
-method: METH NAME '('initialization')'':' type'{'content'}' 	// RETURN isnt forced to be use
-|	METH NAME '('initializations')'':' type'{'content'}'
+controlStructure: IF '(' comparation ')' '{'content'}'
+|	LOOP '(' DIGIT ')' '{' content '}'
+|	LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
+//|	LOOP FOR '(' INT NAME ',' RANGE '(' DIGIT ',' DIGIT ')' ',' DIGIT ')' '{' content '}'
+|	LOOP WHILE '(' comparation ')' '{' content '}'
+|	LOOP UNTIL '(' comparation ')' '{' content '}'
+;
+
+len: LEN '(' NAME ')'
+;
+
+print: LEN '(' NAME ')'
+|	LEN '(' expression ')'
+;
+
+method: METH NAME '('param')'':' typeContainer '{'content'}' 	// RETURN isnt forced to be use
+//|	METH NAME '('initializations')'':' type'{'content'}'
+;
+
+typeContainer: type
+|	type '[' ']'
+|	type '[' DIGIT ']'
+|	type '[' NAME ']'
+;
 
 type: INT 
 |   FLOAT 
@@ -78,9 +139,6 @@ type: INT
 |   ARR
 ;
 
-
-
-
 /**
 	statements: statement 
 	|    statement EOL statements
@@ -89,8 +147,8 @@ type: INT
 
 comparator: EQ
 |	NEQ
-|	GT
-|	LT
+|	'>'
+|	'<'
 |	GTE
 |	LTE
 |	AND
@@ -99,7 +157,9 @@ comparator: EQ
 
 comparation: NAME
 |	NAME comparator comparation
-|	NOT comparation
+|	NOT NAME comparator comparation
+|	NOT '(' comparation ')'
+|	NOT '(' expression ')'
 ;
 
 %%
@@ -113,7 +173,7 @@ comparation: NAME
 	printf("Análisis finalizado\n");
 }*/
 int main (int argc, char **argv){
-	yydebug = 1; //1 = enabled
+	yydebug = 0; //1 = enabled
 	if (argc == 2){
 		yyin = fopen(argv[1], "r");
 		yyparse();
@@ -123,4 +183,5 @@ int main (int argc, char **argv){
 
 int yyerror(char const *s){
 	fprintf(stderr, "error in line %d: %s\n", lines, s);
+	//fprintf("yyparse: %d", yyparse());
 }

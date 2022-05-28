@@ -1,5 +1,5 @@
-learn -> directorio1.subdirectorio
-learn -> directorio2
+learn -> "directorio1.subdirectorio"
+learn -> "directorio2"
 
 ~~ Method that returns the division of two integers
 meth divideInt(int a, int b): int{

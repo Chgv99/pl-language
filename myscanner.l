@@ -67,6 +67,13 @@ void error(char*, char*);
 [\(\)\[\]\{\}\,\=] { return yytext[0]; }
 [\>\<] { return yytext[0]; }
 
+\-\> { return ARROW; }
+
+\+\= { return INC; }
+\-\= { return DEC; }
+\*\= { return MULT_ASSIGN; }
+\/\= { return DIV_ASSIGN; }
+
 \=\= { return EQ; }
 \!\= { return NEQ; }
 \>\= { return GTE; }
@@ -84,7 +91,7 @@ return { return RET; }
 end { return END; }
 next { return NEXT; }
 terminate { return TERM; }
-~~.* { return COMM; }
+[\~\~].* { /*return COMM;*/ }
 range { return RANGE; }
 len { return LEN; }
 print { return PRINT; }
@@ -105,8 +112,8 @@ false { return FALSE; }
 void { return VOID; }
 
 [ \t] { /* ignore whitespaces */ }
-\"([^"\n]|\\.)*\" { words++; chars += strlen(yytext); return STR; }
-[a-zA-Z]+  { words++; chars += strlen(yytext); return NAME; }
+\"([^"\n]|\\.)*\" { words++; chars += strlen(yytext); return V_STR; }
+[a-zA-Z_][a-zA-Z0-9_]*  { words++; chars += strlen(yytext); return NAME; }
 \n         { chars++; lines++;}
 
 .          { chars++; error("unexpected token ", yytext); }
