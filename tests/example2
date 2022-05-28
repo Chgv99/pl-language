@@ -4,4 +4,4 @@ int c = 3
 
 print(a)
 print(b + c)
-print("Test: c = ", c)
+print("Test: c = " + c)

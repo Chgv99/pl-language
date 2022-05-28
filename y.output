@@ -11,7 +11,6 @@ Terminals unused in grammar
     V_ARR
     COMM
     RANGE
-    PRINT
     ELSE
     GT
     LT
@@ -20,7 +19,8 @@ Terminals unused in grammar
 
 
 State 2 conflicts: 1 shift/reduce
-State 120 conflicts: 1 reduce/reduce
+State 72 conflicts: 1 shift/reduce
+State 133 conflicts: 1 reduce/reduce
 
 
 Grammar
@@ -52,93 +52,99 @@ Grammar
    20          | END
    21          | NEXT
    22          | TERM
+   23          | print
 
-   23 initialization: typeContainer nameContainer
+   24 initialization: typeContainer nameContainer
 
-   24 nameContainer: NAME
-   25              | NAME ',' nameContainer
+   25 nameContainer: NAME
+   26              | NAME ',' nameContainer
 
-   26 param: typeContainer NAME
-   27      | typeContainer NAME ',' param
+   27 param: typeContainer NAME
+   28      | typeContainer NAME ',' param
 
-   28 expression: operand
-   29           | operand '+' expression
-   30           | operand '-' expression
-   31           | operand '*' expression
-   32           | operand '/' expression
-   33           | operand '%' expression
-   34           | operand '^' expression
-   35           | '{' list '}'
+   29 expression: operand
+   30           | operand '+' expression
+   31           | operand '-' expression
+   32           | operand '*' expression
+   33           | operand '/' expression
+   34           | operand '%' expression
+   35           | operand '^' expression
+   36           | len
+   37           | '{' list '}'
 
-   36 list: DIGIT
-   37     | DIGIT ',' list
+   38 list: DIGIT
+   39     | DIGIT ',' list
 
-   38 operand: DIGIT
-   39        | NAME
-   40        | NAME '[' DIGIT ']'
-   41        | NAME '[' NAME ']'
-   42        | NAME '(' nameContainer ')'
+   40 operand: DIGIT
+   41        | NAME
+   42        | NAME '[' DIGIT ']'
+   43        | NAME '[' NAME ']'
+   44        | NAME '(' nameContainer ')'
+   45        | V_STR
 
-   43 controlStructure: IF '(' comparation ')' '{' content '}'
-   44                 | LOOP '(' DIGIT ')' '{' content '}'
-   45                 | LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
-   46                 | LOOP WHILE '(' comparation ')' '{' content '}'
-   47                 | LOOP UNTIL '(' comparation ')' '{' content '}'
+   46 controlStructure: IF '(' comparation ')' '{' content '}'
+   47                 | LOOP '(' DIGIT ')' '{' content '}'
+   48                 | LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
+   49                 | LOOP WHILE '(' comparation ')' '{' content '}'
+   50                 | LOOP UNTIL '(' comparation ')' '{' content '}'
 
-   48 len: LEN '(' NAME ')'
+   51 len: LEN '(' NAME ')'
 
-   49 method: METH NAME '(' param ')' ':' typeContainer '{' content '}'
+   52 print: PRINT '(' V_STR ')'
+   53      | PRINT '(' expression ')'
 
-   50 typeContainer: type
-   51              | type '[' ']'
-   52              | type '[' DIGIT ']'
-   53              | type '[' NAME ']'
+   54 method: METH NAME '(' param ')' ':' typeContainer '{' content '}'
 
-   54 type: INT
-   55     | FLOAT
-   56     | BOOL
-   57     | CHAR
-   58     | STR
-   59     | ARR
+   55 typeContainer: type
+   56              | type '[' ']'
+   57              | type '[' DIGIT ']'
+   58              | type '[' NAME ']'
 
-   60 comparator: EQ
-   61           | NEQ
-   62           | '>'
-   63           | '<'
-   64           | GTE
-   65           | LTE
-   66           | AND
-   67           | OR
+   59 type: INT
+   60     | FLOAT
+   61     | BOOL
+   62     | CHAR
+   63     | STR
+   64     | ARR
 
-   68 comparation: NAME
-   69            | NAME comparator comparation
-   70            | NOT NAME comparator comparation
-   71            | NOT '(' comparation ')'
-   72            | NOT '(' expression ')'
+   65 comparator: EQ
+   66           | NEQ
+   67           | '>'
+   68           | '<'
+   69           | GTE
+   70           | LTE
+   71           | AND
+   72           | OR
+
+   73 comparation: NAME
+   74            | NAME comparator comparation
+   75            | NOT NAME comparator comparation
+   76            | NOT '(' comparation ')'
+   77            | NOT '(' expression ')'
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    '%' (37) 33
-    '(' (40) 42 43 44 45 46 47 48 49 71 72
-    ')' (41) 42 43 44 45 46 47 48 49 71 72
-    '*' (42) 31
-    '+' (43) 29
-    ',' (44) 25 27 37 45
-    '-' (45) 30
-    '/' (47) 32
-    ':' (58) 49
-    '<' (60) 63
+    '%' (37) 34
+    '(' (40) 44 46 47 48 49 50 51 52 53 54 76 77
+    ')' (41) 44 46 47 48 49 50 51 52 53 54 76 77
+    '*' (42) 32
+    '+' (43) 30
+    ',' (44) 26 28 39 48
+    '-' (45) 31
+    '/' (47) 33
+    ':' (58) 54
+    '<' (60) 68
     '=' (61) 12 13
-    '>' (62) 62
-    '[' (91) 40 41 51 52 53
-    ']' (93) 40 41 51 52 53
-    '^' (94) 34
-    '{' (123) 35 43 44 45 46 47 49
-    '}' (125) 35 43 44 45 46 47 49
+    '>' (62) 67
+    '[' (91) 42 43 56 57 58
+    ']' (93) 42 43 56 57 58
+    '^' (94) 35
+    '{' (123) 37 46 47 48 49 50 54
+    '}' (125) 37 46 47 48 49 50 54
     error (256)
-    DIGIT (258) 36 37 38 40 44 45 52
+    DIGIT (258) 38 39 40 42 47 48 57
     INC (259) 14 15
     DEC (260) 16 17
     MULT_ASSIGN (261)
@@ -149,41 +155,41 @@ Terminals, with rules where they appear
     END (266) 20
     NEXT (267) 21
     TERM (268) 22
-    INT (269) 45 54
-    FLOAT (270) 55
-    BOOL (271) 56
-    CHAR (272) 57
+    INT (269) 48 59
+    FLOAT (270) 60
+    BOOL (271) 61
+    CHAR (272) 62
     VOID (273)
-    ARR (274) 59
-    STR (275) 58
+    ARR (274) 64
+    STR (275) 63
     V_INT (276)
     V_FLOAT (277)
     V_BOOL (278)
     V_CHAR (279)
     V_VOID (280)
     V_ARR (281)
-    V_STR (282) 4
-    NAME (283) 13 15 17 24 25 26 27 39 40 41 42 45 48 49 53 68 69 70
+    V_STR (282) 4 45 52
+    NAME (283) 13 15 17 25 26 27 28 41 42 43 44 48 51 54 58 73 74 75
     COMM (284)
     RANGE (285)
-    LEN (286) 48
-    PRINT (287)
-    METH (288) 49
-    IF (289) 43
-    AND (290) 66
-    OR (291) 67
-    NOT (292) 70 71 72
+    LEN (286) 51
+    PRINT (287) 52 53
+    METH (288) 54
+    IF (289) 46
+    AND (290) 71
+    OR (291) 72
+    NOT (292) 75 76 77
     ELSE (293)
-    LOOP (294) 44 45 46 47
-    FOR (295) 45
-    WHILE (296) 46
-    UNTIL (297) 47
-    EQ (298) 60
-    NEQ (299) 61
+    LOOP (294) 47 48 49 50
+    FOR (295) 48
+    WHILE (296) 49
+    UNTIL (297) 50
+    EQ (298) 65
+    NEQ (299) 66
     GT (300)
     LT (301)
-    GTE (302) 64
-    LTE (303) 65
+    GTE (302) 69
+    LTE (303) 70
     TRUE (304)
     FALSE (305)
 
@@ -200,49 +206,52 @@ Nonterminals, with rules where they appear
         on right: 2
     content (71)
         on left: 5 6 7 8 9 10
-        on right: 3 6 8 10 43 44 45 46 47 49
+        on right: 3 6 8 10 46 47 48 49 50 54
     statement (72)
-        on left: 11 12 13 14 15 16 17 18 19 20 21 22
+        on left: 11 12 13 14 15 16 17 18 19 20 21 22 23
         on right: 5 6
     initialization (73)
-        on left: 23
+        on left: 24
         on right: 11 12 14 16
     nameContainer (74)
-        on left: 24 25
-        on right: 23 25 42
+        on left: 25 26
+        on right: 24 26 44
     param (75)
-        on left: 26 27
-        on right: 27 49
+        on left: 27 28
+        on right: 28 54
     expression (76)
-        on left: 28 29 30 31 32 33 34 35
-        on right: 12 13 14 15 16 17 19 29 30 31 32 33 34 72
+        on left: 29 30 31 32 33 34 35 36 37
+        on right: 12 13 14 15 16 17 19 30 31 32 33 34 35 53 77
     list (77)
-        on left: 36 37
-        on right: 35 37
+        on left: 38 39
+        on right: 37 39
     operand (78)
-        on left: 38 39 40 41 42
-        on right: 28 29 30 31 32 33 34
+        on left: 40 41 42 43 44 45
+        on right: 29 30 31 32 33 34 35
     controlStructure (79)
-        on left: 43 44 45 46 47
+        on left: 46 47 48 49 50
         on right: 7 8
     len (80)
-        on left: 48
-        on right: 45
-    method (81)
-        on left: 49
+        on left: 51
+        on right: 36 48
+    print (81)
+        on left: 52 53
+        on right: 23
+    method (82)
+        on left: 54
         on right: 9 10
-    typeContainer (82)
-        on left: 50 51 52 53
-        on right: 23 26 27 49
-    type (83)
-        on left: 54 55 56 57 58 59
-        on right: 50 51 52 53
-    comparator (84)
-        on left: 60 61 62 63 64 65 66 67
-        on right: 45 69 70
-    comparation (85)
-        on left: 68 69 70 71 72
-        on right: 43 46 47 69 70 71
+    typeContainer (83)
+        on left: 55 56 57 58
+        on right: 24 27 28 54
+    type (84)
+        on left: 59 60 61 62 63 64
+        on right: 55 56 57 58
+    comparator (85)
+        on left: 65 66 67 68 69 70 71 72
+        on right: 48 74 75
+    comparation (86)
+        on left: 73 74 75 76 77
+        on right: 46 49 50 74 75 76
 
 
 State 0
@@ -261,28 +270,30 @@ State 0
     ARR    shift, and go to state 10
     STR    shift, and go to state 11
     NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
 
     $default  reduce using rule 1 (program)
 
-    program           go to state 16
-    import            go to state 17
-    content           go to state 18
-    statement         go to state 19
-    initialization    go to state 20
-    controlStructure  go to state 21
-    method            go to state 22
-    typeContainer     go to state 23
-    type              go to state 24
+    program           go to state 17
+    import            go to state 18
+    content           go to state 19
+    statement         go to state 20
+    initialization    go to state 21
+    controlStructure  go to state 22
+    print             go to state 23
+    method            go to state 24
+    typeContainer     go to state 25
+    type              go to state 26
 
 
 State 1
 
     4 import: LEARN . ARROW V_STR
 
-    ARROW  shift, and go to state 25
+    ARROW  shift, and go to state 27
 
 
 State 2
@@ -290,15 +301,18 @@ State 2
    18 statement: RET .
    19          | RET . expression
 
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
 
     NAME      [reduce using rule 18 (statement)]
     $default  reduce using rule 18 (statement)
 
-    expression  go to state 29
-    operand     go to state 30
+    expression  go to state 33
+    operand     go to state 34
+    len         go to state 35
 
 
 State 3
@@ -324,44 +338,44 @@ State 5
 
 State 6
 
-   54 type: INT .
-
-    $default  reduce using rule 54 (type)
-
-
-State 7
-
-   55 type: FLOAT .
-
-    $default  reduce using rule 55 (type)
-
-
-State 8
-
-   56 type: BOOL .
-
-    $default  reduce using rule 56 (type)
-
-
-State 9
-
-   57 type: CHAR .
-
-    $default  reduce using rule 57 (type)
-
-
-State 10
-
-   59 type: ARR .
+   59 type: INT .
 
     $default  reduce using rule 59 (type)
 
 
+State 7
+
+   60 type: FLOAT .
+
+    $default  reduce using rule 60 (type)
+
+
+State 8
+
+   61 type: BOOL .
+
+    $default  reduce using rule 61 (type)
+
+
+State 9
+
+   62 type: CHAR .
+
+    $default  reduce using rule 62 (type)
+
+
+State 10
+
+   64 type: ARR .
+
+    $default  reduce using rule 64 (type)
+
+
 State 11
 
-   58 type: STR .
+   63 type: STR .
 
-    $default  reduce using rule 58 (type)
+    $default  reduce using rule 63 (type)
 
 
 State 12
@@ -370,46 +384,54 @@ State 12
    15          | NAME . INC expression
    17          | NAME . DEC expression
 
-    INC  shift, and go to state 31
-    DEC  shift, and go to state 32
-    '='  shift, and go to state 33
+    INC  shift, and go to state 36
+    DEC  shift, and go to state 37
+    '='  shift, and go to state 38
 
 
 State 13
 
-   49 method: METH . NAME '(' param ')' ':' typeContainer '{' content '}'
+   52 print: PRINT . '(' V_STR ')'
+   53      | PRINT . '(' expression ')'
 
-    NAME  shift, and go to state 34
+    '('  shift, and go to state 39
 
 
 State 14
 
-   43 controlStructure: IF . '(' comparation ')' '{' content '}'
+   54 method: METH . NAME '(' param ')' ':' typeContainer '{' content '}'
 
-    '('  shift, and go to state 35
+    NAME  shift, and go to state 40
 
 
 State 15
 
-   44 controlStructure: LOOP . '(' DIGIT ')' '{' content '}'
-   45                 | LOOP . FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
-   46                 | LOOP . WHILE '(' comparation ')' '{' content '}'
-   47                 | LOOP . UNTIL '(' comparation ')' '{' content '}'
+   46 controlStructure: IF . '(' comparation ')' '{' content '}'
 
-    FOR    shift, and go to state 36
-    WHILE  shift, and go to state 37
-    UNTIL  shift, and go to state 38
-    '('    shift, and go to state 39
+    '('  shift, and go to state 41
 
 
 State 16
 
-    0 $accept: program . $end
+   47 controlStructure: LOOP . '(' DIGIT ')' '{' content '}'
+   48                 | LOOP . FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
+   49                 | LOOP . WHILE '(' comparation ')' '{' content '}'
+   50                 | LOOP . UNTIL '(' comparation ')' '{' content '}'
 
-    $end  shift, and go to state 40
+    FOR    shift, and go to state 42
+    WHILE  shift, and go to state 43
+    UNTIL  shift, and go to state 44
+    '('    shift, and go to state 45
 
 
 State 17
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 46
+
+
+State 18
 
     2 program: import . program
 
@@ -425,24 +447,26 @@ State 17
     ARR    shift, and go to state 10
     STR    shift, and go to state 11
     NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
 
     $default  reduce using rule 1 (program)
 
-    program           go to state 41
-    import            go to state 17
-    content           go to state 18
-    statement         go to state 19
-    initialization    go to state 20
-    controlStructure  go to state 21
-    method            go to state 22
-    typeContainer     go to state 23
-    type              go to state 24
+    program           go to state 47
+    import            go to state 18
+    content           go to state 19
+    statement         go to state 20
+    initialization    go to state 21
+    controlStructure  go to state 22
+    print             go to state 23
+    method            go to state 24
+    typeContainer     go to state 25
+    type              go to state 26
 
 
-State 18
+State 19
 
     3 program: content .
     6 content: content . statement
@@ -460,457 +484,564 @@ State 18
     ARR    shift, and go to state 10
     STR    shift, and go to state 11
     NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
 
     $default  reduce using rule 3 (program)
 
-    statement         go to state 42
-    initialization    go to state 20
-    controlStructure  go to state 43
-    method            go to state 44
-    typeContainer     go to state 23
-    type              go to state 24
+    statement         go to state 48
+    initialization    go to state 21
+    controlStructure  go to state 49
+    print             go to state 23
+    method            go to state 50
+    typeContainer     go to state 25
+    type              go to state 26
 
 
-State 19
+State 20
 
     5 content: statement .
 
     $default  reduce using rule 5 (content)
 
 
-State 20
+State 21
 
    11 statement: initialization .
    12          | initialization . '=' expression
    14          | initialization . INC expression
    16          | initialization . DEC expression
 
-    INC  shift, and go to state 45
-    DEC  shift, and go to state 46
-    '='  shift, and go to state 47
+    INC  shift, and go to state 51
+    DEC  shift, and go to state 52
+    '='  shift, and go to state 53
 
     $default  reduce using rule 11 (statement)
 
 
-State 21
+State 22
 
     7 content: controlStructure .
 
     $default  reduce using rule 7 (content)
 
 
-State 22
+State 23
+
+   23 statement: print .
+
+    $default  reduce using rule 23 (statement)
+
+
+State 24
 
     9 content: method .
 
     $default  reduce using rule 9 (content)
 
 
-State 23
-
-   23 initialization: typeContainer . nameContainer
-
-    NAME  shift, and go to state 48
-
-    nameContainer  go to state 49
-
-
-State 24
-
-   50 typeContainer: type .
-   51              | type . '[' ']'
-   52              | type . '[' DIGIT ']'
-   53              | type . '[' NAME ']'
-
-    '['  shift, and go to state 50
-
-    $default  reduce using rule 50 (typeContainer)
-
-
 State 25
 
-    4 import: LEARN ARROW . V_STR
+   24 initialization: typeContainer . nameContainer
 
-    V_STR  shift, and go to state 51
+    NAME  shift, and go to state 54
+
+    nameContainer  go to state 55
 
 
 State 26
 
-   38 operand: DIGIT .
+   55 typeContainer: type .
+   56              | type . '[' ']'
+   57              | type . '[' DIGIT ']'
+   58              | type . '[' NAME ']'
 
-    $default  reduce using rule 38 (operand)
+    '['  shift, and go to state 56
+
+    $default  reduce using rule 55 (typeContainer)
 
 
 State 27
 
-   39 operand: NAME .
-   40        | NAME . '[' DIGIT ']'
-   41        | NAME . '[' NAME ']'
-   42        | NAME . '(' nameContainer ')'
+    4 import: LEARN ARROW . V_STR
 
-    '['  shift, and go to state 52
-    '('  shift, and go to state 53
-
-    $default  reduce using rule 39 (operand)
+    V_STR  shift, and go to state 57
 
 
 State 28
 
-   35 expression: '{' . list '}'
+   40 operand: DIGIT .
 
-    DIGIT  shift, and go to state 54
-
-    list  go to state 55
+    $default  reduce using rule 40 (operand)
 
 
 State 29
+
+   45 operand: V_STR .
+
+    $default  reduce using rule 45 (operand)
+
+
+State 30
+
+   41 operand: NAME .
+   42        | NAME . '[' DIGIT ']'
+   43        | NAME . '[' NAME ']'
+   44        | NAME . '(' nameContainer ')'
+
+    '['  shift, and go to state 58
+    '('  shift, and go to state 59
+
+    $default  reduce using rule 41 (operand)
+
+
+State 31
+
+   51 len: LEN . '(' NAME ')'
+
+    '('  shift, and go to state 60
+
+
+State 32
+
+   37 expression: '{' . list '}'
+
+    DIGIT  shift, and go to state 61
+
+    list  go to state 62
+
+
+State 33
 
    19 statement: RET expression .
 
     $default  reduce using rule 19 (statement)
 
 
-State 30
-
-   28 expression: operand .
-   29           | operand . '+' expression
-   30           | operand . '-' expression
-   31           | operand . '*' expression
-   32           | operand . '/' expression
-   33           | operand . '%' expression
-   34           | operand . '^' expression
-
-    '+'  shift, and go to state 56
-    '-'  shift, and go to state 57
-    '*'  shift, and go to state 58
-    '/'  shift, and go to state 59
-    '%'  shift, and go to state 60
-    '^'  shift, and go to state 61
-
-    $default  reduce using rule 28 (expression)
-
-
-State 31
-
-   15 statement: NAME INC . expression
-
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
-
-    expression  go to state 62
-    operand     go to state 30
-
-
-State 32
-
-   17 statement: NAME DEC . expression
-
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
-
-    expression  go to state 63
-    operand     go to state 30
-
-
-State 33
-
-   13 statement: NAME '=' . expression
-
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
-
-    expression  go to state 64
-    operand     go to state 30
-
-
 State 34
 
-   49 method: METH NAME . '(' param ')' ':' typeContainer '{' content '}'
+   29 expression: operand .
+   30           | operand . '+' expression
+   31           | operand . '-' expression
+   32           | operand . '*' expression
+   33           | operand . '/' expression
+   34           | operand . '%' expression
+   35           | operand . '^' expression
 
-    '('  shift, and go to state 65
+    '+'  shift, and go to state 63
+    '-'  shift, and go to state 64
+    '*'  shift, and go to state 65
+    '/'  shift, and go to state 66
+    '%'  shift, and go to state 67
+    '^'  shift, and go to state 68
+
+    $default  reduce using rule 29 (expression)
 
 
 State 35
 
-   43 controlStructure: IF '(' . comparation ')' '{' content '}'
+   36 expression: len .
 
-    NAME  shift, and go to state 66
-    NOT   shift, and go to state 67
-
-    comparation  go to state 68
+    $default  reduce using rule 36 (expression)
 
 
 State 36
 
-   45 controlStructure: LOOP FOR . '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
+   15 statement: NAME INC . expression
 
-    '('  shift, and go to state 69
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
+
+    expression  go to state 69
+    operand     go to state 34
+    len         go to state 35
 
 
 State 37
 
-   46 controlStructure: LOOP WHILE . '(' comparation ')' '{' content '}'
+   17 statement: NAME DEC . expression
 
-    '('  shift, and go to state 70
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
+
+    expression  go to state 70
+    operand     go to state 34
+    len         go to state 35
 
 
 State 38
 
-   47 controlStructure: LOOP UNTIL . '(' comparation ')' '{' content '}'
+   13 statement: NAME '=' . expression
 
-    '('  shift, and go to state 71
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
+
+    expression  go to state 71
+    operand     go to state 34
+    len         go to state 35
 
 
 State 39
 
-   44 controlStructure: LOOP '(' . DIGIT ')' '{' content '}'
+   52 print: PRINT '(' . V_STR ')'
+   53      | PRINT '(' . expression ')'
 
-    DIGIT  shift, and go to state 72
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 72
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
+
+    expression  go to state 73
+    operand     go to state 34
+    len         go to state 35
 
 
 State 40
+
+   54 method: METH NAME . '(' param ')' ':' typeContainer '{' content '}'
+
+    '('  shift, and go to state 74
+
+
+State 41
+
+   46 controlStructure: IF '(' . comparation ')' '{' content '}'
+
+    NAME  shift, and go to state 75
+    NOT   shift, and go to state 76
+
+    comparation  go to state 77
+
+
+State 42
+
+   48 controlStructure: LOOP FOR . '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
+
+    '('  shift, and go to state 78
+
+
+State 43
+
+   49 controlStructure: LOOP WHILE . '(' comparation ')' '{' content '}'
+
+    '('  shift, and go to state 79
+
+
+State 44
+
+   50 controlStructure: LOOP UNTIL . '(' comparation ')' '{' content '}'
+
+    '('  shift, and go to state 80
+
+
+State 45
+
+   47 controlStructure: LOOP '(' . DIGIT ')' '{' content '}'
+
+    DIGIT  shift, and go to state 81
+
+
+State 46
 
     0 $accept: program $end .
 
     $default  accept
 
 
-State 41
+State 47
 
     2 program: import program .
 
     $default  reduce using rule 2 (program)
 
 
-State 42
+State 48
 
     6 content: content statement .
 
     $default  reduce using rule 6 (content)
 
 
-State 43
+State 49
 
     8 content: content controlStructure .
 
     $default  reduce using rule 8 (content)
 
 
-State 44
+State 50
 
    10 content: content method .
 
     $default  reduce using rule 10 (content)
 
 
-State 45
+State 51
 
    14 statement: initialization INC . expression
 
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
 
-    expression  go to state 73
-    operand     go to state 30
+    expression  go to state 82
+    operand     go to state 34
+    len         go to state 35
 
 
-State 46
+State 52
 
    16 statement: initialization DEC . expression
 
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
 
-    expression  go to state 74
-    operand     go to state 30
+    expression  go to state 83
+    operand     go to state 34
+    len         go to state 35
 
 
-State 47
+State 53
 
    12 statement: initialization '=' . expression
 
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
 
-    expression  go to state 75
-    operand     go to state 30
-
-
-State 48
-
-   24 nameContainer: NAME .
-   25              | NAME . ',' nameContainer
-
-    ','  shift, and go to state 76
-
-    $default  reduce using rule 24 (nameContainer)
+    expression  go to state 84
+    operand     go to state 34
+    len         go to state 35
 
 
-State 49
+State 54
 
-   23 initialization: typeContainer nameContainer .
+   25 nameContainer: NAME .
+   26              | NAME . ',' nameContainer
 
-    $default  reduce using rule 23 (initialization)
+    ','  shift, and go to state 85
 
-
-State 50
-
-   51 typeContainer: type '[' . ']'
-   52              | type '[' . DIGIT ']'
-   53              | type '[' . NAME ']'
-
-    DIGIT  shift, and go to state 77
-    NAME   shift, and go to state 78
-    ']'    shift, and go to state 79
+    $default  reduce using rule 25 (nameContainer)
 
 
-State 51
+State 55
+
+   24 initialization: typeContainer nameContainer .
+
+    $default  reduce using rule 24 (initialization)
+
+
+State 56
+
+   56 typeContainer: type '[' . ']'
+   57              | type '[' . DIGIT ']'
+   58              | type '[' . NAME ']'
+
+    DIGIT  shift, and go to state 86
+    NAME   shift, and go to state 87
+    ']'    shift, and go to state 88
+
+
+State 57
 
     4 import: LEARN ARROW V_STR .
 
     $default  reduce using rule 4 (import)
 
 
-State 52
-
-   40 operand: NAME '[' . DIGIT ']'
-   41        | NAME '[' . NAME ']'
-
-    DIGIT  shift, and go to state 80
-    NAME   shift, and go to state 81
-
-
-State 53
-
-   42 operand: NAME '(' . nameContainer ')'
-
-    NAME  shift, and go to state 48
-
-    nameContainer  go to state 82
-
-
-State 54
-
-   36 list: DIGIT .
-   37     | DIGIT . ',' list
-
-    ','  shift, and go to state 83
-
-    $default  reduce using rule 36 (list)
-
-
-State 55
-
-   35 expression: '{' list . '}'
-
-    '}'  shift, and go to state 84
-
-
-State 56
-
-   29 expression: operand '+' . expression
-
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
-
-    expression  go to state 85
-    operand     go to state 30
-
-
-State 57
-
-   30 expression: operand '-' . expression
-
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
-
-    expression  go to state 86
-    operand     go to state 30
-
-
 State 58
 
-   31 expression: operand '*' . expression
+   42 operand: NAME '[' . DIGIT ']'
+   43        | NAME '[' . NAME ']'
 
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
-
-    expression  go to state 87
-    operand     go to state 30
+    DIGIT  shift, and go to state 89
+    NAME   shift, and go to state 90
 
 
 State 59
 
-   32 expression: operand '/' . expression
+   44 operand: NAME '(' . nameContainer ')'
 
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
+    NAME  shift, and go to state 54
 
-    expression  go to state 88
-    operand     go to state 30
+    nameContainer  go to state 91
 
 
 State 60
 
-   33 expression: operand '%' . expression
+   51 len: LEN '(' . NAME ')'
 
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
-
-    expression  go to state 89
-    operand     go to state 30
+    NAME  shift, and go to state 92
 
 
 State 61
 
-   34 expression: operand '^' . expression
+   38 list: DIGIT .
+   39     | DIGIT . ',' list
 
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 27
-    '{'    shift, and go to state 28
+    ','  shift, and go to state 93
 
-    expression  go to state 90
-    operand     go to state 30
+    $default  reduce using rule 38 (list)
 
 
 State 62
+
+   37 expression: '{' list . '}'
+
+    '}'  shift, and go to state 94
+
+
+State 63
+
+   30 expression: operand '+' . expression
+
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
+
+    expression  go to state 95
+    operand     go to state 34
+    len         go to state 35
+
+
+State 64
+
+   31 expression: operand '-' . expression
+
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
+
+    expression  go to state 96
+    operand     go to state 34
+    len         go to state 35
+
+
+State 65
+
+   32 expression: operand '*' . expression
+
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
+
+    expression  go to state 97
+    operand     go to state 34
+    len         go to state 35
+
+
+State 66
+
+   33 expression: operand '/' . expression
+
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
+
+    expression  go to state 98
+    operand     go to state 34
+    len         go to state 35
+
+
+State 67
+
+   34 expression: operand '%' . expression
+
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
+
+    expression  go to state 99
+    operand     go to state 34
+    len         go to state 35
+
+
+State 68
+
+   35 expression: operand '^' . expression
+
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 30
+    LEN    shift, and go to state 31
+    '{'    shift, and go to state 32
+
+    expression  go to state 100
+    operand     go to state 34
+    len         go to state 35
+
+
+State 69
 
    15 statement: NAME INC expression .
 
     $default  reduce using rule 15 (statement)
 
 
-State 63
+State 70
 
    17 statement: NAME DEC expression .
 
     $default  reduce using rule 17 (statement)
 
 
-State 64
+State 71
 
    13 statement: NAME '=' expression .
 
     $default  reduce using rule 13 (statement)
 
 
-State 65
+State 72
 
-   49 method: METH NAME '(' . param ')' ':' typeContainer '{' content '}'
+   45 operand: V_STR .
+   52 print: PRINT '(' V_STR . ')'
+
+    ')'  shift, and go to state 101
+
+    ')'       [reduce using rule 45 (operand)]
+    $default  reduce using rule 45 (operand)
+
+
+State 73
+
+   53 print: PRINT '(' expression . ')'
+
+    ')'  shift, and go to state 102
+
+
+State 74
+
+   54 method: METH NAME '(' . param ')' ':' typeContainer '{' content '}'
 
     INT    shift, and go to state 6
     FLOAT  shift, and go to state 7
@@ -919,899 +1050,719 @@ State 65
     ARR    shift, and go to state 10
     STR    shift, and go to state 11
 
-    param          go to state 91
-    typeContainer  go to state 92
-    type           go to state 24
+    param          go to state 103
+    typeContainer  go to state 104
+    type           go to state 26
 
 
-State 66
+State 75
 
-   68 comparation: NAME .
-   69            | NAME . comparator comparation
+   73 comparation: NAME .
+   74            | NAME . comparator comparation
 
-    AND  shift, and go to state 93
-    OR   shift, and go to state 94
-    EQ   shift, and go to state 95
-    NEQ  shift, and go to state 96
-    GTE  shift, and go to state 97
-    LTE  shift, and go to state 98
-    '>'  shift, and go to state 99
-    '<'  shift, and go to state 100
+    AND  shift, and go to state 105
+    OR   shift, and go to state 106
+    EQ   shift, and go to state 107
+    NEQ  shift, and go to state 108
+    GTE  shift, and go to state 109
+    LTE  shift, and go to state 110
+    '>'  shift, and go to state 111
+    '<'  shift, and go to state 112
 
-    $default  reduce using rule 68 (comparation)
+    $default  reduce using rule 73 (comparation)
 
-    comparator  go to state 101
-
-
-State 67
-
-   70 comparation: NOT . NAME comparator comparation
-   71            | NOT . '(' comparation ')'
-   72            | NOT . '(' expression ')'
-
-    NAME  shift, and go to state 102
-    '('   shift, and go to state 103
+    comparator  go to state 113
 
 
-State 68
+State 76
 
-   43 controlStructure: IF '(' comparation . ')' '{' content '}'
+   75 comparation: NOT . NAME comparator comparation
+   76            | NOT . '(' comparation ')'
+   77            | NOT . '(' expression ')'
 
-    ')'  shift, and go to state 104
-
-
-State 69
-
-   45 controlStructure: LOOP FOR '(' . INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
-
-    INT  shift, and go to state 105
+    NAME  shift, and go to state 114
+    '('   shift, and go to state 115
 
 
-State 70
+State 77
 
-   46 controlStructure: LOOP WHILE '(' . comparation ')' '{' content '}'
+   46 controlStructure: IF '(' comparation . ')' '{' content '}'
 
-    NAME  shift, and go to state 66
-    NOT   shift, and go to state 67
-
-    comparation  go to state 106
+    ')'  shift, and go to state 116
 
 
-State 71
+State 78
 
-   47 controlStructure: LOOP UNTIL '(' . comparation ')' '{' content '}'
+   48 controlStructure: LOOP FOR '(' . INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
 
-    NAME  shift, and go to state 66
-    NOT   shift, and go to state 67
-
-    comparation  go to state 107
+    INT  shift, and go to state 117
 
 
-State 72
+State 79
 
-   44 controlStructure: LOOP '(' DIGIT . ')' '{' content '}'
+   49 controlStructure: LOOP WHILE '(' . comparation ')' '{' content '}'
 
-    ')'  shift, and go to state 108
+    NAME  shift, and go to state 75
+    NOT   shift, and go to state 76
+
+    comparation  go to state 118
 
 
-State 73
+State 80
+
+   50 controlStructure: LOOP UNTIL '(' . comparation ')' '{' content '}'
+
+    NAME  shift, and go to state 75
+    NOT   shift, and go to state 76
+
+    comparation  go to state 119
+
+
+State 81
+
+   47 controlStructure: LOOP '(' DIGIT . ')' '{' content '}'
+
+    ')'  shift, and go to state 120
+
+
+State 82
 
    14 statement: initialization INC expression .
 
     $default  reduce using rule 14 (statement)
 
 
-State 74
+State 83
 
    16 statement: initialization DEC expression .
 
     $default  reduce using rule 16 (statement)
 
 
-State 75
+State 84
 
    12 statement: initialization '=' expression .
 
     $default  reduce using rule 12 (statement)
 
 
-State 76
-
-   25 nameContainer: NAME ',' . nameContainer
-
-    NAME  shift, and go to state 48
-
-    nameContainer  go to state 109
-
-
-State 77
-
-   52 typeContainer: type '[' DIGIT . ']'
-
-    ']'  shift, and go to state 110
-
-
-State 78
-
-   53 typeContainer: type '[' NAME . ']'
-
-    ']'  shift, and go to state 111
-
-
-State 79
-
-   51 typeContainer: type '[' ']' .
-
-    $default  reduce using rule 51 (typeContainer)
-
-
-State 80
-
-   40 operand: NAME '[' DIGIT . ']'
-
-    ']'  shift, and go to state 112
-
-
-State 81
-
-   41 operand: NAME '[' NAME . ']'
-
-    ']'  shift, and go to state 113
-
-
-State 82
-
-   42 operand: NAME '(' nameContainer . ')'
-
-    ')'  shift, and go to state 114
-
-
-State 83
-
-   37 list: DIGIT ',' . list
-
-    DIGIT  shift, and go to state 54
-
-    list  go to state 115
-
-
-State 84
-
-   35 expression: '{' list '}' .
-
-    $default  reduce using rule 35 (expression)
-
-
 State 85
 
-   29 expression: operand '+' expression .
+   26 nameContainer: NAME ',' . nameContainer
 
-    $default  reduce using rule 29 (expression)
+    NAME  shift, and go to state 54
+
+    nameContainer  go to state 121
 
 
 State 86
 
-   30 expression: operand '-' expression .
+   57 typeContainer: type '[' DIGIT . ']'
 
-    $default  reduce using rule 30 (expression)
+    ']'  shift, and go to state 122
 
 
 State 87
 
-   31 expression: operand '*' expression .
+   58 typeContainer: type '[' NAME . ']'
 
-    $default  reduce using rule 31 (expression)
+    ']'  shift, and go to state 123
 
 
 State 88
 
-   32 expression: operand '/' expression .
+   56 typeContainer: type '[' ']' .
 
-    $default  reduce using rule 32 (expression)
+    $default  reduce using rule 56 (typeContainer)
 
 
 State 89
 
-   33 expression: operand '%' expression .
+   42 operand: NAME '[' DIGIT . ']'
 
-    $default  reduce using rule 33 (expression)
+    ']'  shift, and go to state 124
 
 
 State 90
 
-   34 expression: operand '^' expression .
+   43 operand: NAME '[' NAME . ']'
 
-    $default  reduce using rule 34 (expression)
+    ']'  shift, and go to state 125
 
 
 State 91
 
-   49 method: METH NAME '(' param . ')' ':' typeContainer '{' content '}'
-
-    ')'  shift, and go to state 116
-
-
-State 92
-
-   26 param: typeContainer . NAME
-   27      | typeContainer . NAME ',' param
-
-    NAME  shift, and go to state 117
-
-
-State 93
-
-   66 comparator: AND .
-
-    $default  reduce using rule 66 (comparator)
-
-
-State 94
-
-   67 comparator: OR .
-
-    $default  reduce using rule 67 (comparator)
-
-
-State 95
-
-   60 comparator: EQ .
-
-    $default  reduce using rule 60 (comparator)
-
-
-State 96
-
-   61 comparator: NEQ .
-
-    $default  reduce using rule 61 (comparator)
-
-
-State 97
-
-   64 comparator: GTE .
-
-    $default  reduce using rule 64 (comparator)
-
-
-State 98
-
-   65 comparator: LTE .
-
-    $default  reduce using rule 65 (comparator)
-
-
-State 99
-
-   62 comparator: '>' .
-
-    $default  reduce using rule 62 (comparator)
-
-
-State 100
-
-   63 comparator: '<' .
-
-    $default  reduce using rule 63 (comparator)
-
-
-State 101
-
-   69 comparation: NAME comparator . comparation
-
-    NAME  shift, and go to state 66
-    NOT   shift, and go to state 67
-
-    comparation  go to state 118
-
-
-State 102
-
-   70 comparation: NOT NAME . comparator comparation
-
-    AND  shift, and go to state 93
-    OR   shift, and go to state 94
-    EQ   shift, and go to state 95
-    NEQ  shift, and go to state 96
-    GTE  shift, and go to state 97
-    LTE  shift, and go to state 98
-    '>'  shift, and go to state 99
-    '<'  shift, and go to state 100
-
-    comparator  go to state 119
-
-
-State 103
-
-   71 comparation: NOT '(' . comparation ')'
-   72            | NOT '(' . expression ')'
-
-    DIGIT  shift, and go to state 26
-    NAME   shift, and go to state 120
-    NOT    shift, and go to state 67
-    '{'    shift, and go to state 28
-
-    expression   go to state 121
-    operand      go to state 30
-    comparation  go to state 122
-
-
-State 104
-
-   43 controlStructure: IF '(' comparation ')' . '{' content '}'
-
-    '{'  shift, and go to state 123
-
-
-State 105
-
-   45 controlStructure: LOOP FOR '(' INT . NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
-
-    NAME  shift, and go to state 124
-
-
-State 106
-
-   46 controlStructure: LOOP WHILE '(' comparation . ')' '{' content '}'
-
-    ')'  shift, and go to state 125
-
-
-State 107
-
-   47 controlStructure: LOOP UNTIL '(' comparation . ')' '{' content '}'
+   44 operand: NAME '(' nameContainer . ')'
 
     ')'  shift, and go to state 126
 
 
+State 92
+
+   51 len: LEN '(' NAME . ')'
+
+    ')'  shift, and go to state 127
+
+
+State 93
+
+   39 list: DIGIT ',' . list
+
+    DIGIT  shift, and go to state 61
+
+    list  go to state 128
+
+
+State 94
+
+   37 expression: '{' list '}' .
+
+    $default  reduce using rule 37 (expression)
+
+
+State 95
+
+   30 expression: operand '+' expression .
+
+    $default  reduce using rule 30 (expression)
+
+
+State 96
+
+   31 expression: operand '-' expression .
+
+    $default  reduce using rule 31 (expression)
+
+
+State 97
+
+   32 expression: operand '*' expression .
+
+    $default  reduce using rule 32 (expression)
+
+
+State 98
+
+   33 expression: operand '/' expression .
+
+    $default  reduce using rule 33 (expression)
+
+
+State 99
+
+   34 expression: operand '%' expression .
+
+    $default  reduce using rule 34 (expression)
+
+
+State 100
+
+   35 expression: operand '^' expression .
+
+    $default  reduce using rule 35 (expression)
+
+
+State 101
+
+   52 print: PRINT '(' V_STR ')' .
+
+    $default  reduce using rule 52 (print)
+
+
+State 102
+
+   53 print: PRINT '(' expression ')' .
+
+    $default  reduce using rule 53 (print)
+
+
+State 103
+
+   54 method: METH NAME '(' param . ')' ':' typeContainer '{' content '}'
+
+    ')'  shift, and go to state 129
+
+
+State 104
+
+   27 param: typeContainer . NAME
+   28      | typeContainer . NAME ',' param
+
+    NAME  shift, and go to state 130
+
+
+State 105
+
+   71 comparator: AND .
+
+    $default  reduce using rule 71 (comparator)
+
+
+State 106
+
+   72 comparator: OR .
+
+    $default  reduce using rule 72 (comparator)
+
+
+State 107
+
+   65 comparator: EQ .
+
+    $default  reduce using rule 65 (comparator)
+
+
 State 108
 
-   44 controlStructure: LOOP '(' DIGIT ')' . '{' content '}'
+   66 comparator: NEQ .
 
-    '{'  shift, and go to state 127
+    $default  reduce using rule 66 (comparator)
 
 
 State 109
 
-   25 nameContainer: NAME ',' nameContainer .
+   69 comparator: GTE .
 
-    $default  reduce using rule 25 (nameContainer)
+    $default  reduce using rule 69 (comparator)
 
 
 State 110
 
-   52 typeContainer: type '[' DIGIT ']' .
+   70 comparator: LTE .
 
-    $default  reduce using rule 52 (typeContainer)
+    $default  reduce using rule 70 (comparator)
 
 
 State 111
 
-   53 typeContainer: type '[' NAME ']' .
+   67 comparator: '>' .
 
-    $default  reduce using rule 53 (typeContainer)
+    $default  reduce using rule 67 (comparator)
 
 
 State 112
 
-   40 operand: NAME '[' DIGIT ']' .
+   68 comparator: '<' .
 
-    $default  reduce using rule 40 (operand)
+    $default  reduce using rule 68 (comparator)
 
 
 State 113
 
-   41 operand: NAME '[' NAME ']' .
+   74 comparation: NAME comparator . comparation
 
-    $default  reduce using rule 41 (operand)
+    NAME  shift, and go to state 75
+    NOT   shift, and go to state 76
+
+    comparation  go to state 131
 
 
 State 114
 
-   42 operand: NAME '(' nameContainer ')' .
+   75 comparation: NOT NAME . comparator comparation
 
-    $default  reduce using rule 42 (operand)
+    AND  shift, and go to state 105
+    OR   shift, and go to state 106
+    EQ   shift, and go to state 107
+    NEQ  shift, and go to state 108
+    GTE  shift, and go to state 109
+    LTE  shift, and go to state 110
+    '>'  shift, and go to state 111
+    '<'  shift, and go to state 112
+
+    comparator  go to state 132
 
 
 State 115
 
-   37 list: DIGIT ',' list .
+   76 comparation: NOT '(' . comparation ')'
+   77            | NOT '(' . expression ')'
 
-    $default  reduce using rule 37 (list)
+    DIGIT  shift, and go to state 28
+    V_STR  shift, and go to state 29
+    NAME   shift, and go to state 133
+    LEN    shift, and go to state 31
+    NOT    shift, and go to state 76
+    '{'    shift, and go to state 32
+
+    expression   go to state 134
+    operand      go to state 34
+    len          go to state 35
+    comparation  go to state 135
 
 
 State 116
 
-   49 method: METH NAME '(' param ')' . ':' typeContainer '{' content '}'
-
-    ':'  shift, and go to state 128
-
-
-State 117
-
-   26 param: typeContainer NAME .
-   27      | typeContainer NAME . ',' param
-
-    ','  shift, and go to state 129
-
-    $default  reduce using rule 26 (param)
-
-
-State 118
-
-   69 comparation: NAME comparator comparation .
-
-    $default  reduce using rule 69 (comparation)
-
-
-State 119
-
-   70 comparation: NOT NAME comparator . comparation
-
-    NAME  shift, and go to state 66
-    NOT   shift, and go to state 67
-
-    comparation  go to state 130
-
-
-State 120
-
-   39 operand: NAME .
-   40        | NAME . '[' DIGIT ']'
-   41        | NAME . '[' NAME ']'
-   42        | NAME . '(' nameContainer ')'
-   68 comparation: NAME .
-   69            | NAME . comparator comparation
-
-    AND  shift, and go to state 93
-    OR   shift, and go to state 94
-    EQ   shift, and go to state 95
-    NEQ  shift, and go to state 96
-    GTE  shift, and go to state 97
-    LTE  shift, and go to state 98
-    '['  shift, and go to state 52
-    '('  shift, and go to state 53
-    '>'  shift, and go to state 99
-    '<'  shift, and go to state 100
-
-    ')'       reduce using rule 39 (operand)
-    ')'       [reduce using rule 68 (comparation)]
-    $default  reduce using rule 39 (operand)
-
-    comparator  go to state 101
-
-
-State 121
-
-   72 comparation: NOT '(' expression . ')'
-
-    ')'  shift, and go to state 131
-
-
-State 122
-
-   71 comparation: NOT '(' comparation . ')'
-
-    ')'  shift, and go to state 132
-
-
-State 123
-
-   43 controlStructure: IF '(' comparation ')' '{' . content '}'
-
-    RET    shift, and go to state 2
-    END    shift, and go to state 3
-    NEXT   shift, and go to state 4
-    TERM   shift, and go to state 5
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-    NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-
-    content           go to state 133
-    statement         go to state 19
-    initialization    go to state 20
-    controlStructure  go to state 21
-    method            go to state 22
-    typeContainer     go to state 23
-    type              go to state 24
-
-
-State 124
-
-   45 controlStructure: LOOP FOR '(' INT NAME . ',' NAME comparator len ',' DIGIT ')' '{' content '}'
-
-    ','  shift, and go to state 134
-
-
-State 125
-
-   46 controlStructure: LOOP WHILE '(' comparation ')' . '{' content '}'
-
-    '{'  shift, and go to state 135
-
-
-State 126
-
-   47 controlStructure: LOOP UNTIL '(' comparation ')' . '{' content '}'
+   46 controlStructure: IF '(' comparation ')' . '{' content '}'
 
     '{'  shift, and go to state 136
 
 
+State 117
+
+   48 controlStructure: LOOP FOR '(' INT . NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
+
+    NAME  shift, and go to state 137
+
+
+State 118
+
+   49 controlStructure: LOOP WHILE '(' comparation . ')' '{' content '}'
+
+    ')'  shift, and go to state 138
+
+
+State 119
+
+   50 controlStructure: LOOP UNTIL '(' comparation . ')' '{' content '}'
+
+    ')'  shift, and go to state 139
+
+
+State 120
+
+   47 controlStructure: LOOP '(' DIGIT ')' . '{' content '}'
+
+    '{'  shift, and go to state 140
+
+
+State 121
+
+   26 nameContainer: NAME ',' nameContainer .
+
+    $default  reduce using rule 26 (nameContainer)
+
+
+State 122
+
+   57 typeContainer: type '[' DIGIT ']' .
+
+    $default  reduce using rule 57 (typeContainer)
+
+
+State 123
+
+   58 typeContainer: type '[' NAME ']' .
+
+    $default  reduce using rule 58 (typeContainer)
+
+
+State 124
+
+   42 operand: NAME '[' DIGIT ']' .
+
+    $default  reduce using rule 42 (operand)
+
+
+State 125
+
+   43 operand: NAME '[' NAME ']' .
+
+    $default  reduce using rule 43 (operand)
+
+
+State 126
+
+   44 operand: NAME '(' nameContainer ')' .
+
+    $default  reduce using rule 44 (operand)
+
+
 State 127
 
-   44 controlStructure: LOOP '(' DIGIT ')' '{' . content '}'
+   51 len: LEN '(' NAME ')' .
 
-    RET    shift, and go to state 2
-    END    shift, and go to state 3
-    NEXT   shift, and go to state 4
-    TERM   shift, and go to state 5
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-    NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-
-    content           go to state 137
-    statement         go to state 19
-    initialization    go to state 20
-    controlStructure  go to state 21
-    method            go to state 22
-    typeContainer     go to state 23
-    type              go to state 24
+    $default  reduce using rule 51 (len)
 
 
 State 128
 
-   49 method: METH NAME '(' param ')' ':' . typeContainer '{' content '}'
+   39 list: DIGIT ',' list .
 
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-
-    typeContainer  go to state 138
-    type           go to state 24
+    $default  reduce using rule 39 (list)
 
 
 State 129
 
-   27 param: typeContainer NAME ',' . param
+   54 method: METH NAME '(' param ')' . ':' typeContainer '{' content '}'
 
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-
-    param          go to state 139
-    typeContainer  go to state 92
-    type           go to state 24
+    ':'  shift, and go to state 141
 
 
 State 130
 
-   70 comparation: NOT NAME comparator comparation .
+   27 param: typeContainer NAME .
+   28      | typeContainer NAME . ',' param
 
-    $default  reduce using rule 70 (comparation)
-
-
-State 131
-
-   72 comparation: NOT '(' expression ')' .
-
-    $default  reduce using rule 72 (comparation)
-
-
-State 132
-
-   71 comparation: NOT '(' comparation ')' .
-
-    $default  reduce using rule 71 (comparation)
-
-
-State 133
-
-    6 content: content . statement
-    8        | content . controlStructure
-   10        | content . method
-   43 controlStructure: IF '(' comparation ')' '{' content . '}'
-
-    RET    shift, and go to state 2
-    END    shift, and go to state 3
-    NEXT   shift, and go to state 4
-    TERM   shift, and go to state 5
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-    NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-    '}'    shift, and go to state 140
-
-    statement         go to state 42
-    initialization    go to state 20
-    controlStructure  go to state 43
-    method            go to state 44
-    typeContainer     go to state 23
-    type              go to state 24
-
-
-State 134
-
-   45 controlStructure: LOOP FOR '(' INT NAME ',' . NAME comparator len ',' DIGIT ')' '{' content '}'
-
-    NAME  shift, and go to state 141
-
-
-State 135
-
-   46 controlStructure: LOOP WHILE '(' comparation ')' '{' . content '}'
-
-    RET    shift, and go to state 2
-    END    shift, and go to state 3
-    NEXT   shift, and go to state 4
-    TERM   shift, and go to state 5
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-    NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-
-    content           go to state 142
-    statement         go to state 19
-    initialization    go to state 20
-    controlStructure  go to state 21
-    method            go to state 22
-    typeContainer     go to state 23
-    type              go to state 24
-
-
-State 136
-
-   47 controlStructure: LOOP UNTIL '(' comparation ')' '{' . content '}'
-
-    RET    shift, and go to state 2
-    END    shift, and go to state 3
-    NEXT   shift, and go to state 4
-    TERM   shift, and go to state 5
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-    NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-
-    content           go to state 143
-    statement         go to state 19
-    initialization    go to state 20
-    controlStructure  go to state 21
-    method            go to state 22
-    typeContainer     go to state 23
-    type              go to state 24
-
-
-State 137
-
-    6 content: content . statement
-    8        | content . controlStructure
-   10        | content . method
-   44 controlStructure: LOOP '(' DIGIT ')' '{' content . '}'
-
-    RET    shift, and go to state 2
-    END    shift, and go to state 3
-    NEXT   shift, and go to state 4
-    TERM   shift, and go to state 5
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-    NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-    '}'    shift, and go to state 144
-
-    statement         go to state 42
-    initialization    go to state 20
-    controlStructure  go to state 43
-    method            go to state 44
-    typeContainer     go to state 23
-    type              go to state 24
-
-
-State 138
-
-   49 method: METH NAME '(' param ')' ':' typeContainer . '{' content '}'
-
-    '{'  shift, and go to state 145
-
-
-State 139
-
-   27 param: typeContainer NAME ',' param .
+    ','  shift, and go to state 142
 
     $default  reduce using rule 27 (param)
 
 
+State 131
+
+   74 comparation: NAME comparator comparation .
+
+    $default  reduce using rule 74 (comparation)
+
+
+State 132
+
+   75 comparation: NOT NAME comparator . comparation
+
+    NAME  shift, and go to state 75
+    NOT   shift, and go to state 76
+
+    comparation  go to state 143
+
+
+State 133
+
+   41 operand: NAME .
+   42        | NAME . '[' DIGIT ']'
+   43        | NAME . '[' NAME ']'
+   44        | NAME . '(' nameContainer ')'
+   73 comparation: NAME .
+   74            | NAME . comparator comparation
+
+    AND  shift, and go to state 105
+    OR   shift, and go to state 106
+    EQ   shift, and go to state 107
+    NEQ  shift, and go to state 108
+    GTE  shift, and go to state 109
+    LTE  shift, and go to state 110
+    '['  shift, and go to state 58
+    '('  shift, and go to state 59
+    '>'  shift, and go to state 111
+    '<'  shift, and go to state 112
+
+    ')'       reduce using rule 41 (operand)
+    ')'       [reduce using rule 73 (comparation)]
+    $default  reduce using rule 41 (operand)
+
+    comparator  go to state 113
+
+
+State 134
+
+   77 comparation: NOT '(' expression . ')'
+
+    ')'  shift, and go to state 144
+
+
+State 135
+
+   76 comparation: NOT '(' comparation . ')'
+
+    ')'  shift, and go to state 145
+
+
+State 136
+
+   46 controlStructure: IF '(' comparation ')' '{' . content '}'
+
+    RET    shift, and go to state 2
+    END    shift, and go to state 3
+    NEXT   shift, and go to state 4
+    TERM   shift, and go to state 5
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
+    NAME   shift, and go to state 12
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+
+    content           go to state 146
+    statement         go to state 20
+    initialization    go to state 21
+    controlStructure  go to state 22
+    print             go to state 23
+    method            go to state 24
+    typeContainer     go to state 25
+    type              go to state 26
+
+
+State 137
+
+   48 controlStructure: LOOP FOR '(' INT NAME . ',' NAME comparator len ',' DIGIT ')' '{' content '}'
+
+    ','  shift, and go to state 147
+
+
+State 138
+
+   49 controlStructure: LOOP WHILE '(' comparation ')' . '{' content '}'
+
+    '{'  shift, and go to state 148
+
+
+State 139
+
+   50 controlStructure: LOOP UNTIL '(' comparation ')' . '{' content '}'
+
+    '{'  shift, and go to state 149
+
+
 State 140
 
-   43 controlStructure: IF '(' comparation ')' '{' content '}' .
+   47 controlStructure: LOOP '(' DIGIT ')' '{' . content '}'
 
-    $default  reduce using rule 43 (controlStructure)
+    RET    shift, and go to state 2
+    END    shift, and go to state 3
+    NEXT   shift, and go to state 4
+    TERM   shift, and go to state 5
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
+    NAME   shift, and go to state 12
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+
+    content           go to state 150
+    statement         go to state 20
+    initialization    go to state 21
+    controlStructure  go to state 22
+    print             go to state 23
+    method            go to state 24
+    typeContainer     go to state 25
+    type              go to state 26
 
 
 State 141
 
-   45 controlStructure: LOOP FOR '(' INT NAME ',' NAME . comparator len ',' DIGIT ')' '{' content '}'
+   54 method: METH NAME '(' param ')' ':' . typeContainer '{' content '}'
 
-    AND  shift, and go to state 93
-    OR   shift, and go to state 94
-    EQ   shift, and go to state 95
-    NEQ  shift, and go to state 96
-    GTE  shift, and go to state 97
-    LTE  shift, and go to state 98
-    '>'  shift, and go to state 99
-    '<'  shift, and go to state 100
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
 
-    comparator  go to state 146
+    typeContainer  go to state 151
+    type           go to state 26
 
 
 State 142
 
-    6 content: content . statement
-    8        | content . controlStructure
-   10        | content . method
-   46 controlStructure: LOOP WHILE '(' comparation ')' '{' content . '}'
+   28 param: typeContainer NAME ',' . param
 
-    RET    shift, and go to state 2
-    END    shift, and go to state 3
-    NEXT   shift, and go to state 4
-    TERM   shift, and go to state 5
     INT    shift, and go to state 6
     FLOAT  shift, and go to state 7
     BOOL   shift, and go to state 8
     CHAR   shift, and go to state 9
     ARR    shift, and go to state 10
     STR    shift, and go to state 11
-    NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-    '}'    shift, and go to state 147
 
-    statement         go to state 42
-    initialization    go to state 20
-    controlStructure  go to state 43
-    method            go to state 44
-    typeContainer     go to state 23
-    type              go to state 24
+    param          go to state 152
+    typeContainer  go to state 104
+    type           go to state 26
 
 
 State 143
 
-    6 content: content . statement
-    8        | content . controlStructure
-   10        | content . method
-   47 controlStructure: LOOP UNTIL '(' comparation ')' '{' content . '}'
+   75 comparation: NOT NAME comparator comparation .
 
-    RET    shift, and go to state 2
-    END    shift, and go to state 3
-    NEXT   shift, and go to state 4
-    TERM   shift, and go to state 5
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-    NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-    '}'    shift, and go to state 148
-
-    statement         go to state 42
-    initialization    go to state 20
-    controlStructure  go to state 43
-    method            go to state 44
-    typeContainer     go to state 23
-    type              go to state 24
+    $default  reduce using rule 75 (comparation)
 
 
 State 144
 
-   44 controlStructure: LOOP '(' DIGIT ')' '{' content '}' .
+   77 comparation: NOT '(' expression ')' .
 
-    $default  reduce using rule 44 (controlStructure)
+    $default  reduce using rule 77 (comparation)
 
 
 State 145
 
-   49 method: METH NAME '(' param ')' ':' typeContainer '{' . content '}'
+   76 comparation: NOT '(' comparation ')' .
 
-    RET    shift, and go to state 2
-    END    shift, and go to state 3
-    NEXT   shift, and go to state 4
-    TERM   shift, and go to state 5
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-    NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-
-    content           go to state 149
-    statement         go to state 19
-    initialization    go to state 20
-    controlStructure  go to state 21
-    method            go to state 22
-    typeContainer     go to state 23
-    type              go to state 24
+    $default  reduce using rule 76 (comparation)
 
 
 State 146
 
-   45 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator . len ',' DIGIT ')' '{' content '}'
+    6 content: content . statement
+    8        | content . controlStructure
+   10        | content . method
+   46 controlStructure: IF '(' comparation ')' '{' content . '}'
 
-    LEN  shift, and go to state 150
+    RET    shift, and go to state 2
+    END    shift, and go to state 3
+    NEXT   shift, and go to state 4
+    TERM   shift, and go to state 5
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
+    NAME   shift, and go to state 12
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+    '}'    shift, and go to state 153
 
-    len  go to state 151
+    statement         go to state 48
+    initialization    go to state 21
+    controlStructure  go to state 49
+    print             go to state 23
+    method            go to state 50
+    typeContainer     go to state 25
+    type              go to state 26
 
 
 State 147
 
-   46 controlStructure: LOOP WHILE '(' comparation ')' '{' content '}' .
+   48 controlStructure: LOOP FOR '(' INT NAME ',' . NAME comparator len ',' DIGIT ')' '{' content '}'
 
-    $default  reduce using rule 46 (controlStructure)
+    NAME  shift, and go to state 154
 
 
 State 148
 
-   47 controlStructure: LOOP UNTIL '(' comparation ')' '{' content '}' .
+   49 controlStructure: LOOP WHILE '(' comparation ')' '{' . content '}'
 
-    $default  reduce using rule 47 (controlStructure)
+    RET    shift, and go to state 2
+    END    shift, and go to state 3
+    NEXT   shift, and go to state 4
+    TERM   shift, and go to state 5
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
+    NAME   shift, and go to state 12
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+
+    content           go to state 155
+    statement         go to state 20
+    initialization    go to state 21
+    controlStructure  go to state 22
+    print             go to state 23
+    method            go to state 24
+    typeContainer     go to state 25
+    type              go to state 26
 
 
 State 149
 
-    6 content: content . statement
-    8        | content . controlStructure
-   10        | content . method
-   49 method: METH NAME '(' param ')' ':' typeContainer '{' content . '}'
+   50 controlStructure: LOOP UNTIL '(' comparation ')' '{' . content '}'
 
     RET    shift, and go to state 2
     END    shift, and go to state 3
@@ -1824,116 +1775,223 @@ State 149
     ARR    shift, and go to state 10
     STR    shift, and go to state 11
     NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-    '}'    shift, and go to state 152
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
 
-    statement         go to state 42
-    initialization    go to state 20
-    controlStructure  go to state 43
-    method            go to state 44
-    typeContainer     go to state 23
-    type              go to state 24
+    content           go to state 156
+    statement         go to state 20
+    initialization    go to state 21
+    controlStructure  go to state 22
+    print             go to state 23
+    method            go to state 24
+    typeContainer     go to state 25
+    type              go to state 26
 
 
 State 150
 
-   48 len: LEN . '(' NAME ')'
+    6 content: content . statement
+    8        | content . controlStructure
+   10        | content . method
+   47 controlStructure: LOOP '(' DIGIT ')' '{' content . '}'
 
-    '('  shift, and go to state 153
+    RET    shift, and go to state 2
+    END    shift, and go to state 3
+    NEXT   shift, and go to state 4
+    TERM   shift, and go to state 5
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
+    NAME   shift, and go to state 12
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+    '}'    shift, and go to state 157
+
+    statement         go to state 48
+    initialization    go to state 21
+    controlStructure  go to state 49
+    print             go to state 23
+    method            go to state 50
+    typeContainer     go to state 25
+    type              go to state 26
 
 
 State 151
 
-   45 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len . ',' DIGIT ')' '{' content '}'
+   54 method: METH NAME '(' param ')' ':' typeContainer . '{' content '}'
 
-    ','  shift, and go to state 154
+    '{'  shift, and go to state 158
 
 
 State 152
 
-   49 method: METH NAME '(' param ')' ':' typeContainer '{' content '}' .
+   28 param: typeContainer NAME ',' param .
 
-    $default  reduce using rule 49 (method)
+    $default  reduce using rule 28 (param)
 
 
 State 153
 
-   48 len: LEN '(' . NAME ')'
+   46 controlStructure: IF '(' comparation ')' '{' content '}' .
 
-    NAME  shift, and go to state 155
+    $default  reduce using rule 46 (controlStructure)
 
 
 State 154
 
-   45 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' . DIGIT ')' '{' content '}'
+   48 controlStructure: LOOP FOR '(' INT NAME ',' NAME . comparator len ',' DIGIT ')' '{' content '}'
 
-    DIGIT  shift, and go to state 156
+    AND  shift, and go to state 105
+    OR   shift, and go to state 106
+    EQ   shift, and go to state 107
+    NEQ  shift, and go to state 108
+    GTE  shift, and go to state 109
+    LTE  shift, and go to state 110
+    '>'  shift, and go to state 111
+    '<'  shift, and go to state 112
+
+    comparator  go to state 159
 
 
 State 155
 
-   48 len: LEN '(' NAME . ')'
+    6 content: content . statement
+    8        | content . controlStructure
+   10        | content . method
+   49 controlStructure: LOOP WHILE '(' comparation ')' '{' content . '}'
 
-    ')'  shift, and go to state 157
+    RET    shift, and go to state 2
+    END    shift, and go to state 3
+    NEXT   shift, and go to state 4
+    TERM   shift, and go to state 5
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
+    NAME   shift, and go to state 12
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+    '}'    shift, and go to state 160
+
+    statement         go to state 48
+    initialization    go to state 21
+    controlStructure  go to state 49
+    print             go to state 23
+    method            go to state 50
+    typeContainer     go to state 25
+    type              go to state 26
 
 
 State 156
 
-   45 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT . ')' '{' content '}'
+    6 content: content . statement
+    8        | content . controlStructure
+   10        | content . method
+   50 controlStructure: LOOP UNTIL '(' comparation ')' '{' content . '}'
 
-    ')'  shift, and go to state 158
+    RET    shift, and go to state 2
+    END    shift, and go to state 3
+    NEXT   shift, and go to state 4
+    TERM   shift, and go to state 5
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
+    NAME   shift, and go to state 12
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+    '}'    shift, and go to state 161
+
+    statement         go to state 48
+    initialization    go to state 21
+    controlStructure  go to state 49
+    print             go to state 23
+    method            go to state 50
+    typeContainer     go to state 25
+    type              go to state 26
 
 
 State 157
 
-   48 len: LEN '(' NAME ')' .
+   47 controlStructure: LOOP '(' DIGIT ')' '{' content '}' .
 
-    $default  reduce using rule 48 (len)
+    $default  reduce using rule 47 (controlStructure)
 
 
 State 158
 
-   45 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' . '{' content '}'
+   54 method: METH NAME '(' param ')' ':' typeContainer '{' . content '}'
 
-    '{'  shift, and go to state 159
+    RET    shift, and go to state 2
+    END    shift, and go to state 3
+    NEXT   shift, and go to state 4
+    TERM   shift, and go to state 5
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
+    NAME   shift, and go to state 12
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+
+    content           go to state 162
+    statement         go to state 20
+    initialization    go to state 21
+    controlStructure  go to state 22
+    print             go to state 23
+    method            go to state 24
+    typeContainer     go to state 25
+    type              go to state 26
 
 
 State 159
 
-   45 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' . content '}'
+   48 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator . len ',' DIGIT ')' '{' content '}'
 
-    RET    shift, and go to state 2
-    END    shift, and go to state 3
-    NEXT   shift, and go to state 4
-    TERM   shift, and go to state 5
-    INT    shift, and go to state 6
-    FLOAT  shift, and go to state 7
-    BOOL   shift, and go to state 8
-    CHAR   shift, and go to state 9
-    ARR    shift, and go to state 10
-    STR    shift, and go to state 11
-    NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
+    LEN  shift, and go to state 31
 
-    content           go to state 160
-    statement         go to state 19
-    initialization    go to state 20
-    controlStructure  go to state 21
-    method            go to state 22
-    typeContainer     go to state 23
-    type              go to state 24
+    len  go to state 163
 
 
 State 160
 
+   49 controlStructure: LOOP WHILE '(' comparation ')' '{' content '}' .
+
+    $default  reduce using rule 49 (controlStructure)
+
+
+State 161
+
+   50 controlStructure: LOOP UNTIL '(' comparation ')' '{' content '}' .
+
+    $default  reduce using rule 50 (controlStructure)
+
+
+State 162
+
     6 content: content . statement
     8        | content . controlStructure
    10        | content . method
-   45 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content . '}'
+   54 method: METH NAME '(' param ')' ':' typeContainer '{' content . '}'
 
     RET    shift, and go to state 2
     END    shift, and go to state 3
@@ -1946,21 +2004,121 @@ State 160
     ARR    shift, and go to state 10
     STR    shift, and go to state 11
     NAME   shift, and go to state 12
-    METH   shift, and go to state 13
-    IF     shift, and go to state 14
-    LOOP   shift, and go to state 15
-    '}'    shift, and go to state 161
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+    '}'    shift, and go to state 164
 
-    statement         go to state 42
-    initialization    go to state 20
-    controlStructure  go to state 43
-    method            go to state 44
-    typeContainer     go to state 23
-    type              go to state 24
+    statement         go to state 48
+    initialization    go to state 21
+    controlStructure  go to state 49
+    print             go to state 23
+    method            go to state 50
+    typeContainer     go to state 25
+    type              go to state 26
 
 
-State 161
+State 163
 
-   45 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}' .
+   48 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len . ',' DIGIT ')' '{' content '}'
 
-    $default  reduce using rule 45 (controlStructure)
+    ','  shift, and go to state 165
+
+
+State 164
+
+   54 method: METH NAME '(' param ')' ':' typeContainer '{' content '}' .
+
+    $default  reduce using rule 54 (method)
+
+
+State 165
+
+   48 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' . DIGIT ')' '{' content '}'
+
+    DIGIT  shift, and go to state 166
+
+
+State 166
+
+   48 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT . ')' '{' content '}'
+
+    ')'  shift, and go to state 167
+
+
+State 167
+
+   48 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' . '{' content '}'
+
+    '{'  shift, and go to state 168
+
+
+State 168
+
+   48 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' . content '}'
+
+    RET    shift, and go to state 2
+    END    shift, and go to state 3
+    NEXT   shift, and go to state 4
+    TERM   shift, and go to state 5
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
+    NAME   shift, and go to state 12
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+
+    content           go to state 169
+    statement         go to state 20
+    initialization    go to state 21
+    controlStructure  go to state 22
+    print             go to state 23
+    method            go to state 24
+    typeContainer     go to state 25
+    type              go to state 26
+
+
+State 169
+
+    6 content: content . statement
+    8        | content . controlStructure
+   10        | content . method
+   48 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content . '}'
+
+    RET    shift, and go to state 2
+    END    shift, and go to state 3
+    NEXT   shift, and go to state 4
+    TERM   shift, and go to state 5
+    INT    shift, and go to state 6
+    FLOAT  shift, and go to state 7
+    BOOL   shift, and go to state 8
+    CHAR   shift, and go to state 9
+    ARR    shift, and go to state 10
+    STR    shift, and go to state 11
+    NAME   shift, and go to state 12
+    PRINT  shift, and go to state 13
+    METH   shift, and go to state 14
+    IF     shift, and go to state 15
+    LOOP   shift, and go to state 16
+    '}'    shift, and go to state 170
+
+    statement         go to state 48
+    initialization    go to state 21
+    controlStructure  go to state 49
+    print             go to state 23
+    method            go to state 50
+    typeContainer     go to state 25
+    type              go to state 26
+
+
+State 170
+
+   48 controlStructure: LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}' .
+
+    $default  reduce using rule 48 (controlStructure)

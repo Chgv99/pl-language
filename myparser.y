@@ -66,6 +66,7 @@ statement: initialization
 |	END 
 |	NEXT
 |	TERM
+|	print
 ;
 
 initialization: typeContainer nameContainer
@@ -93,6 +94,7 @@ expression: operand
 |	operand '/' expression
 |	operand '%' expression
 |	operand '^' expression
+|	len
 |	'{' list '}'
 ;
 
@@ -104,6 +106,7 @@ operand: DIGIT
 |	NAME '[' DIGIT ']'
 |	NAME '[' NAME ']' //multidimensionales?
 |	NAME '(' nameContainer ')' //function call
+|	V_STR
 ;
 
 controlStructure: IF '(' comparation ')' '{'content'}'
@@ -117,9 +120,13 @@ controlStructure: IF '(' comparation ')' '{'content'}'
 len: LEN '(' NAME ')'
 ;
 
-print: LEN '(' NAME ')'
-|	LEN '(' expression ')'
+print: PRINT '(' V_STR ')'
+|	PRINT '(' expression ')'
 ;
+
+/*print: LEN '(' NAME ')'
+|	LEN '(' expression ')'
+;*/
 
 method: METH NAME '('param')'':' typeContainer '{'content'}' 	// RETURN isnt forced to be use
 //|	METH NAME '('initializations')'':' type'{'content'}'
@@ -173,7 +180,7 @@ comparation: NAME
 	printf("Análisis finalizado\n");
 }*/
 int main (int argc, char **argv){
-	yydebug = 0; //1 = enabled
+	yydebug = 1; //1 = enabled
 	if (argc == 2){
 		yyin = fopen(argv[1], "r");
 		yyparse();
