@@ -11,16 +11,39 @@ extern int lines;   /* lexico le da valores */
 #define YYDEBUG 1 //debugging
 %}
 
-%token DIGIT
 %token INC DEC MULT_ASSIGN DIV_ASSIGN
 %token LEARN ARROW RET END NEXT TERM
 %token INT FLOAT BOOL CHAR VOID ARR STR
-%token V_INT V_FLOAT V_BOOL V_CHAR V_VOID V_ARR V_STR
+%token V_VOID
 %token NAME
 %token COMM RANGE LEN PRINT
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
 %token EQ NEQ GT LT GTE LTE
 %token TRUE FALSE
+
+// TIPOS
+
+// primitivos
+%token <my_int> DIGIT
+%token <my_float> V_FLOAT
+%token <my_bool> V_BOOL
+%token <my_char> V_CHAR
+
+//compuestos
+//%token <my_arr> V_ARR
+%token <my_str> V_STR
+
+%union{
+	int my_int;
+	float my_float;
+	bool my_bool;
+	char my_char;
+	// Compuestos
+	//int* my_arr;
+	char* my_str;
+}
+
+
 
 %right '=' INC DEC MULT_ASSIGN DIV_ASSIGN
 //lógicas primero or luego and

@@ -4,6 +4,7 @@
 *.h
 *.tab.*
 copy
+*.output
 
 # Prerequisites
 *.d
