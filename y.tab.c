@@ -1810,7 +1810,7 @@ yyreturn:
 	printf("Análisis finalizado\n");
 }*/
 int main (int argc, char **argv){
-	yydebug = 1; //1 = enabled
+	yydebug = 0; //1 = enabled
 	if (argc == 2){
 		yyin = fopen(argv[1], "r");
 		yyparse();
