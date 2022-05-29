@@ -1,7 +1,7 @@
 # Compiler
 /ignore
 /lex.yy.c
-*.h
+
 *.tab.*
 copy
 *.output
