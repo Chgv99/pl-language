@@ -10,5 +10,5 @@ comp: myparser.tab.c lex.yy.c myparser.tab.c
 lex.yy.c: myscanner.l myparser.tab.h
 	flex myscanner.l
 
-myparser.tab.c: myparser.y myparser.tab.c myparser.tab.h
+myparser.tab.c: myparser.y myparser.tab.h
 	bison -ydv myparser.y

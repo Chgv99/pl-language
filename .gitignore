@@ -1,6 +1,9 @@
 # Compiler
 /ignore
-
+/lex.yy.c
+*.h
+*.tab.*
+copy
 
 # Prerequisites
 *.d
