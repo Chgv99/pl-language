@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
-//#include "y.tab.h"
+
+#include "table.h" /* tabla de símbolos */
 
 int yylex();
 int yyparse(void);
@@ -9,6 +10,14 @@ extern FILE *yyin;
 extern int lines;   /* lexico le da valores */
 
 #define YYDEBUG 1 //debugging
+
+void init() { /* iniciar tabla de símbolos */
+	insertar("void", tipo, NULL);
+	voidp = top;
+	insertar("int", tipo, NULL);
+	insertar("dbl", tipo, NULL);
+}
+
 %}
 
 %token INC DEC MULT_ASSIGN DIV_ASSIGN
@@ -42,6 +51,8 @@ extern int lines;   /* lexico le da valores */
 	//int* my_arr;
 	char* my_str;
 }
+
+
 
 
 
@@ -204,6 +215,9 @@ comparation: NAME
 }*/
 int main (int argc, char **argv){
 	yydebug = 1; //1 = enabled
+
+	//init(); //iniciar tabla de símbolos
+
 	if (argc == 2){
 		yyin = fopen(argv[1], "r");
 		yyparse();
