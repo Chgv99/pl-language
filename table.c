@@ -38,7 +38,7 @@ void dump(const char* s) {
 	printf("DUMP: %s\n", s);
 	struct reg *p = top;
 	while (p != NULL){
-		printf("0x%x %c %s\n", (int)p, "TGLR"[p->cat], p->id, p->tip==NULL?".":p->tip->id);
+		printf("0x%x %c %s %s\n", (int)p, "TGLR"[p->cat], p->id, p->tip==NULL?".":p->tip->id);
 		p=p->sig;
 	}
 }
