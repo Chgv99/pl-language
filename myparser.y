@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "table.h" /* tabla de símbolos */
 
@@ -11,6 +12,8 @@ extern int lines;   /* lexico le da valores */
 
 #define YYDEBUG 1 //debugging
 
+struct reg* voidp;
+
 void init() { /* iniciar tabla de símbolos */
 	insertar("void", tipo, NULL);
 	voidp = top;
@@ -18,13 +21,14 @@ void init() { /* iniciar tabla de símbolos */
 	insertar("dbl", tipo, NULL);
 }
 
+//list<id> init_stack;
+
 %}
 
 %token INC DEC MULT_ASSIGN DIV_ASSIGN
 %token LEARN ARROW RET END NEXT TERM
 %token INT FLOAT BOOL CHAR VOID ARR STR
 %token V_VOID
-%token NAME
 %token COMM RANGE LEN PRINT
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
 %token EQ NEQ GT LT GTE LTE
@@ -33,6 +37,7 @@ void init() { /* iniciar tabla de símbolos */
 // TIPOS
 
 // primitivos
+%token <id> NAME
 %token <my_int> DIGIT
 %token <my_float> V_FLOAT
 %token <my_bool> V_BOOL
@@ -43,6 +48,8 @@ void init() { /* iniciar tabla de símbolos */
 %token <my_str> V_STR
 
 %union{
+	char* id;
+
 	int my_int;
 	float my_float;
 	bool my_bool;
@@ -52,7 +59,7 @@ void init() { /* iniciar tabla de símbolos */
 	char* my_str;
 }
 
-
+%type<id> nameContainer;
 
 
 
@@ -106,8 +113,10 @@ statement: initialization
 initialization: typeContainer nameContainer
 ;
 
-nameContainer: NAME
-|	NAME ',' nameContainer
+nameContainer: NAME	{ 	$$ = $1;	}
+|	NAME ',' nameContainer 	{ 	//init_stack.insert(0, $1);
+								//printf(init_stack);
+							}
 ;
 
 param: typeContainer NAME

@@ -1,4 +1,4 @@
-enum category { tipo, v_global, v_local, rutina }
+enum category { tipo, v_global, v_local, rutina };
 
 extern struct reg {
 	char *id;

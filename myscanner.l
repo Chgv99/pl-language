@@ -49,7 +49,7 @@
 #define VOID 291*/
 
 
-int yylval;
+//int yylval;
 
 int chars = 0;
 int words = 0;
@@ -79,7 +79,7 @@ void error(char*, char*);
 \>\= { return GTE; }
 \<\= { return LTE; }
 
-[0-9]+ { yylval = atoi(yytext); return DIGIT; }
+[0-9]+ { yylval.my_int = atoi(yytext); return DIGIT; }
 
 int { return INT; }
 float { return FLOAT; }
