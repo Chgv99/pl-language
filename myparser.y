@@ -6,7 +6,7 @@
 
 int yylex();
 int yyparse(void);
-int yyerror(char const *s);
+void yyerror(char const *s);
 extern FILE *yyin;
 extern int lines;   /* lexico le da valores */
 
@@ -225,16 +225,18 @@ comparation: NAME
 int main (int argc, char **argv){
 	yydebug = 1; //1 = enabled
 
-	//init(); //iniciar tabla de símbolos
-
 	if (argc == 2){
 		yyin = fopen(argv[1], "r");
+		init(); //iniciar tabla de símbolos
+		dump("t.s. inicial");
 		yyparse();
+		dump("t.s. final");
 	}
 	return 0;
 }
 
-int yyerror(char const *s){
+void yyerror(char const *s){
+	dump("ERROR");
 	fprintf(stderr, "error in line %d: %s\n", lines, s);
 	//fprintf("yyparse: %d", yyparse());
 }
