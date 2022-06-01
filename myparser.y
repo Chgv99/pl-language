@@ -1,12 +1,13 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 #include "table.h" /* tabla de símbolos */
 
 int yylex();
 int yyparse(void);
-void yyerror(char const *s);
+int yyerror(char const *s);
 extern FILE *yyin;
 extern int lines;   /* lexico le da valores */
 
@@ -14,20 +15,27 @@ extern int lines;   /* lexico le da valores */
 
 struct reg* voidp;
 
-void init() { /* iniciar tabla de símbolos */
+//list<char*> init_stack;
+char** init_stack;
+
+char* _type;
+
+void init_s_t() { /* iniciar tabla de símbolos */
 	insertar("void", tipo, NULL);
 	voidp = top;
 	insertar("int", tipo, NULL);
 	insertar("dbl", tipo, NULL);
 }
 
-//list<id> init_stack;
+void init(){
+	init_stack = malloc(10 * sizeof(char**));
+	init_s_t();
+}
 
 %}
 
 %token INC DEC MULT_ASSIGN DIV_ASSIGN
 %token LEARN ARROW RET END NEXT TERM
-%token INT FLOAT BOOL CHAR VOID ARR STR
 %token V_VOID
 %token COMM RANGE LEN PRINT
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
@@ -38,6 +46,7 @@ void init() { /* iniciar tabla de símbolos */
 
 // primitivos
 %token <id> NAME
+%token <id> INT FLOAT BOOL CHAR VOID ARR STR
 %token <my_int> DIGIT
 %token <my_float> V_FLOAT
 %token <my_bool> V_BOOL
@@ -60,6 +69,7 @@ void init() { /* iniciar tabla de símbolos */
 }
 
 %type<id> nameContainer;
+%type<id> typeContainer;
 
 
 
@@ -110,10 +120,15 @@ statement: initialization
 |	print
 ;
 
-initialization: typeContainer nameContainer
+initialization: typeContainer nameContainer { 
+												struct reg *tipo = (struct reg *) malloc(sizeof(struct reg));
+												enum category cat;
+												tipo->id = _type; tipo->cat = cat;
+												insertar(init_stack[0], v_local, tipo); 
+											}
 ;
 
-nameContainer: NAME	{ 	$$ = $1;	}
+nameContainer: NAME	{ 	init_stack[0] = $1;	}
 |	NAME ',' nameContainer 	{ 	//init_stack.insert(0, $1);
 								//printf(init_stack);
 							}
@@ -148,8 +163,12 @@ operand: DIGIT
 |	NAME
 |	NAME '[' DIGIT ']'
 |	NAME '[' NAME ']' //multidimensionales?
-|	NAME '(' nameContainer ')' //function call
+|	NAME '(' paramContainer ')' //function call
 |	V_STR
+;
+
+paramContainer: NAME
+|	NAME ',' paramContainer
 ;
 
 controlStructure: IF '(' comparation ')' '{'content'}'
@@ -181,12 +200,12 @@ typeContainer: type
 |	type '[' NAME ']'
 ;
 
-type: INT 
-|   FLOAT 
-|   BOOL 
-|   CHAR 
-|   STR
-|   ARR
+type: INT 	{ _type = $1; }
+|   FLOAT 	{ _type = $1; }
+|   BOOL 	{ _type = $1; }
+|   CHAR 	{ _type = $1; }
+|   STR 	{ _type = $1; }
+|   ARR 	{ _type = $1; }
 ;
 
 /**
@@ -223,7 +242,7 @@ comparation: NAME
 	printf("Análisis finalizado\n");
 }*/
 int main (int argc, char **argv){
-	yydebug = 1; //1 = enabled
+	yydebug = 0; //1 = enabled
 
 	if (argc == 2){
 		yyin = fopen(argv[1], "r");
@@ -235,7 +254,7 @@ int main (int argc, char **argv){
 	return 0;
 }
 
-void yyerror(char const *s){
+int yyerror(char const *s){
 	dump("ERROR");
 	fprintf(stderr, "error in line %d: %s\n", lines, s);
 	//fprintf("yyparse: %d", yyparse());

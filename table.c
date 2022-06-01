@@ -5,6 +5,8 @@
 
 #include "table.h"
 
+int yyerror(char* s); //Lo exige la versión de bison
+
 struct reg* top = NULL;
 
 struct reg* buscar(char *id){ //busca el más reciente (local oculta global) (!?)
