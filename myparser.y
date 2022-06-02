@@ -9,7 +9,8 @@ int yylex();
 int yyparse(void);
 int yyerror(char const *s);
 extern FILE *yyin;
-extern int lines;   /* lexico le da valores */
+extern int lines;   /* lexico */
+extern int _scope;   /* lexico */
 
 #define YYDEBUG 1 //debugging
 
@@ -20,6 +21,8 @@ char** init_stack;
 
 enum type _type;
 
+//int _scope;
+
 void init_s_t() { /* iniciar tabla de símbolos */
 	insertar("void", tipo, nada);
 	voidp = top;
@@ -29,6 +32,7 @@ void init_s_t() { /* iniciar tabla de símbolos */
 
 void init(){
 	init_stack = (char**) malloc(10 * sizeof(char*));
+	_scope = 0; // Ámbito Global (flex)
 	init_s_t();
 
 }
@@ -94,9 +98,8 @@ program: /* empty */ { printf("Empty input\n"); }
 import: LEARN ARROW V_STR
 ;
 
-content: /*initialization content		// keywords?
-|*/	statement
-|	content statement		// keywords?
+content: statement
+|	content statement	// keywords?
 |	controlStructure
 |	content controlStructure
 |	method
@@ -154,11 +157,11 @@ expression: operand
 |	operand '%' expression
 |	operand '^' expression
 |	len
-|	'{' list '}'
+//|	'{' list '}'
 ;
 
-list: DIGIT
-|	DIGIT ',' list;
+//list: DIGIT
+//|	DIGIT ',' list;
 
 operand: DIGIT
 |	NAME
@@ -172,13 +175,17 @@ paramContainer: NAME
 |	NAME ',' paramContainer
 ;
 
-controlStructure: IF '(' comparation ')' '{'content'}'
-|	LOOP '(' DIGIT ')' '{' content '}'
-|	LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' '{' content '}'
+controlStructure: IF '(' comparation ')' increaseScope content decreaseScope
+|	LOOP '(' DIGIT ')' increaseScope content decreaseScope
+|	LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' increaseScope content decreaseScope
 //|	LOOP FOR '(' INT NAME ',' RANGE '(' DIGIT ',' DIGIT ')' ',' DIGIT ')' '{' content '}'
-|	LOOP WHILE '(' comparation ')' '{' content '}'
-|	LOOP UNTIL '(' comparation ')' '{' content '}'
+|	LOOP WHILE '(' comparation ')' increaseScope content decreaseScope
+|	LOOP UNTIL '(' comparation ')' increaseScope content decreaseScope
 ;
+
+increaseScope: '{' { _scope++; };
+
+decreaseScope: '}' { _scope--; };
 
 len: LEN '(' NAME ')'
 ;
@@ -191,7 +198,7 @@ print: PRINT '(' V_STR ')'
 |	LEN '(' expression ')'
 ;*/
 
-method: METH NAME '('param')'':' typeContainer '{'content'}' 	// RETURN isnt forced to be use
+method: METH NAME '('param')'':' typeContainer increaseScope content decreaseScope 	// RETURN isnt forced to be use
 //|	METH NAME '('initializations')'':' type'{'content'}'
 ;
 
@@ -243,7 +250,7 @@ comparation: NAME
 	printf("Análisis finalizado\n");
 }*/
 int main (int argc, char **argv){
-	yydebug = 0; //1 = enabled
+	yydebug = 1; //1 = enabled
 
 	if (argc == 2){
 		yyin = fopen(argv[1], "r");

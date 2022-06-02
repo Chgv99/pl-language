@@ -55,6 +55,8 @@ int chars = 0;
 int words = 0;
 int lines = 1;
 
+int _scope = 0;
+
 bool newline = true;
 
 void error(char*, char*);
@@ -64,7 +66,9 @@ void error(char*, char*);
 %%
 
 [-+*/\^%:.] { return yytext[0]; }
-[\(\)\[\]\{\}\,\=] { return yytext[0]; }
+[\(\)\[\]\{\}\,\=] 	{ return yytext[0]; }
+
+
 [\>\<] { return yytext[0]; }
 
 \-\> { return ARROW; }
@@ -114,7 +118,7 @@ void { return VOID; }
 [ \t] { /* ignore whitespaces */ }
 \"([^"\n]|\\.)*\" { words++; chars += strlen(yytext); return V_STR; }
 [a-zA-Z_][a-zA-Z0-9_]*  { words++; chars += strlen(yytext); yylval.my_str = strdup(yytext); return NAME; }
-\n         { chars++; lines++;}
+\n         { chars++; lines++; }
 
 .          { chars++; error("unexpected token ", yytext); }
 <<EOF>> { return 0; }
