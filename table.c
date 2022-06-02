@@ -22,10 +22,13 @@ struct reg* buscar_cat(char *id, enum category cat){
 	return (p != NULL && p->cat == cat) ? p : NULL;
 }
 
-void insertar(char *id, enum category cat, struct reg *tp){
-	if (buscar(id) != NULL) yyerror("-1: nombre ya definido");
+void insertar(char *id, enum category cat, enum type tipo){
+	if (buscar(id) != NULL) {
+		yyerror("-1: nombre ya definido");
+		return; // return evitaría variables repetidas en la TS
+	}
 	struct reg *p = (struct reg *) malloc(sizeof(struct reg));
-	p->id = id; p->cat = cat; p->tip = tp; p->sig = top;
+	p->id = id; p->cat = cat; p->tipo = tipo/*p->tip = tp*/; p->sig = top;
 	top = p;
 }
 

@@ -18,18 +18,19 @@ struct reg* voidp;
 //list<char*> init_stack;
 char** init_stack;
 
-char* _type;
+enum type _type;
 
 void init_s_t() { /* iniciar tabla de símbolos */
-	insertar("void", tipo, NULL);
+	insertar("void", tipo, nada);
 	voidp = top;
-	insertar("int", tipo, NULL);
-	insertar("dbl", tipo, NULL);
+	insertar("int", tipo, nada);
+	insertar("dbl", tipo, nada);
 }
 
 void init(){
-	init_stack = malloc(10 * sizeof(char**));
+	init_stack = (char**) malloc(10 * sizeof(char*));
 	init_s_t();
+
 }
 
 %}
@@ -121,17 +122,17 @@ statement: initialization
 ;
 
 initialization: typeContainer nameContainer { 
-												struct reg *tipo = (struct reg *) malloc(sizeof(struct reg));
+												/**char* e = "ey";
+												init_stack[0] = e;
+												struct reg* tipo = (struct reg*) malloc(sizeof(struct reg));
 												enum category cat;
 												tipo->id = _type; tipo->cat = cat;
-												insertar(init_stack[0], v_local, tipo); 
+												insertar(init_stack[0], v_local, tipo); */
 											}
 ;
 
-nameContainer: NAME	{ 	init_stack[0] = $1;	}
-|	NAME ',' nameContainer 	{ 	//init_stack.insert(0, $1);
-								//printf(init_stack);
-							}
+nameContainer: NAME			{ 	insertar($1, v_local, _type);	}
+|	NAME ',' nameContainer 	{ 	insertar($1, v_local, _type);	}
 ;
 
 param: typeContainer NAME
@@ -200,12 +201,12 @@ typeContainer: type
 |	type '[' NAME ']'
 ;
 
-type: INT 	{ _type = $1; }
-|   FLOAT 	{ _type = $1; }
-|   BOOL 	{ _type = $1; }
-|   CHAR 	{ _type = $1; }
-|   STR 	{ _type = $1; }
-|   ARR 	{ _type = $1; }
+type: INT 	{ _type = entero; }
+|   FLOAT 	{ _type = flotante; }
+|   BOOL 	{ _type = booleano; }
+|   CHAR 	{ _type = caracter; }
+//|   STR 	{ _type = $1; }
+//|   ARR 	{ _type = $1; }
 ;
 
 /**
@@ -250,6 +251,7 @@ int main (int argc, char **argv){
 		dump("t.s. inicial");
 		yyparse();
 		dump("t.s. final");
+		free(init_stack);
 	}
 	return 0;
 }
