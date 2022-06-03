@@ -1,0 +1,29 @@
+learn -> "directorio1.subdirectorio"
+learn -> "directorio2"
+
+~~ Method that returns the division of two integers
+meth divideInt(int a, int b): int{
+	if(b){ ~~ If the denominator is 0 the program ends
+		terminate
+	}
+return a / b
+}
+
+~~ Method that returns the sum of the odd positions of an array 
+meth sumOddPos(int[] array): int{
+	int totalSum = 0
+loop for(int i, i < len(array),1){
+if (not (i % 2)){
+totalSum += array[i]
+}
+}
+return totalSum
+}
+
+int a = 4
+int b = 2
+int result1 = divideInt(a,b)
+
+int[6] array = {3,4,1,5,2,3}
+int result2 = sumOddPos(array)
+

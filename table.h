@@ -9,6 +9,7 @@ extern struct reg {
 	//struct reg *tip;
 	struct reg *sig;
 	int scope;
+	char* function;
 } *top;
 
 struct reg* buscar(char *id);
