@@ -21,9 +21,27 @@ struct reg* buscar(char *id){ //busca el más reciente (local oculta global) (!?
 	return p;
 }
 
+void eliminar_scope(int scope){
+	struct reg* p = top;
+	dump("eliminando scope");
+	while (p->sig != NULL) {
+		if (p->scope < scope){
+			top = p;
+			dump("scope eliminado");
+			break;
+		}
+		p = p->sig;
+	}
+}
+
 struct reg* buscar_cat(char *id, enum category cat){
 	struct reg* p = buscar(id);
 	return (p != NULL && p->cat == cat) ? p : NULL;
+}
+
+struct reg* buscar_scope(char *id, int scope){
+	struct reg* p = buscar(id);
+	return (p != NULL && p->scope == scope) ? p : NULL;
 }
 
 void insertar(char *id, enum category cat, enum type tipo){
@@ -32,7 +50,7 @@ void insertar(char *id, enum category cat, enum type tipo){
 		return; // return evitaría variables repetidas en la TS
 	}
 	struct reg *p = (struct reg *) malloc(sizeof(struct reg));
-	printf("\ninserta %s _scope = %d\n", id, _scope);
+	//printf("\ninserta %s _scope = %d\n", id, _scope);
 	p->id = id; p->cat = cat; p->tipo = tipo/*p->tip = tp*/; p->sig = top; p->scope = _scope;
 	top = p;
 }

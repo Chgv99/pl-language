@@ -34,8 +34,14 @@ void init(){
 	init_stack = (char**) malloc(10 * sizeof(char*));
 	_scope = 0; // Ámbito Global (flex)
 	init_s_t();
-
 }
+
+/*void deleteScope(){
+	while(struct reg* var = buscar_scope(_scope)){
+		eliminar(var->id)
+	}
+	_scope--;
+}*/
 
 %}
 
@@ -111,7 +117,12 @@ content: statement
 
 statement: initialization
 | 	initialization '=' expression
-|   NAME '=' expression  
+|   NAME '=' expression  	{	// Asignación
+								struct reg* var = buscar($1);
+								if (var != NULL){
+									printf("variable %s utilizable (line: %d)\n", $1, lines);
+								} else printf("variable %s no utilizable (line: %d)\n", $1, lines);
+							}
 | 	initialization INC expression
 |   NAME INC expression  
 | 	initialization DEC expression
@@ -183,9 +194,11 @@ controlStructure: IF '(' comparation ')' increaseScope content decreaseScope
 |	LOOP UNTIL '(' comparation ')' increaseScope content decreaseScope
 ;
 
-increaseScope: '{' { _scope++; };
+increaseScope: '{' 	{ _scope++; };
 
-decreaseScope: '}' { _scope--; };
+decreaseScope: '}' 	{ 	eliminar_scope(_scope);
+						_scope--;
+					};
 
 len: LEN '(' NAME ')'
 ;
@@ -250,7 +263,7 @@ comparation: NAME
 	printf("Análisis finalizado\n");
 }*/
 int main (int argc, char **argv){
-	yydebug = 1; //1 = enabled
+	yydebug = 0; //1 = enabled
 
 	if (argc == 2){
 		yyin = fopen(argv[1], "r");

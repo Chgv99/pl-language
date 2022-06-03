@@ -1,0 +1,13 @@
+int a
+
+if (a) {
+	if (a){
+		int b
+	}
+
+	if (a) {
+		b = 0
+	}
+	a = 3
+	b = 5
+}
