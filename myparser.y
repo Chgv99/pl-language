@@ -206,8 +206,8 @@ L 1:					//while salida
 
 
 controlStructure: IF '(' comparation ')' increaseScope content decreaseScope
-|		LOOP 				{$<my_int>$ = tag(); gc("L %d:\n", $$);}
-		'(' DIGIT ')'		{gc("R1 = R0 > 0;\n")$3}
+|		LOOP 				{$<my_int>$ = tag(); gc("L %d:\n", $<my_int>$);}
+		'(' DIGIT ')'		{gc("R1 = R0 > 0;\n")/*$3*/}
 		increaseScope		{}
 		content 			{gc("%s", $7);}
 		decreaseScope		{}
