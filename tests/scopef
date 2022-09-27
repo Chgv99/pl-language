@@ -1,23 +1,6 @@
-learn -> "directorio1.subdirectorio"
-learn -> "directorio2"
-
-~~ Method that returns the division of two integers
-meth divideInt(int a, int b): int{
-	if(b){ ~~ If the denominator is 0 the program ends
-		terminate
-	}
-return a / b
-}
-
-~~ Method that returns the sum of the odd positions of an array 
-meth sumOddPos(int[] array): int{
-	int totalSum = 0
-loop for(int i, i < len(array),1){
-if (not (i % 2)){
-totalSum += array[i]
-}
-}
-return totalSum
+meth dummy(int a, int b): void{
+	a = 3
+	b = 5
 }
 
 int a = 4

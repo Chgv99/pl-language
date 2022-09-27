@@ -21,6 +21,8 @@ char** init_stack;
 
 enum type _type;
 
+int _tag;
+
 //int _scope;
 
 void init_s_t() { /* iniciar tabla de símbolos */
@@ -33,7 +35,12 @@ void init_s_t() { /* iniciar tabla de símbolos */
 void init(){
 	init_stack = (char**) malloc(10 * sizeof(char*));
 	_scope = 0; // Ámbito Global (flex)
+	_tag = 0;
 	init_s_t();
+}
+
+int tag() {
+	return _tag++;
 }
 
 /*void deleteScope(){
@@ -186,8 +193,24 @@ paramContainer: NAME
 |	NAME ',' paramContainer
 ;
 
+/*
+L 0:
+	R0 = i(0x11FF0);	// digit
+	R1 = R0 > 0;			// loop digit times
+	R0 = R0 - 1;		// negativo (?)
+	IF (!R1) GT(1);
+	#content
+	GT(0);
+L 1:					//while salida
+*/
+
+
 controlStructure: IF '(' comparation ')' increaseScope content decreaseScope
-|	LOOP '(' DIGIT ')' increaseScope content decreaseScope
+|		LOOP 				{$<my_int>$ = tag(); gc("L %d:\n", $$);}
+		'(' DIGIT ')'		{gc("R1 = R0 > 0;\n")$3}
+		increaseScope		{}
+		content 			{gc("%s", $7);}
+		decreaseScope		{}
 |	LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' increaseScope content decreaseScope
 //|	LOOP FOR '(' INT NAME ',' RANGE '(' DIGIT ',' DIGIT ')' ',' DIGIT ')' '{' content '}'
 |	LOOP WHILE '(' comparation ')' increaseScope content decreaseScope
@@ -211,7 +234,11 @@ print: PRINT '(' V_STR ')'
 |	LEN '(' expression ')'
 ;*/
 
-method: METH NAME '('param')'':' typeContainer increaseScope content decreaseScope 	// RETURN isnt forced to be use
+method: METH NAME '('param')' 	{	// Add params to inner scope
+									while (){
+
+									}
+								}':' typeContainer increaseScope content decreaseScope 	// RETURN isnt forced to be use
 //|	METH NAME '('initializations')'':' type'{'content'}'
 ;
 
