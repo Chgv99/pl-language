@@ -12,6 +12,7 @@ int yyerror(char const *s);
 void gc(char* str, int val);
 extern FILE *yyin;
 extern int lines;   /* lexico */
+extern int chars;	/* lexico */
 extern int _scope;   /* lexico */
 
 #define YYDEBUG 1 //debugging
@@ -36,8 +37,8 @@ int _tag;
 void init_s_t() { /* iniciar tabla de símbolos */
 	insertar("void", tipo, nada);
 	voidp = top;
-	insertar("int", tipo, nada);
-	insertar("dbl", tipo, nada);
+	//insertar("int", tipo, nada);
+	//insertar("dbl", tipo, nada);
 }
 
 void init(){
@@ -132,6 +133,7 @@ content: statement					//only one instruction
 
 statement: initialization
 | 	initialization '=' expression
+|	initializationArray '=' expressionArray
 |   NAME '=' expression  	{	// Asignación
 								struct reg* var = buscar($1);
 								if (var != NULL){
@@ -160,6 +162,10 @@ initialization: typeContainer nameContainer {
 											}
 ;
 
+initializationArray: typeContainer '[' DIGIT ']' NAME
+;
+
+
 nameContainer: NAME			{ 	insertar($1, v_local, _type);	}
 |	NAME ',' nameContainer 	{ 	insertar($1, v_local, _type);	}
 ;
@@ -186,6 +192,9 @@ expression: operand
 //|	'{' list '}'
 ;
 
+expressionArray: '{' digitContainer '}'
+;
+
 //list: DIGIT
 //|	DIGIT ',' list;
 
@@ -199,6 +208,10 @@ operand: DIGIT
 
 paramContainer: NAME
 |	NAME ',' paramContainer
+;
+
+digitContainer: DIGIT
+|	DIGIT ',' digitContainer
 ;
 
 /*
@@ -263,7 +276,7 @@ type: INT 	{ $<id>$ = INT; }//_type = entero; }
 |   BOOL 	{ $<id>$ = BOOL; }//_type = booleano; }
 |   CHAR 	{ $<id>$ = CHAR; }//_type = caracter; }
 //|   STR 	{ _type = $1; }
-//|   ARR 	{ _type = $1; }
+//|   ARR 	{_type = $1; }
 ;
 
 /**
@@ -329,7 +342,7 @@ int main (int argc, char **argv){
 
 	printf("args = %d\n", argc);
 	if (argc == 2){
-		//yyin = fopen(argv[1], "r");
+		yyin = fopen(argv[1], "r");
 
 		//Q File
 		printf("ey1\n");
@@ -355,7 +368,7 @@ int main (int argc, char **argv){
 
 int yyerror(char const *s){
 	dump("ERROR");
-	fprintf(stderr, "error in line %d: %s\n", lines, s);
+	fprintf(stderr, "error in line %d: %s , %d\n", lines, s, chars);
 	//fprintf("yyparse: %d", yyparse());
 	fclose(qfile);
 }
