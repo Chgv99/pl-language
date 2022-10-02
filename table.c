@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stddef.h>
 
+#include <stdint.h>
+
 #include "table.h"
 
 extern int _scope;   /* lexico */
@@ -66,7 +68,8 @@ void dump(const char* s) {
 	printf("	DUMP: %s\n", s);
 	struct reg *p = top;
 	while (p != NULL){
-		printf("0x%x\t\t%c\t\t%s\t\t%s\t\t%d\n", (int)p, "TGLR"[p->cat], p->id, p->tipo==0?".":typeStrings[p->tipo], p->scope);
+		//printf("0x%x\t\t%c\t\t%s\t\t%s\t\t%d\n", (int)p, "TGLR"[p->cat], p->id, p->tipo==0?".":typeStrings[p->tipo], p->scope);
+		printf("%p\t\t%c\t\t%s\t\t%s\t\t%d\n", p, "TGLR"[p->cat], p->id, p->tipo==0?".":typeStrings[p->tipo], p->scope);
 		p=p->sig;
 	}
 }

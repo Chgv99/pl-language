@@ -2,17 +2,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 #include "table.h" /* tabla de símbolos */
 
 int yylex();
 int yyparse(void);
 int yyerror(char const *s);
+void gc(char* str, int val);
 extern FILE *yyin;
 extern int lines;   /* lexico */
 extern int _scope;   /* lexico */
 
 #define YYDEBUG 1 //debugging
+
+FILE *qfile;
+char *qfileName = "output.q.c";
+
+int lineSize;
+char* line;
 
 struct reg* voidp;
 
@@ -35,7 +43,7 @@ void init_s_t() { /* iniciar tabla de símbolos */
 void init(){
 	init_stack = (char**) malloc(10 * sizeof(char*));
 	_scope = 0; // Ámbito Global (flex)
-	_tag = 0;
+	_tag = 1; 		//0 reservado para comienzo de fichero en código Q
 	init_s_t();
 }
 
@@ -111,12 +119,12 @@ program: /* empty */ { printf("Empty input\n"); }
 import: LEARN ARROW V_STR
 ;
 
-content: statement
-|	content statement	// keywords?
-|	controlStructure
-|	content controlStructure
-|	method
-|	content method
+content: statement					//only one instruction
+|	content statement				//multiple instructions ... ¿keywords?
+|	controlStructure				//only one CS
+|	content controlStructure		//multiple CS
+|	method							//only one method
+|	content method					//multiple methods
 //|	EOL
 //|	statement EOL content
 //|	controlStructure EOL content
@@ -206,11 +214,13 @@ L 1:					//while salida
 
 
 controlStructure: IF '(' comparation ')' increaseScope content decreaseScope
-|		LOOP 				{$<my_int>$ = tag(); gc("L %d:\n", $<my_int>$);}
-		'(' DIGIT ')'		{gc("R1 = R0 > 0;\n")/*$3*/}
+|		LOOP 				{$<my_int>$ = tag(); gc("L %d:\n", $<my_int>$);}							//L N1:
+		'(' DIGIT ')'		{$<my_int>$ = tag(); gc("R1 = R0 > 0;\nIF(!R1) GT(%d);\n",$<my_int>$);}		//R1 = R0 > 0; 		condición
+																										//IF (!R1) GT(N2);	condición
 		increaseScope		{}
-		content 			{gc("%s", $7);}
-		decreaseScope		{}
+		content 			{/*gc("%s", $7);*/} 														//subárbol
+		decreaseScope		{gc("GT(%d);\n", $<my_int>1); gc("L %d:\n",$<my_int>3);}						//GT(N1);
+																										//L N2:
 |	LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' increaseScope content decreaseScope
 //|	LOOP FOR '(' INT NAME ',' RANGE '(' DIGIT ',' DIGIT ')' ',' DIGIT ')' '{' content '}'
 |	LOOP WHILE '(' comparation ')' increaseScope content decreaseScope
@@ -235,9 +245,9 @@ print: PRINT '(' V_STR ')'
 ;*/
 
 method: METH NAME '('param')' 	{	// Add params to inner scope
-									while (){
+									/*while (){
 
-									}
+									}*/
 								}':' typeContainer increaseScope content decreaseScope 	// RETURN isnt forced to be use
 //|	METH NAME '('initializations')'':' type'{'content'}'
 ;
@@ -248,10 +258,10 @@ typeContainer: type
 |	type '[' NAME ']'
 ;
 
-type: INT 	{ _type = entero; }
-|   FLOAT 	{ _type = flotante; }
-|   BOOL 	{ _type = booleano; }
-|   CHAR 	{ _type = caracter; }
+type: INT 	{ $<id>$ = INT; }//_type = entero; }
+|   FLOAT 	{ $<id>$ = FLOAT; }//_type = flotante; }
+|   BOOL 	{ $<id>$ = BOOL; }//_type = booleano; }
+|   CHAR 	{ $<id>$ = CHAR; }//_type = caracter; }
 //|   STR 	{ _type = $1; }
 //|   ARR 	{ _type = $1; }
 ;
@@ -281,6 +291,28 @@ comparation: NAME
 
 %%
 
+// Implementación temporal para enteros
+/*void gc(char* str, ...){
+
+	va_list ap;
+	int val;
+	char c, *p, *s;
+
+	va_start(ap, fmt);
+	while (*fmt){
+		val = va_arg(ap, int);
+		snprintf(line,lineSize, str, val);
+		*fmt++;
+    }
+	va_end(ap);
+}*/
+
+// Implementación temporal para enteros
+void gc(char* str, int val){
+	snprintf(line, lineSize, str, val);
+	fputs(str, qfile);
+}
+
 /*int main (int argc, char **argv){
 	yydebug = 1; //debugging
 	//Antes del análisis
@@ -292,13 +324,31 @@ comparation: NAME
 int main (int argc, char **argv){
 	yydebug = 0; //1 = enabled
 
+	lineSize = sizeof(char*) * 500;
+	line = (char*) malloc(lineSize);
+
+	printf("args = %d\n", argc);
 	if (argc == 2){
-		yyin = fopen(argv[1], "r");
+		//yyin = fopen(argv[1], "r");
+
+		//Q File
+		printf("ey1\n");
+		qfile = fopen(qfileName,"w");
+		fputs("", qfile);
+		fclose(qfile);
+		printf("ey2\n");
+		qfile = fopen(qfileName,"a");
+
 		init(); //iniciar tabla de símbolos
 		dump("t.s. inicial");
-		yyparse();
+		printf("ey3");
+		yyparse();			// Actualmente (29/09/22 3:59) se queda pillado en esta línea.
+		printf("ey4");
 		dump("t.s. final");
 		free(init_stack);
+	} else {
+		//print some help?
+		printf("No source file given.\n");
 	}
 	return 0;
 }
@@ -307,4 +357,5 @@ int yyerror(char const *s){
 	dump("ERROR");
 	fprintf(stderr, "error in line %d: %s\n", lines, s);
 	//fprintf("yyparse: %d", yyparse());
+	fclose(qfile);
 }
