@@ -13,6 +13,7 @@ void gcstr(char* str);
 void gc(char* str, int val);
 extern FILE *yyin;
 extern int lines;   /* lexico */
+extern int chars;	/* lexico */
 extern int _scope;   /* lexico */
 
 #define YYDEBUG 1 //debugging
@@ -172,7 +173,15 @@ initialization: type nameContainer {
 											}
 ;
 
+<<<<<<< HEAD
 nameContainer: NAME			{ 	struct node* /*insertar($1, v_local, _type);*/	} //Establecer si v_local o v_global
+=======
+initializationArray: typeContainer '[' DIGIT ']' NAME
+;
+
+
+nameContainer: NAME			{ 	insertar($1, v_local, _type);	}
+>>>>>>> bison_revision
 |	NAME ',' nameContainer 	{ 	insertar($1, v_local, _type);	}
 ;
 
@@ -198,6 +207,9 @@ expression: operand
 //|	'{' list '}'
 ;
 
+expressionArray: '{' digitContainer '}'
+;
+
 //list: DIGIT
 //|	DIGIT ',' list;
 
@@ -211,6 +223,10 @@ operand: DIGIT
 
 paramContainer: NAME
 |	NAME ',' paramContainer
+;
+
+digitContainer: DIGIT
+|	DIGIT ',' digitContainer
 ;
 
 /*
@@ -275,7 +291,6 @@ type: INT 	{ $$ = entero; }
 |   BOOL 	{ $$ = booleano; }
 |   CHAR 	{ $$ = caracter; }
 |   STR 	{ $$ = ristra; }
-//|   ID_ARR 	{ _type = $1; }
 ;
 
 /**
@@ -390,7 +405,7 @@ int main (int argc, char **argv){
 
 int yyerror(char const *s){
 	dump("ERROR");
-	fprintf(stderr, "error in line %d: %s\n", lines, s);
+	fprintf(stderr, "error in line %d: %s , %d\n", lines, s, chars);
 	//fprintf("yyparse: %d", yyparse());
 	fclose(qfile);
 }
