@@ -1,4 +1,4 @@
-int x, y, z
+int x, y, z, x1, y1, z1
 float a
 char b
 bool c
@@ -6,3 +6,4 @@ int d
 a = 3
 b = 2
 c = 1
+y = 8

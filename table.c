@@ -13,10 +13,10 @@ char* typeStrings[] = { "nada", "entero", "flotante", "booleano", "caracter" };
 
 int yyerror(char* s); //Lo exige la versión de bison
 
-struct reg* top = NULL;
+struct node* top = NULL;
 
-struct reg* buscar(char *id){ //busca el más reciente (local oculta global) (!?)
-	struct reg* p = top;
+struct node* buscar(char *id){ //busca el más reciente (local oculta global) (!?)
+	struct node* p = top;
 	while (p != NULL && strcmp(p->id, id) != 0) {
 		p = p->sig;
 	}
@@ -24,7 +24,7 @@ struct reg* buscar(char *id){ //busca el más reciente (local oculta global) (!?
 }
 
 void eliminar_scope(int scope){
-	struct reg* p = top;
+	struct node* p = top;
 	dump("eliminando scope");
 	while (p->sig != NULL) {
 		if (p->scope < scope){
@@ -36,13 +36,13 @@ void eliminar_scope(int scope){
 	}
 }
 
-struct reg* buscar_cat(char *id, enum category cat){
-	struct reg* p = buscar(id);
+struct node* buscar_cat(char *id, enum category cat){
+	struct node* p = buscar(id);
 	return (p != NULL && p->cat == cat) ? p : NULL;
 }
 
-struct reg* buscar_scope(char *id, int scope){
-	struct reg* p = buscar(id);
+struct node* buscar_scope(char *id, int scope){
+	struct node* p = buscar(id);
 	return (p != NULL && p->scope == scope) ? p : NULL;
 }
 
@@ -51,7 +51,7 @@ void insertar(char *id, enum category cat, enum type tipo){
 		yyerror("-1: nombre ya definido");
 		return; // return evitaría variables repetidas en la TS
 	}
-	struct reg *p = (struct reg *) malloc(sizeof(struct reg));
+	struct node *p = (struct node *) malloc(sizeof(struct node));
 	//printf("\ninserta %s _scope = %d\n", id, _scope);
 	p->id = id; p->cat = cat; p->tipo = tipo/*p->tip = tp*/; p->sig = top; p->scope = _scope;
 	top = p;
@@ -59,14 +59,15 @@ void insertar(char *id, enum category cat, enum type tipo){
 
 void finbloq(){
 	while (top != NULL && top->cat != rutina) {
-		struct reg *p = top->sig;
+		struct node *p = top->sig;
 		free(top->id); free(top); top=p;
 	}
 }
 
 void dump(const char* s) {
-	printf("	DUMP: %s\n", s);
-	struct reg *p = top;
+	printf("\tDUMP: %s\n", s);
+	struct node *p = top;
+	printf("DIR\t\tCATEGORY\t\tID\t\tTIPO\t\tSCOPE\n");
 	while (p != NULL){
 		//printf("0x%x\t\t%c\t\t%s\t\t%s\t\t%d\n", (int)p, "TGLR"[p->cat], p->id, p->tipo==0?".":typeStrings[p->tipo], p->scope);
 		printf("%p\t\t%c\t\t%s\t\t%s\t\t%d\n", p, "TGLR"[p->cat], p->id, p->tipo==0?".":typeStrings[p->tipo], p->scope);

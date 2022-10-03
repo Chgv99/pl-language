@@ -7,8 +7,9 @@
 #include "table.h" /* tabla de símbolos */
 
 int yylex();
-int yyparse(void);
+//int yyparse(void);
 int yyerror(char const *s);
+void gcstr(char* str);
 void gc(char* str, int val);
 extern FILE *yyin;
 extern int lines;   /* lexico */
@@ -22,7 +23,7 @@ char *qfileName = "output.q.c";
 int lineSize;
 char* line;
 
-struct reg* voidp;
+struct node* voidp;
 
 //list<char*> init_stack;
 char** init_stack;
@@ -37,7 +38,9 @@ void init_s_t() { /* iniciar tabla de símbolos */
 	insertar("void", tipo, nada);
 	voidp = top;
 	insertar("int", tipo, nada);
-	insertar("dbl", tipo, nada);
+	insertar("float", tipo, nada);
+	insertar("bool", tipo, nada);
+	insertar("char", tipo, nada);
 }
 
 void init(){
@@ -52,7 +55,7 @@ int tag() {
 }
 
 /*void deleteScope(){
-	while(struct reg* var = buscar_scope(_scope)){
+	while(struct node* var = buscar_scope(_scope)){
 		eliminar(var->id)
 	}
 	_scope--;
@@ -72,7 +75,14 @@ int tag() {
 
 // primitivos
 %token <id> NAME
-%token <id> INT FLOAT BOOL CHAR VOID ARR STR
+%token <my_int> ID_INT
+%token <my_float> ID_FLOAT 
+%token <my_bool> ID_BOOL 
+%token <my_char> ID_CHAR 
+//%token <my_int> ID_VOID //??
+//%token <my_int> ID_ARR 
+//%token <my_int> ID_STR
+
 %token <my_int> DIGIT
 %token <my_float> V_FLOAT
 %token <my_bool> V_BOOL
@@ -95,8 +105,8 @@ int tag() {
 }
 
 %type<id> nameContainer;
-%type<id> typeContainer;
 
+%type <expr> initialization
 
 
 %right '=' INC DEC MULT_ASSIGN DIV_ASSIGN
@@ -130,13 +140,13 @@ content: statement					//only one instruction
 //|	controlStructure EOL content
 ;
 
-statement: initialization
+statement: initialization	{
+								//createVariable
+								createVariable($1);
+							}
 | 	initialization '=' expression
-|   NAME '=' expression  	{	// Asignación
-								struct reg* var = buscar($1);
-								if (var != NULL){
-									printf("variable %s utilizable (line: %d)\n", $1, lines);
-								} else printf("variable %s no utilizable (line: %d)\n", $1, lines);
+|   NAME '=' expression  	{	
+								//createVariable();
 							}
 | 	initialization INC expression
 |   NAME INC expression  
@@ -150,22 +160,24 @@ statement: initialization
 |	print
 ;
 
-initialization: typeContainer nameContainer { 
-												/**char* e = "ey";
-												init_stack[0] = e;
-												struct reg* tipo = (struct reg*) malloc(sizeof(struct reg));
+initialization: type nameContainer { 
+												//char* e = "ey";
+												//init_stack[0] = e;
+												struct var* tipo = (struct node*) malloc(sizeof(struct node));
 												enum category cat;
 												tipo->id = _type; tipo->cat = cat;
-												insertar(init_stack[0], v_local, tipo); */
+												//insertar(init_stack[0], v_local, tipo);
+												initVar($<my_str>2, );
+												$$ = 
 											}
 ;
 
-nameContainer: NAME			{ 	insertar($1, v_local, _type);	}
+nameContainer: NAME			{ 	struct node* /*insertar($1, v_local, _type);*/	} //Establecer si v_local o v_global
 |	NAME ',' nameContainer 	{ 	insertar($1, v_local, _type);	}
 ;
 
-param: typeContainer NAME
-|	typeContainer NAME ',' param
+param: type NAME
+|	type NAME ',' param
 ;
 
 /*expression: DIGIT
@@ -221,7 +233,7 @@ controlStructure: IF '(' comparation ')' increaseScope content decreaseScope
 		content 			{/*gc("%s", $7);*/} 														//subárbol
 		decreaseScope		{gc("GT(%d);\n", $<my_int>1); gc("L %d:\n",$<my_int>3);}						//GT(N1);
 																										//L N2:
-|	LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' increaseScope content decreaseScope
+|	LOOP FOR '(' ID_INT NAME ',' NAME comparator len ',' DIGIT ')' increaseScope content decreaseScope
 //|	LOOP FOR '(' INT NAME ',' RANGE '(' DIGIT ',' DIGIT ')' ',' DIGIT ')' '{' content '}'
 |	LOOP WHILE '(' comparation ')' increaseScope content decreaseScope
 |	LOOP UNTIL '(' comparation ')' increaseScope content decreaseScope
@@ -248,22 +260,22 @@ method: METH NAME '('param')' 	{	// Add params to inner scope
 									/*while (){
 
 									}*/
-								}':' typeContainer increaseScope content decreaseScope 	// RETURN isnt forced to be use
+								}':' type increaseScope content decreaseScope 	// RETURN isnt forced to be use
 //|	METH NAME '('initializations')'':' type'{'content'}'
 ;
 
-typeContainer: type
+/*type: type { $$ = "1"; }
 |	type '[' ']'
 |	type '[' DIGIT ']'
 |	type '[' NAME ']'
-;
+;*/
 
-type: INT 	{ $<id>$ = INT; }//_type = entero; }
-|   FLOAT 	{ $<id>$ = FLOAT; }//_type = flotante; }
-|   BOOL 	{ $<id>$ = BOOL; }//_type = booleano; }
-|   CHAR 	{ $<id>$ = CHAR; }//_type = caracter; }
-//|   STR 	{ _type = $1; }
-//|   ARR 	{ _type = $1; }
+type: INT 	{ $$ = entero; }
+|   FLOAT 	{ $$ = flotante; }
+|   BOOL 	{ $$ = booleano; }
+|   CHAR 	{ $$ = caracter; }
+|   STR 	{ $$ = ristra; }
+//|   ID_ARR 	{ _type = $1; }
 ;
 
 /**
@@ -307,10 +319,28 @@ comparation: NAME
 	va_end(ap);
 }*/
 
+void gcstr(char* str){
+	fputs(str, qfile);
+}
+
 // Implementación temporal para enteros
 void gc(char* str, int val){
 	snprintf(line, lineSize, str, val);
-	fputs(str, qfile);
+	gcstr(str);
+}
+
+//insertar($1, v_local, _type);
+
+void createVariable(){
+	if (_scope == 0){
+		//insertar($1, v_global, _type);
+	}
+
+	// Asignación
+	struct node* var = buscar($1);
+	if (var != NULL){
+		printf("variable %s utilizable (line: %d)\n", $1, lines);
+	} else printf("variable %s no utilizable (line: %d)\n", $1, lines);
 }
 
 /*int main (int argc, char **argv){
@@ -329,23 +359,28 @@ int main (int argc, char **argv){
 
 	printf("args = %d\n", argc);
 	if (argc == 2){
-		//yyin = fopen(argv[1], "r");
+		yyin = fopen(argv[1], "r");
 
 		//Q File
-		printf("ey1\n");
 		qfile = fopen(qfileName,"w");
+		printf("qfilename: %s\n", qfileName);
 		fputs("", qfile);
 		fclose(qfile);
-		printf("ey2\n");
 		qfile = fopen(qfileName,"a");
+		gcstr("#include \"Q.h\"\n");
+		gcstr("BEGIN\n");
+		gcstr("L 0:\t\t\t\t\t\t// Inicio del programa\n");
+		
 
 		init(); //iniciar tabla de símbolos
 		dump("t.s. inicial");
-		printf("ey3");
+		printf("ey3\n");
 		yyparse();			// Actualmente (29/09/22 3:59) se queda pillado en esta línea.
-		printf("ey4");
+		printf("ey4\n");
 		dump("t.s. final");
 		free(init_stack);
+		fclose(qfileName);
+		fclose(argv[1]);
 	} else {
 		//print some help?
 		printf("No source file given.\n");

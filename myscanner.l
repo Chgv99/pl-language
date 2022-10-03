@@ -85,10 +85,10 @@ void error(char*, char*);
 
 [0-9]+ { yylval.my_int = atoi(yytext); return DIGIT; }
 
-int { return INT; }
-float { return FLOAT; }
-bool { return BOOL; }
-char { return CHAR; }
+int { return ID_INT; }
+float { return ID_FLOAT; }
+bool { return ID_BOOL; }
+char { return ID_CHAR; }
 
 learn { return LEARN; }
 return { return RET; }
@@ -113,7 +113,7 @@ or { return OR; }
 
 true { return TRUE; }
 false { return FALSE; }
-void { return VOID; }
+void { return ID_VOID; }
 
 [ \t] { /* ignore whitespaces */ }
 \"([^"\n]|\\.)*\" { words++; chars += strlen(yytext); return V_STR; }
