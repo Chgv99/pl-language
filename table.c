@@ -67,10 +67,10 @@ void finbloq(){
 void dump(const char* s) {
 	printf("\tDUMP: %s\n", s);
 	struct node *p = top;
-	printf("DIR\t\tCATEGORY\t\tID\t\tTIPO\t\tSCOPE\n");
+	printf("DIR\t\tCATEGORY\t\tTIPO\t\tID\t\tSCOPE\n"); //\t\tVALUE
 	while (p != NULL){
 		//printf("0x%x\t\t%c\t\t%s\t\t%s\t\t%d\n", (int)p, "TGLR"[p->cat], p->id, p->tipo==0?".":typeStrings[p->tipo], p->scope);
-		printf("%p\t\t%c\t\t%s\t\t%s\t\t%d\n", p, "TGLR"[p->cat], p->id, p->tipo==0?".":typeStrings[p->tipo], p->scope);
+		printf("%p\t\t%c\t\t%s\t\t%s\t\t%d\n", p, "TGLR"[p->cat], p->tipo==0?".":typeStrings[p->tipo], p->id, p->scope);
 		p=p->sig;
 	}
 }

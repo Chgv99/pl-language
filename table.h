@@ -7,6 +7,7 @@ extern struct node {
 	enum category cat;
 	enum type tipo;
 	//struct node *tip;
+	
 	struct node *sig;
 	int scope;
 	char* function;

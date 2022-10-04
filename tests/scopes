@@ -1,7 +1,7 @@
 int a = 33
 
 if (a) {
-int b = 22
+char b = 22
 }
 
 int c = 80

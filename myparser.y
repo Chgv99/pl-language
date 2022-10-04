@@ -11,7 +11,10 @@ int yylex();
 int yyerror(char const *s);
 void gcstr(char* str);
 void gc(char* str, int val);
+void createVariable();
+void insertIntoVarStack(char*);
 extern FILE *yyin;
+//extern enum type;
 extern int lines;   /* lexico */
 extern int chars;	/* lexico */
 extern int _scope;   /* lexico */
@@ -33,15 +36,23 @@ enum type _type;
 
 int _tag;
 
+unsigned int z = 0x12000;
+
+struct variable{
+	char* id;
+	enum type tipo;
+	struct variable *sig;
+} *first;
+
 //int _scope;
 
 void init_s_t() { /* iniciar tabla de símbolos */
-	insertar("void", tipo, nada);
+	//insertar("", tipo, my_void);
 	voidp = top;
-	insertar("int", tipo, nada);
-	insertar("float", tipo, nada);
-	insertar("bool", tipo, nada);
-	insertar("char", tipo, nada);
+	insertar("-", tipo, entero);
+	insertar("--", tipo, flotante);
+	insertar("---", tipo, booleano);
+	insertar("----", tipo, caracter);
 }
 
 void init(){
@@ -66,7 +77,6 @@ int tag() {
 
 %token INC DEC MULT_ASSIGN DIV_ASSIGN
 %token LEARN ARROW RET END NEXT TERM
-%token V_VOID
 %token COMM RANGE LEN PRINT
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
 %token EQ NEQ GT LT GTE LTE
@@ -76,13 +86,14 @@ int tag() {
 
 // primitivos
 %token <id> NAME
-%token <my_int> ID_INT
-%token <my_float> ID_FLOAT 
-%token <my_bool> ID_BOOL 
-%token <my_char> ID_CHAR 
+%token <my_int> INT
+%token <my_float> FLOAT 
+%token <my_bool> BOOL 
+%token <my_char> CHAR 
 //%token <my_int> ID_VOID //??
 //%token <my_int> ID_ARR 
-//%token <my_int> ID_STR
+%token <my_str> STR
+%token /*<my_void>*/ VOID
 
 %token <my_int> DIGIT
 %token <my_float> V_FLOAT
@@ -103,11 +114,13 @@ int tag() {
 	// Compuestos
 	//int* my_arr;
 	char* my_str;
+	int my_type;
+	//void my_void;
 }
 
 %type<id> nameContainer;
 
-%type <expr> initialization
+//%type <expr> initialization
 
 
 %right '=' INC DEC MULT_ASSIGN DIV_ASSIGN
@@ -142,8 +155,8 @@ content: statement					//only one instruction
 ;
 
 statement: initialization	{
-								//createVariable
-								createVariable($1);
+								//initialize variable aka modify existing one
+								
 							}
 | 	initialization '=' expression
 |   NAME '=' expression  	{	
@@ -164,25 +177,26 @@ statement: initialization	{
 initialization: type nameContainer { 
 												//char* e = "ey";
 												//init_stack[0] = e;
-												struct var* tipo = (struct node*) malloc(sizeof(struct node));
-												enum category cat;
-												tipo->id = _type; tipo->cat = cat;
-												//insertar(init_stack[0], v_local, tipo);
-												initVar($<my_str>2, );
-												$$ = 
+												//struct var* tipo = (struct node*) malloc(sizeof(struct node));
+												//enum category cat;
+												//tipo->id = _type; tipo->cat = cat;
+												struct node* var = first;//(struct node*) malloc(sizeof(struct node));
+												printf("first variable from stack: %s\n", first->id);
+												while (var != NULL){
+													printf("variable in stack: %s\n", var->id);
+													//var->id = $<id>2;
+													var->tipo = $<my_type>1;
+													createVariable(var);
+													var = var->sig;
+												}
+												first = NULL;
+												
 											}
 ;
 
-<<<<<<< HEAD
-nameContainer: NAME			{ 	struct node* /*insertar($1, v_local, _type);*/	} //Establecer si v_local o v_global
-=======
-initializationArray: typeContainer '[' DIGIT ']' NAME
-;
 
-
-nameContainer: NAME			{ 	insertar($1, v_local, _type);	}
->>>>>>> bison_revision
-|	NAME ',' nameContainer 	{ 	insertar($1, v_local, _type);	}
+nameContainer: NAME			{ insertIntoVarStack($<id>1); } 
+|	NAME ',' nameContainer 	{ insertIntoVarStack($<id>1); }
 ;
 
 param: type NAME
@@ -249,7 +263,7 @@ controlStructure: IF '(' comparation ')' increaseScope content decreaseScope
 		content 			{/*gc("%s", $7);*/} 														//subárbol
 		decreaseScope		{gc("GT(%d);\n", $<my_int>1); gc("L %d:\n",$<my_int>3);}						//GT(N1);
 																										//L N2:
-|	LOOP FOR '(' ID_INT NAME ',' NAME comparator len ',' DIGIT ')' increaseScope content decreaseScope
+|	LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' increaseScope content decreaseScope
 //|	LOOP FOR '(' INT NAME ',' RANGE '(' DIGIT ',' DIGIT ')' ',' DIGIT ')' '{' content '}'
 |	LOOP WHILE '(' comparation ')' increaseScope content decreaseScope
 |	LOOP UNTIL '(' comparation ')' increaseScope content decreaseScope
@@ -286,11 +300,11 @@ method: METH NAME '('param')' 	{	// Add params to inner scope
 |	type '[' NAME ']'
 ;*/
 
-type: INT 	{ $$ = entero; }
-|   FLOAT 	{ $$ = flotante; }
-|   BOOL 	{ $$ = booleano; }
-|   CHAR 	{ $$ = caracter; }
-|   STR 	{ $$ = ristra; }
+type: INT 	{ $<my_int>$ = entero; }
+|   FLOAT 	{ $<my_int>$ = flotante; }
+|   BOOL 	{ $<my_int>$ = booleano; }
+|   CHAR 	{ $<my_int>$ = caracter; }
+|   STR 	{ $<my_int>$ = ristra; }
 ;
 
 /**
@@ -346,16 +360,43 @@ void gc(char* str, int val){
 
 //insertar($1, v_local, _type);
 
-void createVariable(){
-	if (_scope == 0){
-		//insertar($1, v_global, _type);
+//params: id, tipo
+void createVariable(struct node* var){
+	printf("creating variable %s of type %d\n", var->id, var->tipo);
+	if (buscar(var->id) == NULL){
+		if (_scope == 0){
+			insertar(var->id, v_global, var->tipo);
+			return;
+		}
+		insertar(var->id, v_local, var->tipo);
 	}
+	printf("Variable %s ya declarada. Line: %d\n", var->id, lines);
+	
 
 	// Asignación
-	struct node* var = buscar($1);
+	/*struct node* var = buscar($1);
 	if (var != NULL){
 		printf("variable %s utilizable (line: %d)\n", $1, lines);
-	} else printf("variable %s no utilizable (line: %d)\n", $1, lines);
+	} else printf("variable %s no utilizable (line: %d)\n", $1, lines);*/
+}
+
+void insertIntoVarStack(char* id){
+	printf("Inserting variable %s into stack.\n", id);
+	if (first == NULL){
+		struct variable *newvar = (struct variable *) malloc(sizeof(struct variable));
+		newvar->id = id;
+		first = newvar;
+	} else {
+		struct variable *var = first;
+		while (var->sig != NULL){
+			//printf("secondary variable loop for %s: %s", id, var->id);
+			var = var->sig;
+		}
+		//printf("\n");
+		struct variable *newvar = (struct variable *) malloc(sizeof(struct variable));
+		newvar->id = id;
+		var->sig = newvar;
+	}
 }
 
 /*int main (int argc, char **argv){
