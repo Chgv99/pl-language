@@ -10,8 +10,7 @@
 int yylex();
 //int yyparse(void);
 int yyerror(char const *s);
-void gcstr(char* str);
-void gc(char* str, int val);
+void gc(char* str);
 void createVariable();
 void insertIntoVarStack(char*);
 extern FILE *yyin;
@@ -36,14 +35,17 @@ struct node* voidp;
 enum type _type;
 
 int _tag;
+int _statcode;
 
-unsigned int z = 0x12000;
+const unsigned int _z = 0x12000;
+const unsigned int _minStat = 0x08000;
 
 struct variable{
 	char* id;
 	enum type tipo;
 	struct variable *sig;
-} *first;
+	struct variable *ant;
+} *first, *last;
 
 //int _scope;
 
@@ -155,14 +157,26 @@ content: statement					//only one instruction
 //|	controlStructure EOL content
 ;
 
-statement: initialization	{
-								//initialize variable aka modify existing one
-								
-							}
-| 	initialization '=' expression
-|   NAME '=' expression  	{	
-								//createVariable();
-							}
+statement: initialization			{
+										//initialize variable
+										
+									}
+| 	initialization '=' expression	{
+										//modify existing variable
+										struct variable* var = first;
+										while (var != NULL){
+											var->tipo = $<my_type>1;
+											//createVariable(var); //store value on symbol table?
+											snprintf(line, lineSize, "\tR\t# Reserva de memoria para %s\n", var->id);	
+											gc(line);
+											var = var->sig;
+										}
+										//I(R6 - 4) = R0;	 
+										gc("R0 = ");
+									}
+|   NAME '=' expression  			{	
+										//createVariable();
+									}
 | 	initialization INC expression
 |   NAME INC expression  
 | 	initialization DEC expression
@@ -176,16 +190,19 @@ statement: initialization	{
 ;
 
 initialization: type nameContainer { 
-												//Leer stack de variables e inicializar una a una
-												struct node* var = first;
-												while (var != NULL){
-													var->tipo = $<my_type>1;
-													createVariable(var);
-													var = var->sig;
-												}
-												first = NULL;
-												
-											}
+										//Leer stack de variables e inicializar una a una
+										struct variable* var = first;
+										while (var != NULL){
+											var->tipo = $<my_type>1;
+											createVariable(var);
+											snprintf(line, lineSize, "\tR7 = R7 - 4\t# Reserva de memoria para %s\n", var->id);	
+											gc(line);
+											//snprintf(line, lineSize, "\tR\t# Reserva de memoria para %s\n", var->id);	
+											//gc(line);
+											var = var->sig;
+										}
+										//first = NULL; //mover a regla superior (asignación)
+									}
 ;
 
 
@@ -250,13 +267,25 @@ L 1:					//while salida
 
 
 controlStructure: IF '(' comparation ')' increaseScope content decreaseScope
-|		LOOP 				{$<my_int>$ = tag(); gc("L %d:\n", $<my_int>$);}							//L N1:
-		'(' DIGIT ')'		{$<my_int>$ = tag(); gc("R1 = R0 > 0;\nIF(!R1) GT(%d);\n",$<my_int>$);}		//R1 = R0 > 0; 		condición
-																										//IF (!R1) GT(N2);	condición
+|		LOOP 				{
+								$<my_int>$ = tag(); 
+								//snprintf(line, lineSize, "L %d:\n", $<my_int>$);		//L N1:
+								gc(line);
+							}
+		'(' DIGIT ')'		{
+								$<my_int>$ = tag(); 
+								//snprintf(line, lineSize, "R1 = R0 > 0;\nIF(!R1) GT(%d);\n",$<my_int>$); 	//R1 = R0 > 0; 		condición	
+								gc(line);
+							}																				//IF (!R1) GT(N2);	condición
 		increaseScope		{}
-		content 			{/*gc("%s", $7);*/} 														//subárbol
-		decreaseScope		{gc("GT(%d);\n", $<my_int>1); gc("L %d:\n",$<my_int>3);}						//GT(N1);
-																										//L N2:
+		content 			{/*gc("%s", $7);*/} 															//subárbol
+		decreaseScope		{
+								//snprintf(line, lineSize, "GT(%d);\n", $<my_int>1);	//GT(N1);
+								gc(line);
+								//snprintf(line, lineSize, "L %d:\n",$<my_int>3);		//L N2:
+								gc(line);
+							}
+																											//L N2:
 |	LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' increaseScope content decreaseScope
 //|	LOOP FOR '(' INT NAME ',' RANGE '(' DIGIT ',' DIGIT ')' ',' DIGIT ')' '{' content '}'
 |	LOOP WHILE '(' comparation ')' increaseScope content decreaseScope
@@ -336,23 +365,15 @@ comparation: NAME
 	va_start(ap, fmt);
 	while (*fmt){
 		val = va_arg(ap, int);
-		snprintf(line,lineSize, str, val);
+		//snprintf(line,lineSize, str, val);
 		*fmt++;
     }
 	va_end(ap);
 }*/
 
-void gcstr(char* str){
+void gc(char* str){
 	fputs(str, qfile);
 }
-
-// Implementación temporal para enteros
-void gc(char* str, int val){
-	snprintf(line, lineSize, str, val);
-	gcstr(str);
-}
-
-//insertar($1, v_local, _type);
 
 //params: id, tipo
 void createVariable(struct node* var){
@@ -373,12 +394,13 @@ void createVariable(struct node* var){
 }
 
 void insertIntoVarStack(char* id){
-	if (first == NULL){
+	if (first == NULL && last == NULL){
 		struct variable *newvar = (struct variable *) malloc(sizeof(struct variable));
 		newvar->id = id;
 		first = newvar;
+		last = newvar;
 	} else {
-		struct variable *var = first;
+		/*struct variable *var = first;
 		while (var->sig != NULL){
 			//printf("secondary variable loop for %s: %s", id, var->id);
 			var = var->sig;
@@ -386,7 +408,14 @@ void insertIntoVarStack(char* id){
 		//printf("\n");
 		struct variable *newvar = (struct variable *) malloc(sizeof(struct variable));
 		newvar->id = id;
-		var->sig = newvar;
+		var->sig = newvar;*/
+
+		//---
+		struct variable *var = last;
+		struct variable *newvar = (struct variable *) malloc(sizeof(struct variable));
+		newvar->id = id;
+		last->sig = newvar;
+		last = newvar;
 	}
 }
 
@@ -399,53 +428,67 @@ void insertIntoVarStack(char* id){
 	printf("Análisis finalizado\n");
 }*/
 int main (int argc, char **argv){
+	errno = 0;
+	if (argc != 2){
+		//print some help
+		errno = 1;
+		perror("No source file given");
+		exit(1);
+	}
+	//Source file
+	yyin = fopen(argv[1], "r");
+	if (yyin == NULL) {
+		errno = 2;
+		perror("Failed to open source file");
+		exit(1);
+	}
+	//Q File
+	qfile = fopen(qfileName,"w");
+	if (qfile == NULL) {
+		errno = 2;
+		perror("Failed to open Q file");
+		exit(1);
+	}
+	fputs("", qfile);
+	fclose(qfile);
+	qfile = fopen(qfileName,"a");
+	if (qfile == NULL) {
+		errno = 2;
+		perror("Failed to open Q file");
+		exit(1);
+	}
+
 	yydebug = 0; //1 = enabled
 
 	lineSize = sizeof(char*) * 500;
 	line = (char*) malloc(lineSize);
 
-	printf("args = %d\n", argc);
-	errno = 0;
 
-	if (argc == 2){
-		yyin = fopen(argv[1], "r");
-		if (yyin == NULL)
-		{
-		    printf("fopen failed (yyin), errno = %d\n", errno);
-		}
+	//R7 = 0x08000;// Reservamos espacio en la memoria estática
+	//R6 = R7;
 
-		//Q File
-		qfile = fopen(qfileName,"w");
-		if (qfile == NULL)
-		{
-		    printf("fopen failed (qfile), errno = %d\n", errno);
-		}
-		printf("qfilename: %s\n", qfileName);
-		fputs("", qfile);
-		fclose(qfile);
-		qfile = fopen(qfileName,"a");
-		if (qfile == NULL)
-		{
-		    printf("fopen failed (qfile), errno = %d\n", errno);
-		}
-		gcstr("#include \"Q.h\"\n");
-		gcstr("BEGIN\n");
-		gcstr("L 0:\t\t\t\t\t\t// Inicio del programa\n");
-		
+	gc("#include \"Q.h\"\n");
+	gc("BEGIN\n");
+	gc("L 0:\t\t\t\t\t\t# Inicio del programa\n");
+	//snprintf(line, lineSize, "STAT(%d)\n", _statcode);
+	gc(line);
+	gc("\t# Memoria estática\n");
+	snprintf(line, lineSize, "CODE(%d)\n", _statcode++);
+	gc(line);
+	snprintf(line, lineSize, "\tR7 = 0x%05X\n", _minStat);
+	gc(line);
+	snprintf(line, lineSize, "\tR6 = R7\n");
+	gc(line);
 
-		init(); //iniciar tabla de símbolos
-		dump("t.s. inicial");
-		printf("ey3\n");
-		yyparse();			// Actualmente (29/09/22 3:59) se queda pillado en esta línea.
-		printf("ey4\n");
-		dump("t.s. final");
-		//free(init_stack);
-		fclose(qfileName);
-		fclose(argv[1]);
-	} else {
-		//print some help?
-		printf("No source file given.\n");
-	}
+	init(); //iniciar tabla de símbolos
+	dump("t.s. inicial");
+	yyparse();
+	dump("t.s. final");
+	gc("END\n");
+	fclose(qfile); //core dump
+	fclose(yyin);
+
+	free(line);
 	return 0;
 }
 
