@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <errno.h>
 
 #include "table.h" /* tabla de símbolos */
 
@@ -30,7 +31,7 @@ char* line;
 struct node* voidp;
 
 //list<char*> init_stack;
-char** init_stack;
+//char** init_stack;
 
 enum type _type;
 
@@ -56,7 +57,7 @@ void init_s_t() { /* iniciar tabla de símbolos */
 }
 
 void init(){
-	init_stack = (char**) malloc(10 * sizeof(char*));
+	//init_stack = (char**) malloc(10 * sizeof(char*));
 	_scope = 0; // Ámbito Global (flex)
 	_tag = 1; 		//0 reservado para comienzo de fichero en código Q
 	init_s_t();
@@ -175,16 +176,9 @@ statement: initialization	{
 ;
 
 initialization: type nameContainer { 
-												//char* e = "ey";
-												//init_stack[0] = e;
-												//struct var* tipo = (struct node*) malloc(sizeof(struct node));
-												//enum category cat;
-												//tipo->id = _type; tipo->cat = cat;
-												struct node* var = first;//(struct node*) malloc(sizeof(struct node));
-												printf("first variable from stack: %s\n", first->id);
+												//Leer stack de variables e inicializar una a una
+												struct node* var = first;
 												while (var != NULL){
-													printf("variable in stack: %s\n", var->id);
-													//var->id = $<id>2;
 													var->tipo = $<my_type>1;
 													createVariable(var);
 													var = var->sig;
@@ -362,7 +356,6 @@ void gc(char* str, int val){
 
 //params: id, tipo
 void createVariable(struct node* var){
-	printf("creating variable %s of type %d\n", var->id, var->tipo);
 	if (buscar(var->id) == NULL){
 		if (_scope == 0){
 			insertar(var->id, v_global, var->tipo);
@@ -370,7 +363,6 @@ void createVariable(struct node* var){
 		}
 		insertar(var->id, v_local, var->tipo);
 	}
-	printf("Variable %s ya declarada. Line: %d\n", var->id, lines);
 	
 
 	// Asignación
@@ -381,7 +373,6 @@ void createVariable(struct node* var){
 }
 
 void insertIntoVarStack(char* id){
-	printf("Inserting variable %s into stack.\n", id);
 	if (first == NULL){
 		struct variable *newvar = (struct variable *) malloc(sizeof(struct variable));
 		newvar->id = id;
@@ -414,15 +405,29 @@ int main (int argc, char **argv){
 	line = (char*) malloc(lineSize);
 
 	printf("args = %d\n", argc);
+	errno = 0;
+
 	if (argc == 2){
 		yyin = fopen(argv[1], "r");
+		if (yyin == NULL)
+		{
+		    printf("fopen failed (yyin), errno = %d\n", errno);
+		}
 
 		//Q File
 		qfile = fopen(qfileName,"w");
+		if (qfile == NULL)
+		{
+		    printf("fopen failed (qfile), errno = %d\n", errno);
+		}
 		printf("qfilename: %s\n", qfileName);
 		fputs("", qfile);
 		fclose(qfile);
 		qfile = fopen(qfileName,"a");
+		if (qfile == NULL)
+		{
+		    printf("fopen failed (qfile), errno = %d\n", errno);
+		}
 		gcstr("#include \"Q.h\"\n");
 		gcstr("BEGIN\n");
 		gcstr("L 0:\t\t\t\t\t\t// Inicio del programa\n");
@@ -434,7 +439,7 @@ int main (int argc, char **argv){
 		yyparse();			// Actualmente (29/09/22 3:59) se queda pillado en esta línea.
 		printf("ey4\n");
 		dump("t.s. final");
-		free(init_stack);
+		//free(init_stack);
 		fclose(qfileName);
 		fclose(argv[1]);
 	} else {

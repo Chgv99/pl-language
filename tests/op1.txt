@@ -1,5 +1,6 @@
+int a
 char x, y, z, x1, y1, z1
-float a
+float a1
 char b
 bool c
 int d

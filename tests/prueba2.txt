@@ -1,0 +1,10 @@
+int a
+char x, y, z, x1, y1, z1
+float a1
+char b
+bool c
+int d
+a = 3
+b = 2
+c = 1
+y = 8
