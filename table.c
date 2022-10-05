@@ -46,14 +46,14 @@ struct node* buscar_scope(char *id, int scope){
 	return (p != NULL && p->scope == scope) ? p : NULL;
 }
 
-void insertar(char *id, enum category cat, enum type tipo){
+void insertar(char *id, enum category cat, enum type tipo, unsigned int address){
 	if (buscar(id) != NULL) {
 		yyerror("-1: nombre ya definido");
 		return; // return evitaría variables repetidas en la TS
 	}
 	struct node *p = (struct node *) malloc(sizeof(struct node));
 	//printf("\ninserta %s _scope = %d\n", id, _scope);
-	p->id = id; p->cat = cat; p->tipo = tipo/*p->tip = tp*/; p->sig = top; p->scope = _scope;
+	p->id = id; p->cat = cat; p->tipo = tipo/*p->tip = tp*/; p->sig = top; p->scope = _scope; p->dir = address;
 	top = p;
 }
 
@@ -67,10 +67,10 @@ void finbloq(){
 void dump(const char* s) {
 	printf("\tDUMP: %s\n", s);
 	struct node *p = top;
-	printf("DIR\t\tCATEGORY\t\tTIPO\t\tID\t\tSCOPE\n"); //\t\tVALUE
+	printf("QDIR\t\tCATEGORY\t\tTIPO\t\tID\t\tSCOPE\n"); //\t\tVALUE
 	while (p != NULL){
 		//printf("0x%x\t\t%c\t\t%s\t\t%s\t\t%d\n", (int)p, "TGLR"[p->cat], p->id, p->tipo==0?".":typeStrings[p->tipo], p->scope);
-		printf("%p\t\t%c\t\t%s\t\t%s\t\t%d\n", p, "TGLR"[p->cat], p->tipo==0?".":typeStrings[p->tipo], p->id, p->scope);
+		printf("%05x\t\t%c\t\t%s\t\t%s\t\t%d\n", p->dir, "TGLR"[p->cat], p->tipo==0?".":typeStrings[p->tipo], p->id, p->scope);
 		p=p->sig;
 	}
 }

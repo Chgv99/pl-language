@@ -3,11 +3,12 @@ enum category { tipo, v_global, v_local, rutina };
 enum type { nada, entero, flotante, booleano, caracter, ristra/*, array*/ };
 
 extern struct node {
+	unsigned int dir;
 	char *id;
 	enum category cat;
 	enum type tipo;
 	//struct node *tip;
-	
+
 	struct node *sig;
 	int scope;
 	char* function;
@@ -21,7 +22,7 @@ struct node* buscar_cat(char *id, enum category cat);
 
 struct node* buscar_scope(char *id, int scope);
 
-void insertar(char *id, enum category cat, enum type tipo);
+void insertar(char *id, enum category cat, enum type tipo, unsigned int address);
 
 void finbloq();
 
