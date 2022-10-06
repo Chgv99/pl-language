@@ -117,7 +117,7 @@ false { return FALSE; }
 void { return VOID; }
 
 [ \t] { /* ignore whitespaces */ }
-\"([^"\n]|\\.)*\" { words++; /**chars += strlen(yytext)*/; return V_STR; }
+\"([^"\n]|\\.)*\" { words++; /**chars += strlen(yytext)*/; return STR; }
 [a-zA-Z_][a-zA-Z0-9_]*  { words++; chars += strlen(yytext); yylval.my_str = strdup(yytext); return NAME; }
 \n         { chars++; lines++; }
 
