@@ -1,8 +1,12 @@
-int a
+int a = 6969
+
+print(a)
 
 if (e){
   int c = 100
-  int a
+  ~~int a
+  ~~print(c)
+  ~~print(a)
 }
 
 int b = 3
