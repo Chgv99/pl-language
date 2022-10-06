@@ -2,6 +2,7 @@ int a
 
 if (e){
   int c = 100
+  int a
 }
 
 int b = 3

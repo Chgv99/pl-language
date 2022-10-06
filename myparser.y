@@ -235,12 +235,12 @@ param: type NAME
 ;*/
 
 expression: operand			{ $$ = $<my_int>1; }
-|	operand '+' expression  {  }
-|	operand '-' expression
-|	operand '*' expression
-|	operand '/' expression
-|	operand '%' expression
-|	operand '^' expression
+|	expression '+' operand  {  }
+|	expression '-' operand
+|	expression '*' operand
+|	expression '/' operand
+|	expression '%' operand
+|	expression '^' operand
 |	len
 //|	'{' list '}'
 ;
@@ -255,8 +255,6 @@ operand: DIGIT 	{
 					$<my_int>$ = $1;
 				}
 |	NAME
-|	NAME '[' DIGIT ']'
-|	NAME '[' NAME ']' //multidimensionales?
 |	NAME '(' paramContainer ')' //function call
 |	V_STR
 ;
@@ -316,8 +314,12 @@ decreaseScope: '}' 	{ 	eliminar_scope(_scope);
 len: LEN '(' NAME ')'
 ;
 
-print: PRINT '(' V_STR ')'
-|	PRINT '(' expression ')'
+print: PRINT '(' V_STR ')'	{
+							//prints a string
+							}
+|	PRINT '(' NAME ')' 		{
+
+							}
 ;
 
 /*print: LEN '(' NAME ')'

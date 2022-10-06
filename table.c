@@ -47,7 +47,8 @@ struct node* buscar_scope(char *id, int scope){
 }
 
 void insertar(char *id, enum category cat, enum type tipo, unsigned int address){
-	if (buscar(id) != NULL) {
+	struct node* var = buscar(id);
+	if (var != NULL && 	var->scope == _scope) {
 		yyerror("-1: nombre ya definido");
 		return; // return evitaría variables repetidas en la TS
 	}
