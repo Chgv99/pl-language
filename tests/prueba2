@@ -1,0 +1,4 @@
+if (e) {
+	int b = 8
+	print(b)
+}
