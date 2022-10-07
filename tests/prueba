@@ -1,15 +1,13 @@
 int a = 2*2
-int b
+int b = 27
+int c = 33
+int d = 42
+int e = 11
+int f = 99
+int g = 115
+int h = 24
+int i = 67
+int j = 82
 
 print(a)
-print(b)
-
-if (e){
-  int c = 100
-  ~~int a
-  ~~print(c)
-  ~~print(a)
-}
-
-~~int b = 3
-
+print(j)
