@@ -23,6 +23,9 @@ CODE(1)
 STAT(2)
  DAT(0x11ff8,I,0);
 CODE(2)
+ R1 = 0x11ff8;
+ R0 = R1;
+ I(R1) = R0;
  I(R7) = R0;
  I(R7 - 4) = R1;
  I(R7 - 8) = R2;
@@ -56,7 +59,7 @@ L 2:
  R1 = I(R7 - 4);
  R2 = I(R7 - 8);
  R7 = R7 - 4;
- R0 = R1;
+ R0 = R2;
  I(R7) = R0;
 GT(-2);
 END
