@@ -1,6 +1,8 @@
-int a = 6969
+int a = 1 * 1
+int b
 
 print(a)
+print(b)
 
 if (e){
   int c = 100
@@ -10,3 +12,4 @@ if (e){
 }
 
 int b = 3
+
