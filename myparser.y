@@ -17,6 +17,13 @@ struct varPack{
 	char* varId;
 	int varType;
 	int varReg;
+
+	//En pruebas
+	int 	val_int;
+	float 	val_float;
+	char 	val_char;
+	char* 	val_str;
+	bool 	val_bool;
 };
 
 int registers_I[8];
@@ -27,8 +34,11 @@ void createVariable();
 void declareVar(char*);
 void initializeVar(struct varPack*);
 struct varPack * arithmetical(struct varPack*, int, struct varPack*);
+struct varPack * logical(struct varPack*, int, struct varPack*);
+
 void lib_reg(struct varPack*);
 int assign_reg();
+struct varPack * storeOperand(struct varPack*);
 //void print(struct varPack*);
 //void insertIntoVarStack(char*);
 extern FILE *yyin;
@@ -61,6 +71,7 @@ const unsigned int _z = 0x12000;
 unsigned int z;
 int _globalgap = 0;
 int _localgap = 0;
+int _localdir = 1;	//points to local variable
 const unsigned int _minStat = 0x08000;
 
 const int _MaxMultipleDeclaration = 30;
@@ -110,7 +121,7 @@ int tag() {
 %token COMM RANGE LEN PRINT
 %token METH IF AND OR NOT ELSE LOOP FOR WHILE UNTIL
 %token EQ NEQ GT LT GTE LTE
-%token TRUE FALSE
+%token <my_str> TRUE FALSE
 
 // TIPOS
 
@@ -145,7 +156,11 @@ int tag() {
 
 %type<my_int> nameContainer; //returns number of vars created at once
 %type<my_pack> expression; //TODO: cualquier tipo (?)
+%type<my_pack> expressionArithmetical; //TODO: cualquier tipo (?)
+%type<my_pack> expressionLogical; //TODO: cualquier tipo (?)
 %type<my_pack> operand;		//my_pack may be replace with a pointer to my_pack?
+%type<my_pack> operandArithmetical;
+%type<my_pack> operandLogical;
 %type<id> initialization
 
 
@@ -188,10 +203,14 @@ statement: initialization			{
 | 	initialization '=' expression	{
 										printf("expression: %d\n", lines);
 										struct varPack *pack = malloc(sizeof(struct varPack));
+
 										pack->varId = $<id>1; 
-										pack->varReg = $<my_pack>3->varReg;
+										//pack->varReg = $<my_pack>3->varReg;
 										pack->varType = $<my_pack>3->varType;
+										pack->val_int = $<my_pack>3->val_int;
+										lib_reg($<my_pack>3);
 										printf("expression pack: %s, %d", pack->varId, pack->varReg);
+
 										initializeVar(pack);
 										
 										//initializeVar($<my_pack>3);
@@ -250,15 +269,26 @@ param: type NAME
 |	DIGIT '/' expression
 ;*/
 
-expression: operand			{ $$ = $1; }
-|	expression '+' operand  { $$ = arithmetical($1,'+',$3); }
-|	expression '-' operand	{ $$ = arithmetical($1,'-',$3); }
-|	expression '*' operand	{ $$ = arithmetical($1,'*',$3); }
-|	expression '/' operand	{ $$ = arithmetical($1,'/',$3); }
-|	expression '%' operand	{ $$ = arithmetical($1,'%',$3); }
-|	expression '^' operand	{ $$ = arithmetical($1,'^',$3); } //deleteable
+
+expression: expressionArithmetical	{$$ = $<my_pack>1;}
+|	expressionLogical				{$$ = $<my_pack>1;}
+;
+
+expressionArithmetical: operandArithmetical			{ $$ = storeOperand($1); }
+|	expressionArithmetical '+' expressionArithmetical  { $$ = arithmetical($1,'+',$3); }
+|	expressionArithmetical '-' expressionArithmetical	{ $$ = arithmetical($1,'-',$3); }
+|	expressionArithmetical '*' expressionArithmetical	{ $$ = arithmetical($1,'*',$3); }
+|	expressionArithmetical '/' expressionArithmetical	{ $$ = arithmetical($1,'/',$3); }
+|	expressionArithmetical '%' expressionArithmetical	{ $$ = arithmetical($1,'%',$3); }
+|	expressionArithmetical '^' expressionArithmetical	{ $$ = arithmetical($1,'^',$3); } //deleteable
 |	len
 //|	'{' list '}'
+;
+
+expressionLogical: operandLogical			{ $$ = storeOperand($1); }
+|	expressionLogical AND expressionLogical  { $$ = logical($1,'&',$3); }
+|	expressionLogical OR expressionLogical	{ $$ = logical($1,'|',$3); }
+|	NOT expressionLogical	{ $$ = logical($2,'!',$2); }
 ;
 
 expressionArray: '{' digitContainer '}'
@@ -267,18 +297,38 @@ expressionArray: '{' digitContainer '}'
 //list: DIGIT
 //|	DIGIT ',' list;
 
-operand: DIGIT 	{
+operandArithmetical: DIGIT 	{
+					//snprintf(line, lineSize, "//digit rule for value %d", $1);
+					//gc(line);
 					struct varPack *pack =  malloc(sizeof(struct varPack));
 					pack->varReg = assign_reg();
-					pack->varType = entero;
+					pack->varType = 1; //int
+					pack->val_int = $1;
 					$<my_pack>$ = pack;
 					//$<my_int>$ = $1;
 				}
-|	NAME
+|	NAME // TO fucking DO
 |	NAME '[' DIGIT ']'
 |	NAME '[' NAME ']' //multidimensionales?
 |	NAME '(' paramContainer ')' //function call
 |	STR
+;
+
+operandLogical: TRUE 	{
+						struct varPack *pack =  malloc(sizeof(struct varPack));
+						pack->varReg = assign_reg();
+						pack->varType = 3; //bool
+						pack->val_bool = true;
+						$<my_pack>$ = pack;
+						}
+|	FALSE 				{
+						struct varPack *pack =  malloc(sizeof(struct varPack));
+						pack->varReg = assign_reg();
+						pack->varType = 3; //bool
+						pack->val_bool = false;
+						$<my_pack>$ = pack;
+						}
+|	NAME
 ;
 
 paramContainer: NAME
@@ -448,18 +498,34 @@ void initializeVar(struct varPack *pack){
 		return;
 	}
 
+	gc("//initializeVar\n");
+
 	if (var->cat == v_global){
-		snprintf(line,lineSize, "\tR1 = 0x%05x;\t\t//Generated by line %d\n", var->dir, lines); // 
-		gc(line);
-		snprintf(line, lineSize, "\tR0 = R%d;\t\t//Generated by line %d\n", pack->varReg, lines); 
-		gc(line);
-		snprintf(line, lineSize, "\tI(R1) = R0;\t\t//Generated by line %d\n", lines); 
-		gc(line);
+		/*snprintf(line,lineSize, "\tR%d = 0x%05x;\t\t//Generated by line %d\n", r0, var->dir, lines); // 
+		gc(line);*/
+		switch(pack->varType){
+			case entero:
+				/*snprintf(line, lineSize, "\tR%d = %d;\t\t//Generated by initializeVar at line %d\n", pack->varReg, pack->val_int, lines); 
+				gc(line);*/
+				snprintf(line, lineSize, "\tI(0x%05x) = R%d;\t\t//Generated by line %d\n", var->dir, /*pack->varReg,*/ lines); 
+				gc(line);
+				break;
+			case flotante:
+				snprintf(line, lineSize, "\tR0 = %f;\t\t//Generated by line %d\n", pack->val_float, lines); 
+				gc(line);
+				break;
+		}
+		
 	} else if (var->cat == v_local){
-		snprintf(line, lineSize, "\tR0 = R%d;\t\t//Generated by line %d\n", pack->varReg, lines); 
+		snprintf(line, lineSize, "\tI(R6 - %d) = R%d;\t\t//Generated by line %d\n", var->dir, pack->varReg, lines); 
 		gc(line);
-		snprintf(line, lineSize, "\tI(R7) = R0;\t\t//Generated by line %d\n", lines); 
+		lib_reg(pack);
+		/*snprintf(line, lineSize, "\tR0 = %d;\t\t//Generated by line %d\n", _value, lines); 
 		gc(line);
+		snprintf(line, lineSize, "\tI(R6 - %d) = R0;\t\t//Generated by line %d\n", var->dir, lines); 
+		gc(line);*/
+	} else {
+		printf("var null");
 	}
 }
 
@@ -479,7 +545,7 @@ void declareVar(char* id){
 		_localgap++;
 		snprintf(line, lineSize, "\tR7 = R7 - %d;\t\t//Generated by line %d\n", 4*_localgap, lines);
 		gc(line);
-		insertar(id, v_local, _type, 0);
+		insertar(id, v_local, _type, 4*_localdir++);
 	}
 	_value = 0;
 }
@@ -506,7 +572,7 @@ void print(char* id){
 		
 		snprintf(line, lineSize, "\tR0 = %d;\t//Generated by print at line: %d\n", retTag, lines);		//R0 = TAG; //TAG de regreso
 		gc(line);
-		snprintf(line, lineSize, "\tR2 =  I(0x%05x);\t//Generated by print\n", var->dir);		//R2 = I(dir);
+		snprintf(line, lineSize, "\tR2 = I(R6 - %d);\t//Generated by print\n", var->dir);		//R2 = I(dir);
 		gc(line);
 		snprintf(line, lineSize, "STAT(%d)\t//Generated by print\n", _statcode);		//STAT(i);
 		gc(line);
@@ -535,53 +601,64 @@ void print(char* id){
 	////
 }
 
+struct varPack * storeOperand(struct varPack* op){
+	//TODO: Diferenciar tipos
+	char *comment = malloc(lineSize);
+	snprintf(comment,lineSize,"\t\t\t// StoreOperand at line:%d",lines);
+	if(op->varType == 1){
+		snprintf(line,lineSize, "\tR%d=%d;%s\n",op->varReg,op->val_int, comment);
+	}else if(op->varType == 3){
+		snprintf(line,lineSize, "\tR%d=%d;%s\n",op->varReg,op->val_bool, comment);
+	}
+	gc(line);
+	return op;
+}
+
 struct varPack * arithmetical(struct varPack* op1, int operation_sign, struct varPack* op2){
 	struct varPack* result;
 	char *comment = malloc(lineSize);
 	snprintf(comment,lineSize,"\t\t\t// Arithmetical - l:%d",lines);
-	printf("This little sht ---> %d\n",operation_sign);
-	char sign;
-	switch(operation_sign){
-		case 43:
-			sign = '+';
-			break;
-		case 45:
-			sign = '-';
-			break;
-		case 42:
-			sign = '*';
-			break;
-		case 47:
-			sign = '/';
-			break;
-		case 37:
-			sign = '%';
-			break;
-		case 94:
-			sign = '^';
-			break;
-		default:
-			yyerror("Wrong sign used");
-			return NULL;
-	}
+	char sign = operation_sign;
 
-	if ((op1->varType == caracter || op1->varType ==  entero) && 
-			(op2->varType == caracter || op2->varType ==  entero)){
+	if ((op1->varType == 4 || op1->varType == 1) && 
+			(op2->varType == 4 || op2->varType ==  1)){
 		snprintf(line,lineSize, "\tR%d=R%d%cR%d;%s\n",op1->varReg,op1->varReg,sign,op2->varReg, comment);
 		lib_reg(op2);
 		result = op1;
-	}else if(op1->varType == flotante && op2->varType == flotante){
+	}else if(op1->varType == 2 && op2->varType == 2){
 		snprintf(line,lineSize, "\tRR%d=RR%d%cRR%d;%s\n",op1->varReg,op1->varReg,sign,op2->varReg, comment);
 		lib_reg(op2);
 		result = op1;
-	}else if(op1->varType == flotante && op2->varType == entero){
+	}else if(op1->varType == 2 && op2->varType == 1){
 		snprintf(line,lineSize, "\tRR%d=RR%d%cR%d;%s\n",op1->varReg,op1->varReg,sign,op2->varReg, comment);
 		lib_reg(op2);
 		result = op1;
-	}else if(op1->varType == entero && op2->varType == flotante){
+	}else if(op1->varType == 1 && op2->varType == 2){
 		snprintf(line,lineSize, "\tRR%d=R%d%cRR%d;%s\n",op2->varReg,op1->varReg,sign,op2->varReg, comment);
 		lib_reg(op1);
 		result = op2;
+	}else{
+		yyerror("Wrong variable type used");
+	}
+	gc(line);
+	free(comment);
+	return result;		
+}
+
+struct varPack * logical(struct varPack* op1, int operation_sign, struct varPack* op2){
+	struct varPack* result;
+	char *comment = malloc(lineSize);
+	snprintf(comment,lineSize,"\t\t\t// Logical - l:%d",lines);
+	char sign = operation_sign;
+	if(op1->varType == 3 && op2->varType == 3){
+		if(sign == '!'){
+			snprintf(line,lineSize, "\tR%d=%cR%d;%s\n",op1->varReg,sign,op1->varReg, comment);
+			result = op1;
+		}else{
+			snprintf(line,lineSize, "\tR%d=R%d%c%cR%d;%s\n",op1->varReg,op1->varReg,sign,sign,op2->varReg, comment);
+			lib_reg(op2);
+			result = op1;
+		}
 	}else{
 		yyerror("Wrong variable type used");
 	}
@@ -613,6 +690,10 @@ int assign_reg(){
 		}
 		yyerror("Fallo de compilador, sin registros entero");
 	}
+
+}
+
+void lib_reg_num(int reg){
 
 }
 
@@ -692,6 +773,8 @@ int main (int argc, char **argv){
 	gc(line);
 	//gc("\t# Memoria estática\n");
 	snprintf(line, lineSize, "CODE(%d)\n", _statcode++);
+	gc(line);
+	snprintf(line, lineSize, "\tR7 = R7 - 4;\n");
 	gc(line);
 	snprintf(line, lineSize, "\tR6 = R7;\n");
 	gc(line);

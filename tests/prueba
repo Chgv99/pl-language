@@ -1,15 +1,6 @@
-int a = 1 * 1
-int b = 3
+bool a = true and false
 
-print(a)
-print(b)
 
-if (e){
-  int c = 100
-  ~~int a
-  ~~print(c)
-  ~~print(a)
-}
 
-~~int b = 3
+
 
