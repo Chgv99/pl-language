@@ -11,5 +11,5 @@ if (e){
   ~~print(a)
 }
 
-int b = 3
+~~int b = 3
 

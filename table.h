@@ -5,6 +5,7 @@ enum type { nada, entero, flotante, booleano, caracter, ristra/*, array*/ };
 extern struct node {
 	unsigned int dir;
 	char *id;
+	int reg;
 	enum category cat;
 	enum type tipo;
 	//struct node *tip;
