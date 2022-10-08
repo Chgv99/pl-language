@@ -90,6 +90,7 @@ int { return INT; }
 float { return FLOAT; }
 bool { return BOOL; }
 char { return CHAR; }
+str { return STR; }
 
 learn { return LEARN; }
 return { return RET; }
@@ -117,7 +118,7 @@ false { return FALSE; }
 void { return VOID; }
 
 [ \t] { /* ignore whitespaces */ }
-\"([^"\n]|\\.)*\" { words++; /**chars += strlen(yytext)*/; return STR; }
+\"([^"\n]|\\.)*\" { words++; /**chars += strlen(yytext)*/ yylval.my_str = strdup(yytext); return STR; }
 [a-zA-Z_][a-zA-Z0-9_]*  { words++; chars += strlen(yytext); yylval.my_str = strdup(yytext); return NAME; }
 \n         { chars++; lines++; }
 

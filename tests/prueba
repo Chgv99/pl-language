@@ -1,4 +1,6 @@
-bool a = true and false
+bool a = true
+
+bool b = true or false
 
 
 

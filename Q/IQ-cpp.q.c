@@ -18,8 +18,13 @@ STAT(1)
  DAT(0x11ffc,I,0);
 CODE(1)
  R0=1;
+
+STAT(2)
+ DAT(0x11ff8,I,0);
+CODE(2)
+ R0=1;
  R1=0;
- R0=R0&&R1;
+ R0=R0||R1;
 
 GT(-2);
 END
