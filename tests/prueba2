@@ -1,6 +1,42 @@
-if (true){
+~~int a
+~~int b
+~~int c
+~~int d
+
+~~meth test (): int {
+~~	~~test
+~~	print(a)
+~~	int b = 3
+~~	print(b)
+~~}
+
 int a = 13
-int b = 8
-int c = 25
-print(c)
+
+if (true){
+	int b = 8
+	print(b)
+	if (true){
+		print(b)
+		if (true){
+			print(b)
+			if (true){
+				print(b)
+				if (true){
+					print(b)
+					if (true){
+						print(b)
+						if (true){
+							print(b)
+							if (true){
+								print(b)
+								if (true){
+									print("ey")
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
