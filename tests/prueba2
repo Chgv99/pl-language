@@ -1,6 +1,6 @@
-if (true){
 int a = 13
 int b = 8
-int c = 25
-print(c)
+if (a == b){
+	int c = 1
+	print(c)
 }
