@@ -1,7 +1,6 @@
 # Compiler
 /ignore
 /lex.yy.c
-/Q
 /*.q.c
 
 *.tab.*
