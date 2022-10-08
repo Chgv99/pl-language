@@ -12,3 +12,10 @@ print(x)
 print("Resultado: ")
 print("3")
 print(a)
+
+~~if(a){
+~~  bool a = true
+~~  bool b = false or a
+~~  bool c = b and a
+~~}
+
