@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <limits.h>
+#include <unistd.h>
 
 #include "table.h" /* tabla de símbolos */
 
@@ -722,6 +723,12 @@ int main (int argc, char **argv){
 		perror("Failed to open source file");
 		exit(1);
 	}
+
+	/*if (access(fname, F_OK) != 0) {
+	    // file doesn't exist
+
+	}*/
+
 	//Q File
 	qfile = fopen(qfileName,"w");
 	if (qfile == NULL) {
