@@ -1,8 +1,6 @@
-if (e) {
-	int a = 13
-	print(a)
-	int b = 8
-	print(b)
-	int c = 25
-	print(c)
+loop (1){
+int a = 13
+int b = 8
+int c = 25
+print(c)
 }

@@ -1,5 +1,14 @@
-int a = 3 + 7
-
+bool a = true
+int x = 90
+int xx = 395
+if (false){
+	int b = 5
+	print(xx)
+	int x = 6
+	print(b)
+	print(x)
+}
+print(x)
 print("Resultado: ")
 print("3")
 print(a)
