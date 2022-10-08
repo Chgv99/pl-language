@@ -804,6 +804,7 @@ void checkCondition(struct varPack * pack){
 	snprintf(line, lineSize, "\tIF (!R%d) GT(%d);\n", pack->varReg, retTag);
 	gc(line);
 	return retTag;
+}
 
 void packInitializer(char* id, struct varPack *expression){
 	struct varPack *pack = malloc(sizeof(struct varPack));
