@@ -27,13 +27,24 @@ void eliminar_scope(int scope){
 	struct node* p = top;
 	dump("eliminando scope");
 	while (p->sig != NULL) {
-		if (p->scope < scope){
+		if (p->scope < scope || p->cat == rutina){
 			top = p;
 			dump("scope eliminado");
 			break;
 		}
 		p = p->sig;
 	}
+}
+
+void eliminar(char *id){
+	struct node* p = top;
+	while (p->sig != NULL) {
+		if (strcmp(p->sig->id, id) == 0){
+			p->sig = p->sig->sig;
+		}
+		p = p->sig;
+	}
+
 }
 
 struct node* buscar_cat(char *id, enum category cat){
@@ -49,6 +60,7 @@ struct node* buscar_scope(char *id, int scope){
 void insertar(char *id, enum category cat, enum type tipo, unsigned int address){
 	struct node* var = buscar(id);
 	if (var != NULL && 	var->scope == _scope) {
+		printf("\"%s\"", var->id);
 		yyerror("-1: nombre ya definido");
 		return; // return evitaría variables repetidas en la TS
 	}

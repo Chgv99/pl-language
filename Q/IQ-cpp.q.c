@@ -18,63 +18,44 @@ STAT(1)
  DAT(0x11ffc,I,0);
 
 CODE(1)
- R0 = 13;
+ R0 = 1;
 
  I(0x11ffc) = R0;
 STAT(2)
  DAT(0x11ff8,I,0);
 
 CODE(2)
- R0 = 8;
+ R0 = 2;
 
  I(0x11ff8) = R0;
- R0 = 0;
-
- R0 = R0 == 1;
- IF (!R0) GT(1);
- R7 = R7 - 4;
- R0 = 1;
- I(R6 - 4) = R0;
-
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 2;
- R2 = I(R6 - 4);
 STAT(3)
- STR(0x11ff4, "%i\n");
+ DAT(0x11ff4,I,0);
+
 CODE(3)
- R1 = 0x11ff4;
- R0 = 2;
- GT(-12);
-L 2:
- R0 = I(R7 + 12);
- R1 = I(R7 + 8);
- R2 = I(R7 + 4);
- R7 = R7 + 16;
+ R0 = 3;
 
+ I(0x11ff4) = R0;
+STAT(4)
+ DAT(0x11ff0,I,0);
 
-L 1:
- R0 = 1;
+CODE(4)
+ R0 = 4;
 
- R0 = R0 == 1;
- IF (!R0) GT(3);
- R7 = R7 - 4;
- R0 = 2;
- I(R6 - 8) = R0;
+ I(0x11ff0) = R0;
 
+ GT(1);
+L 3:
+
+STAT(5)
+ STR(0x11efc,"begin of test\n");
+CODE(5)
  I(R7 - 4) = R0;
  I(R7 - 8) = R1;
  I(R7 - 12) = R2;
  R7 = R7 - 16;
  R0 = 4;
- R2 = I(R6 - 8);
-STAT(4)
- STR(0x11fec, "%i\n");
-CODE(4)
- R1 = 0x11fec;
- R0 = 4;
+ R1 = 0x11efc;
+ R2 = 0;
  GT(-12);
 L 4:
  R0 = I(R7 + 12);
@@ -82,26 +63,38 @@ L 4:
  R2 = I(R7 + 4);
  R7 = R7 + 16;
 
+ GT(2);
 
-L 3:
- R0 = 1;
+STAT(6)
+ STR(0x11ecc,"end of test\n");
+CODE(6)
+ I(R7 - 4) = R0;
+ I(R7 - 8) = R1;
+ I(R7 - 12) = R2;
+ R7 = R7 - 16;
+ R0 = 5;
+ R1 = 0x11ecc;
+ R2 = 0;
+ GT(-12);
+L 5:
+ R0 = I(R7 + 12);
+ R1 = I(R7 + 8);
+ R2 = I(R7 + 4);
+ R7 = R7 + 16;
 
- R0 = R0 == 1;
- IF (!R0) GT(5);
- R7 = R7 - 4;
- R0 = 3;
- I(R6 - 12) = R0;
+ GT(2);
+L 1:
 
  I(R7 - 4) = R0;
  I(R7 - 8) = R1;
  I(R7 - 12) = R2;
  R7 = R7 - 16;
  R0 = 6;
- R2 = I(R6 - 12);
-STAT(5)
- STR(0x11fe4, "%i\n");
-CODE(5)
- R1 = 0x11fe4;
+ R2 = I(0x11ffc);
+STAT(7)
+ STR(0x11fdc, "%i\n");
+CODE(7)
+ R1 = 0x11fdc;
  R0 = 6;
  GT(-12);
 L 6:
@@ -110,7 +103,64 @@ L 6:
  R2 = I(R7 + 4);
  R7 = R7 + 16;
 
+ GT(3);
+L 2:
 
-L 5:
+ I(R7 - 4) = R0;
+ I(R7 - 8) = R1;
+ I(R7 - 12) = R2;
+ R7 = R7 - 16;
+ R0 = 8;
+ R2 = I(0x11ff8);
+STAT(8)
+ STR(0x11fd4, "%i\n");
+CODE(8)
+ R1 = 0x11fd4;
+ R0 = 8;
+ GT(-12);
+L 8:
+ R0 = I(R7 + 12);
+ R1 = I(R7 + 8);
+ R2 = I(R7 + 4);
+ R7 = R7 + 16;
+
+ I(R7 - 4) = R0;
+ I(R7 - 8) = R1;
+ I(R7 - 12) = R2;
+ R7 = R7 - 16;
+ R0 = 9;
+ R2 = I(0x11ff4);
+STAT(9)
+ STR(0x11fcc, "%i\n");
+CODE(9)
+ R1 = 0x11fcc;
+ R0 = 9;
+ GT(-12);
+L 9:
+ R0 = I(R7 + 12);
+ R1 = I(R7 + 8);
+ R2 = I(R7 + 4);
+ R7 = R7 + 16;
+
+ GT(3);
+L 2:
+
+ I(R7 - 4) = R0;
+ I(R7 - 8) = R1;
+ I(R7 - 12) = R2;
+ R7 = R7 - 16;
+ R0 = 11;
+ R2 = I(0x11ff0);
+STAT(10)
+ STR(0x11fc4, "%i\n");
+CODE(10)
+ R1 = 0x11fc4;
+ R0 = 11;
+ GT(-12);
+L 11:
+ R0 = I(R7 + 12);
+ R1 = I(R7 + 8);
+ R2 = I(R7 + 4);
+ R7 = R7 + 16;
 GT(-2);
 END
