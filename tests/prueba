@@ -1,17 +1,8 @@
-int a = 1
-int b = 2
-int c = 3
-int d = 4
-
+int b = 66
 meth test () : int {
-	print("begin of test")
-	return
-	print("end of test")
+	int b = 33
 }
 
-print(a)
 test()
 print(b)
-print(c)
-test()
-print(d)
+print("ey")
