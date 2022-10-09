@@ -84,7 +84,9 @@ void error(char*, char*);
 \>\= { return GTE; }
 \<\= { return LTE; }
 
-[0-9]+ { yylval.my_int = atoi(yytext); return DIGIT; }
+[0-9]+ 	{ yylval.my_int = atoi(yytext); return DIGIT; }
+[0-9]+\.[0-9]* 	{ yylval.my_float = atof(yytext); return FDIGIT; }
+\'.\'	{ yylval.my_char = yytext[1];return CARACTER;}
 
 int { return INT; }
 float { return FLOAT; }

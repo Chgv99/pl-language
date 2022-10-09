@@ -1,21 +1,18 @@
-bool a = true
-int x = 90
-int xx = 395
-if (false){
-	int b = 5
-	print(xx)
-	int x = 6
-	print(b)
-	print(x)
-}
-print(x)
-print("Resultado: ")
-print("3")
+int a = 1
+int b = 2
+int c = 3
+
 print(a)
 
-~~if(a){
-~~  bool a = true
-~~  bool b = false or a
-~~  bool c = b and a
-~~}
+meth test () : int {
+	print("begin of test")
+	if (false){
+		print("if")
+		return
+	}
+	print("end of test")
+}
 
+print(b)
+test()
+print(c)

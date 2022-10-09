@@ -1,16 +1,6 @@
 int a = 13
 int b = 8
-
-if (a == b){
-	int c = 1
+char c = 'd'
+if('d' == c){
 	print(c)
 }
-if (a != b){
-	int d = 2
-	print(d)
-}
-if (a > b){
-	int e = 3
-	print(e)
-}
-
