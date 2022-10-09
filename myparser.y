@@ -448,22 +448,42 @@ increaseScope content decreaseScope
 								gc(line);
 							}
 |		LOOP 				{
-								$<my_int>$ = tag(); 
-								//snprintf(line, lineSize, "L %d:\n", $<my_int>$);		//L N1:
-								gc(line);
+								$<my_int>$ = tag();
 							}
 		'(' DIGIT ')'		{//may implement to be able to use varibles
-								$<my_int>$ = tag(); 
-								//snprintf(line, lineSize, "R1 = R0 > 0;\nIF(!R1) GT(%d);\n",$<my_int>$); 	//R1 = R0 > 0; 		condición	
+								/*$<my_int>$ = tag();
+								int reg = assign_reg();
+								snprintf(line, lineSize, "\tR%d = %d;\n", reg, $<my_int>4);		
 								gc(line);
-							}																				//IF (!R1) GT(N2);	condición
+								snprintf(line, lineSize, "L %d:\n", $<my_int>2);		//L N1:
+								gc(line);
+								//asdf
+								int comp = assign_reg();
+								snprintf(line, lineSize, "\tR%d = R%d > 0;\n", comp, reg);
+								gc(line);
+								snprintf(line, lineSize, "\tIF (!R%d) GT(%d);\n", comp, $<my_int>$);
+								gc(line);
+								snprintf(line, lineSize, "\tR%d = R%d - %d;\n", reg, reg, 1);		
+								gc(line);
+
+								snprintf(line, lineSize, "\tR7 = R7 - 4;\n", reg, reg, 1);		
+								gc(line);
+								snprintf(line, lineSize, "\tI(R6 - %d) = R%d;\n", 4*_localdir++, reg, 1);		
+								gc(line);
+								insertar();*/
+								
+							}																				
 		increaseScope		{}
 		content 			{/*gc("%s", $7);*/} 															//subárbol
 		decreaseScope		{
-								//snprintf(line, lineSize, "GT(%d);\n", $<my_int>1);	//GT(N1);
+								/*snprintf(line, lineSize, "\tI(R6 + %d) = R%d;\n", , reg, 1);		
 								gc(line);
-								//snprintf(line, lineSize, "L %d:\n",$<my_int>3);		//L N2:
+								snprintf(line, lineSize, "\tR7 = R7 + 4;\n", reg, reg, 1);		
 								gc(line);
+								snprintf(line, lineSize, "\tGT(%d);\n", $<my_int>2);		//L N1:
+								gc(line);
+								snprintf(line, lineSize, "L %d:\n", $<my_int>6);		//L N1:
+								gc(line);*/
 							}
 																											//L N2:
 |	LOOP FOR '(' INT NAME ',' NAME comparator len ',' DIGIT ')' increaseScope content decreaseScope
