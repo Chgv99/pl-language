@@ -18,49 +18,39 @@ STAT(1)
  DAT(0x11ffc,I,0);
 
 CODE(1)
- R0 = 10;
- R1 = I(0x11ffc);
- R0=R0>R0;
+ R0 = 13;
 
- R0 = R0 == 1;
- IF (!R0) GT(1);
+ I(0x11ffc) = R0;
 
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 2;
- R2 = I(0x11ffc);
-STAT(2)
- STR(0x11ff8, "%i\n");
-CODE(2)
- R1 = 0x11ff8;
- R0 = 2;
- GT(-12);
+ GT(1);
 L 2:
- R0 = I(R7 + 12);
- R1 = I(R7 + 8);
- R2 = I(R7 + 4);
- R7 = R7 + 16;
 
-
-L 1:
-
-STAT(3)
- STR(0x11fd0,"END\n");
-CODE(3)
  I(R7 - 4) = R0;
  I(R7 - 8) = R1;
  I(R7 - 12) = R2;
  R7 = R7 - 16;
  R0 = 3;
- R1 = 0x11fd0;
- R2 = 0;
+ R2 = I(0x11ffc);
+STAT(2)
+ STR(0x11ff8, "%i\n");
+CODE(2)
+ R1 = 0x11ff8;
+ R0 = 3;
  GT(-12);
 L 3:
  R0 = I(R7 + 12);
  R1 = I(R7 + 8);
  R2 = I(R7 + 4);
  R7 = R7 + 16;
+ GT(R5);
+L 1:
+
+ I(R6 - 4) = R5;
+ R7 = R7 - 4;
+ R5 = 4;
+ GT(2);
+L 4:
+ R5 = I(R6 - 4);
+ R7 = R7 + 4;
 GT(-2);
 END

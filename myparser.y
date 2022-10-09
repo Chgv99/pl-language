@@ -360,6 +360,7 @@ operandRelational: 	operandLogical 	{
 										pack->varType = $<my_pack>1->varType; //bool
 										pack->val_bool = $<my_pack>1->val_bool;
 										pack->varCat = $<my_pack>1->varCat;
+										pack->varReg = $<my_pack>1->varReg;
 										$<my_pack>$ = pack;
 									}
 |	operandArithmetical 			{
@@ -367,6 +368,7 @@ operandRelational: 	operandLogical 	{
 										pack->varType = $<my_pack>1->varType; //bool
 										pack->val_int = $<my_pack>1->val_int;
 										pack->varCat = $<my_pack>1->varCat;
+										pack->varReg = $<my_pack>1->varReg;
 										$<my_pack>$ = pack;
 									}
 |	CHAR 							{
