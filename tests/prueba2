@@ -1,42 +1,15 @@
-~~int a
-~~int b
-~~int c
-~~int d
-
-~~meth test (): int {
-~~	~~test
-~~	print(a)
-~~	int b = 3
-~~	print(b)
-~~}
-
 int a = 13
+int b = 8
 
+if (false){
+	int c = 1
+	print(c)
+}
 if (true){
-	int b = 8
-	print(b)
-	if (true){
-		print(b)
-		if (true){
-			print(b)
-			if (true){
-				print(b)
-				if (true){
-					print(b)
-					if (true){
-						print(b)
-						if (true){
-							print(b)
-							if (true){
-								print(b)
-								if (true){
-									print("ey")
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+	int c = 2
+	print(c)
+}
+if (true){
+	int c = 3
+	print(c)
 }
