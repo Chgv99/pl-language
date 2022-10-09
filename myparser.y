@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "table.h" /* symbol table */
 
@@ -43,7 +44,12 @@ struct varPack * arithmetical(struct varPack*, char, struct varPack*);
 struct varPack * logical(struct varPack*, char, struct varPack*);
 struct varPack * relational(struct varPack*, char, struct varPack*);
 
+void methReturn();
+int checkCondition(struct varPack*);
+
+void lib_reg_num(int, int);
 void lib_reg(struct varPack*);
+int assign_reg_num(int, int);
 int assign_reg();
 
 struct varPack * storeOperand(struct varPack*);
@@ -224,12 +230,6 @@ statement: initialization			{
 |   NAME '=' expression  			{
 										packInitializer($<id>1, $<my_pack>3);										
 									}
-| 	initialization INC expression
-|   NAME INC expression  
-| 	initialization DEC expression
-|   NAME DEC expression   
-|   return 
-|	return expression
 |	END 
 |	NEXT
 |	TERM
@@ -240,17 +240,13 @@ initialization: type 			{
 									_type = $<my_type>1; 
 								} 
 				nameContainer	{ 
-										$<id>$ = $<id>3;
-										//printf("init\n");
-										//printf("_z(d) - r7gap = %d\n", _z - r7gap);
-										//printf("_z(0x) - r7gap = %05x\n", _z - r7gap);
+									$<id>$ = $<id>3;
 								}
 ;
 
-
 nameContainer: NAME 							{
 													declareVar($<id>1);	
-													$$ = $<id>1;
+													$<id>$ = $<id>1;
 												}
 |	NAME ',' nameContainer 						{ 
 													declareVar($<id>1);
@@ -258,50 +254,33 @@ nameContainer: NAME 							{
 												}//insertIntoVarStack($<id>1); }
 ;
 
-param: type NAME
-|	type NAME ',' param
-;
-
-/*expression: DIGIT
-|	DIGIT '+' expression
-|	DIGIT '-' expression
-|	DIGIT '*' expression
-|	DIGIT '/' expression
-;*/
-
 expression: expressionArithmetical	{ $$ = $<my_pack>1; }
 |	expressionLogical				{ $$ = $<my_pack>1; }
 |	expressionRelational			{ $$ = $<my_pack>1; }
 ;
 
-expressionArithmetical: operandArithmetical			{ if ($1->varCat){ $$ = storeOperand($1);}; }
-|	expressionArithmetical '+' expressionArithmetical  { $$ = arithmetical($1,'+',$3); }
+expressionArithmetical: operandArithmetical				{ if ($1->varCat){ $$ = storeOperand($1);}; }
+|	expressionArithmetical '+' expressionArithmetical  	{ $$ = arithmetical($1,'+',$3); }
 |	expressionArithmetical '-' expressionArithmetical	{ $$ = arithmetical($1,'-',$3); }
 |	expressionArithmetical '*' expressionArithmetical	{ $$ = arithmetical($1,'*',$3); }
 |	expressionArithmetical '/' expressionArithmetical	{ $$ = arithmetical($1,'/',$3); }
 |	expressionArithmetical '%' expressionArithmetical	{ $$ = arithmetical($1,'%',$3); }
-|	expressionArithmetical '^' expressionArithmetical	{ $$ = arithmetical($1,'^',$3); } //deleteable
-|	len
-//|	'{' list '}'
+|	expressionArithmetical '^' expressionArithmetical	{ $$ = arithmetical($1,'^',$3); }
 ;
 
 expressionLogical: operandLogical			{ if ($1->varCat){ $$ = storeOperand($1);}; }
-|	expressionLogical AND expressionLogical  { $$ = logical($1,'&',$3); }
+|	expressionLogical AND expressionLogical { $$ = logical($1,'&',$3); }
 |	expressionLogical OR expressionLogical	{ $$ = logical($1,'|',$3); }
-|	NOT expressionLogical	{ $$ = logical($2,'!',$2); }
+|	NOT expressionLogical					{ $$ = logical($2,'!',$2); }
 ;
 
-expressionRelational: operandRelational			{ if ($1->varCat){ $$ = storeOperand($1);}; }
-|	expressionRelational EQ expressionRelational  { $$ = relational($1,'e',$3); }
+expressionRelational: operandRelational				{ if ($1->varCat){ $$ = storeOperand($1);}; }
+|	expressionRelational EQ expressionRelational  	{ $$ = relational($1,'e',$3); }
 |	expressionRelational NEQ expressionRelational	{ $$ = relational($1,'n',$3); }
 |	expressionRelational '<' expressionRelational	{ $$ = relational($1,'<',$3); }
 |	expressionRelational '>' expressionRelational	{ $$ = relational($1,'>',$3); }
 |	expressionRelational GTE expressionRelational	{ $$ = relational($1,'g',$3); }
 |	expressionRelational LTE expressionRelational	{ $$ = relational($1,'l',$3); }
-
-;
-
-expressionArray: '{' digitContainer '}'
 ;
 
 operandArithmetical: DIGIT 	{
@@ -334,9 +313,6 @@ operandArithmetical: DIGIT 	{
 
 								$<my_pack>$ = pack;
 							}
-//|	NAME '[' DIGIT ']'
-//|	NAME '[' NAME ']' //multidimensionales?
-|	NAME '(' paramContainer ')' //function call
 ;
 
 operandLogical: TRUE 	{
@@ -396,14 +372,15 @@ operandRelational: 	operandLogical 	{
 |	CHAR 							{
 										struct varPack *pack =  malloc(sizeof(struct varPack));
 										pack->varReg = assign_reg();
-										pack->varType = 4; //int
+										pack->varType = 4;
 										pack->val_int = $1;
 										pack->varCat = 0;
 										$<my_pack>$ = pack;
 									}
+
 ;
 
-paramContainer: type NAME 		{
+paramContainer: type NAME 	{
 								printf("inside paramContainer");
 								_routineParamCounter++;
 								declareVar($<id>1);
@@ -414,34 +391,10 @@ paramContainer: type NAME 		{
 |	NAME ',' paramContainer
 ;
 
-digitContainer: DIGIT
-|	DIGIT ',' digitContainer
-;
-
-/*
-L 0:
-	R0 = i(0x11FF0);	// digit
-	R1 = R0 > 0;			// loop digit times
-	R0 = R0 - 1;		// negativo (?)
-	IF (!R1) GT(1);
-	#content
-	GT(0);
-L 1:					//while salida
-*/
-
-
-controlStructure: IF '(' expressionLogical ')' 	{
-													$<my_int>$ = checkCondition($3);
-													lib_reg($3);
-												} 
-increaseScope content decreaseScope 
-							{
-								snprintf(line, lineSize, "\t//if content\n//end if()\nL %d: \n", $<my_int>5);
-								gc(line);
-							}
-|	IF '(' expressionRelational ')' 			{
-													$<my_int>$ = checkCondition($3);
-												} 
+controlStructure:	IF '(' expressionRelational ')' {
+														$<my_int>$ = checkCondition($3);
+														lib_reg($3);
+													} 
 increaseScope content decreaseScope 
 							{
 								snprintf(line, lineSize, "\t//if content\n//end if()\nL %d: \n", $<my_int>5);
@@ -528,9 +481,6 @@ print: PRINT '(' V_STR ')'		{
 									//printStr(pack);
 									//lib_reg(pack);
 								}
-|	PRINT '(' expression ')' 	{
-
-								}
 |	PRINT '(' NAME ')' 	{ 
 							snprintf(line,lineSize, "//printing an ID: %s\n", $3); // R1 = 0x... STR dir
 							gc(line);
@@ -541,10 +491,6 @@ print: PRINT '(' V_STR ')'		{
 							print($<id>3);
 						}
 ;
-
-/*print: LEN '(' NAME ')'
-|	LEN '(' expression ')'
-;*/
 
 methodCall: NAME '(' paramContainer ')' {
 									gc("//function call\n");
@@ -680,11 +626,16 @@ method: METH NAME 				{
 								}// RETURN isnt forced to be used
 //|	METH NAME '('initializations')'':' type'{'content'}'
 ;
-
+/**
 contentMeth: content
 |	content return content
 |	content return
 |	return content
+;
+*/
+contentMeth: content
+|	return
+|	contentMeth contentMeth
 ;
 
 return: RET  		{
@@ -696,11 +647,6 @@ return: RET  		{
 						methReturn();
 					}
 ;
-/*type: type { $$ = "1"; }
-|	type '[' ']'
-|	type '[' DIGIT ']'
-|	type '[' NAME ']'
-;*/
 
 type: INT 	{ $<my_int>$ = entero; }
 |   FLOAT 	{ $<my_int>$ = flotante; }
@@ -721,8 +667,8 @@ comparator: EQ
 |	'<'
 |	GTE
 |	LTE
-|	AND
-|	OR
+//|	AND
+//|	OR
 ;
 
 %%
@@ -747,13 +693,7 @@ void gc(char* str){
 	fputs(str, qfile);
 }
 
-void methReturn(struct varPack * pack){
-	if (pack != NULL) {
-		//check locality
-		//snprintf(line, lineSize, "\tR2 = I(R6 - %d);\t// Generated by meth (no params) at %d\n", pack->dir, lines);
-		//gc(line);
-	}
-
+void methReturn(){
 	struct node * ret = buscar("__RET");
 	/*int meth;
 	if (ret == NULL) {
@@ -1051,7 +991,7 @@ struct varPack * logical(struct varPack* op1, char sign, struct varPack* op2){
 struct varPack * relational(struct varPack* op1, char sign, struct varPack* op2){
 	struct varPack* result;
 	char *comment = malloc(lineSize);
-	snprintf(comment,lineSize,"\t\t\t// Logical - l:%d",lines);
+	snprintf(comment,lineSize,"\t\t\t// Relational - l:%d",lines);
 	char* signStr;
 	switch(sign){
 		case 'e':
