@@ -1,15 +1,7 @@
 int a = 13
 int b = 8
 
-if (false){
+if (a == b){
 	int c = 1
-	print(c)
-}
-if (true){
-	int c = 2
-	print(c)
-}
-if (true){
-	int c = 3
 	print(c)
 }
