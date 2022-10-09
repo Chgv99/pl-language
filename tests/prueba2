@@ -1,6 +1,7 @@
 int a = 13
-int b = 8
-char c = 'd'
-if('d' == c){
-	print(c)
+
+meth test(): int{
+    print(a)
 }
+
+test()
