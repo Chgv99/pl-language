@@ -20,13 +20,11 @@ struct varPack{
 	int varType;
 	int varReg;
 	int varCat;	//0: variable; 1: number.
-
-	//wip
-	int 	val_int;
-	float 	val_float;
-	char 	val_char;
-	char* 	val_str;
-	bool 	val_bool;
+	int val_int;
+	float val_float;
+	char val_char;
+	char* val_str;
+	bool val_bool;
 };
 
 int registers_I[8];
@@ -74,9 +72,6 @@ char* line;
 
 struct node* voidp;
 
-//list<char*> init_stack;
-//char** init_stack;
-
 enum type _type;
 
 int _tag;
@@ -94,20 +89,9 @@ int _localdir = 1;	//points to local variable
 const unsigned int _minStat = 0x08000;
 
 const int _MaxMultipleDeclaration = 30;
-//int *_varDecl = (int) malloc(_MaxMultipleDeclaration * sizeof(int));
 int _value;
 
-/*struct variable{
-	char* id;
-	enum type tipo;
-	struct variable *sig;
-	struct variable *ant;
-} *first, *last;*/
-
-//int _scope;
-
 void init_s_t() { /* iniciar tabla de símbolos */
-	//insertar("", tipo, my_void);
 	voidp = top;
 	insertar("-", tipo, entero, 0);
 	insertar("--", tipo, flotante, 0);
@@ -116,7 +100,6 @@ void init_s_t() { /* iniciar tabla de símbolos */
 }
 
 void init(){
-	//init_stack = (char**) malloc(10 * sizeof(char*));
 	_scope = 0; // Ámbito Global (flex)
 	_tag = 1; 		//0 reservado para comienzo de fichero en código Q
 	init_s_t();
@@ -125,13 +108,6 @@ void init(){
 int tag() {
 	return _tag++;
 }
-
-/*void deleteScope(){
-	while(struct node* var = buscar_scope(_scope)){
-		eliminar(var->id)
-	}
-	_scope--;
-}*/
 
 %}
 
@@ -146,15 +122,13 @@ int tag() {
 
 // primitivos
 %token <id> NAME
-%token <my_int> INT 		//literales de tipo no deberían tener tipo (?)
-%token <my_float> FLOAT 	//literales de tipo no deberían tener tipo (?)
-%token <my_bool> BOOL 		//literales de tipo no deberían tener tipo (?)
-%token <my_char> CHAR 		//literales de tipo no deberían tener tipo (?)
-%token STR 		//literales de tipo no deberían tener tipo (?)
-//%token <my_int> ID_VOID //??
-//%token <my_int> ID_ARR 
+%token <my_int> INT 		
+%token <my_float> FLOAT 	
+%token <my_bool> BOOL 		
+%token <my_char> CHAR 		
+%token STR 		
 %token <my_str> V_STR
-%token /*<my_void>*/ VOID
+%token VOID
 
 %token <my_int> DIGIT
 %token <my_float> FDIGIT
@@ -168,20 +142,16 @@ int tag() {
 	bool my_bool;
 	char my_char;
 	// Compuestos
-	//int* my_arr;
 	char* my_str;
 	int my_type;
-	//void my_void;
-	int* my_int_bundle;
 	struct varPack* my_pack;
 }
 
 %type<my_int> nameContainer; //returns number of vars created at once
-%type<my_pack> expression; //TODO: cualquier tipo (?)
-%type<my_pack> expressionArithmetical; //TODO: cualquier tipo (?)
-%type<my_pack> expressionLogical; //TODO: cualquier tipo (?)
-%type<my_pack> expressionRelational; //TODO: cualquier tipo (?)
-//%type<my_pack> operand;		//my_pack may be replace with a pointer to my_pack?
+%type<my_pack> expression; 
+%type<my_pack> expressionArithmetical; 
+%type<my_pack> expressionLogical; 
+%type<my_pack> expressionRelational; 
 %type<my_pack> operandArithmetical;
 %type<my_pack> operandLogical;
 %type<my_pack> operandRelational;
@@ -189,15 +159,11 @@ int tag() {
 
 
 %right '=' INC DEC MULT_ASSIGN DIV_ASSIGN
-//lógicas primero or luego and
-//equals
-//comparativas
 %left '+' '-'
-%left '*' '/' '%' //Comprobar si módulo va aquí
-%left '^' //Feeling cute, may delete later
-//not
+%left '*' '/' '%' 
+%left '^'
 
-%start program //cambiar a statementS?
+%start program
 
 %%
 
@@ -216,13 +182,9 @@ content: statement					//only one instruction
 |	content method					//multiple methods
 |	methodCall						//only one methodCall
 |	content methodCall				//multiple methodCalls
-//|	EOL
-//|	statement EOL content
-//|	controlStructure EOL content
 ;
 
 statement: initialization			{
-										//initialize variable
 										printf("isolated init: %d\n", lines);
 										_value = 0;
 									}
@@ -253,7 +215,7 @@ nameContainer: NAME 							{
 |	NAME ',' nameContainer 						{ 
 													declareVar($<id>1);
 													
-												}//insertIntoVarStack($<id>1); }
+												}
 ;
 
 expression: expressionArithmetical	{ $$ = $<my_pack>1; }
@@ -307,7 +269,7 @@ operandArithmetical: DIGIT 	{
 								struct varPack *pack =  malloc(sizeof(struct varPack));
 								
 								pack->varReg = assign_reg();
-								pack->varType = var->tipo; //should check if its an Int
+								pack->varType = var->tipo;
 								
 								if(pack->varType == flotante){
 									if(var->cat == v_global){
@@ -328,7 +290,6 @@ operandArithmetical: DIGIT 	{
 								}
 								
 								
-								//pack->val_int = $1;
 								pack->varCat = 0;
 
 								$<my_pack>$ = pack;
@@ -357,7 +318,7 @@ operandLogical: TRUE 	{
 							struct varPack *pack =  malloc(sizeof(struct varPack));
 							
 							pack->varReg = assign_reg();
-							pack->varType = var->tipo; //should check if its an bool
+							pack->varType = var->tipo;
 							
 
 							if(var->cat == v_global){
@@ -368,7 +329,6 @@ operandLogical: TRUE 	{
 								gc(line);
 							}
 							
-							//pack->val_int = $1;
 							pack->varCat = 0;
 
 							$<my_pack>$ = pack;
@@ -676,12 +636,6 @@ type: INT 	{ $<my_int>$ = entero; }
 |   STR 	{ $<my_int>$ = ristra; }
 ;
 
-/**
-	statements: statement 
-	|    statement EOL statements
-	;
-*/
-
 comparator: EQ
 |	NEQ
 |	'>'
@@ -693,22 +647,6 @@ comparator: EQ
 ;
 
 %%
-
-// Implementación temporal para enteros
-/*void gc(char* str, ...){
-
-	va_list ap;
-	int val;
-	char c, *p, *s;
-
-	va_start(ap, fmt);
-	while (*fmt){
-		val = va_arg(ap, int);
-		//snprintf(line,lineSize, str, val);
-		*fmt++;
-    }
-	va_end(ap);
-}*/
 
 void gc(char* str){
 	fputs(str, qfile);
@@ -767,17 +705,12 @@ void initializeVar(struct varPack *pack){
 		return;
 	}
 
-	//gc("//initializeVar\n");
 	printf("initializeVar for %d", pack->varType);
 	if (var->cat == v_global){
-		/*snprintf(line,lineSize, "\tR%d = 0x%05x;\t\t//Generated by line %d\n", r0, var->dir, lines); // 
-		gc(line);*/
 		snprintf(line,lineSize, "// pack->varType = %d, initializeVar%d\n", pack->varType, lines); // 
 		gc(line);
 		switch(pack->varType){
 			case entero:
-				/*snprintf(line, lineSize, "\tR%d = %d;\t\t//Generated by initializeVar at line %d\n", pack->varReg, pack->val_int, lines); 
-				gc(line);*/
 				snprintf(line, lineSize, "\tI(0x%05x) = R%d;\t\t//Generated by line %d\n", var->dir, pack->varReg, lines); 
 				gc(line);
 				break;
@@ -936,10 +869,7 @@ void print(char* id){
 		gc("\tGT(-12);\t//Generated by print\n");
 		snprintf(line, lineSize, "L %d:\t//Generated by print\n", retTag);
 		gc(line);
-	} else {
-		//gc("tryin to print local variable huh\n");
 	}
-
 	//// Cargar el contenido guardado en los registros r0, r1, r2
 	snprintf(line, lineSize, "\tR0 = I(R7 + 12);\t//Generated by print at line: %d\n", lines);	//I(R7) = R0;
 	gc(line);
@@ -954,7 +884,6 @@ void print(char* id){
 }
 
 struct varPack * storeOperand(struct varPack* op){
-	//TODO: Diferenciar tipos
 	char *comment = malloc(lineSize);
 	snprintf(comment,lineSize,"\t\t\t// StoreOperand at line:%d",lines);
 	switch(op->varType){
@@ -1124,11 +1053,6 @@ int assign_reg_num(int type, int reg){
 }
 
 int assign_reg(){
-	/*for(int i = 0; i < 8; i++){
-		printf("[%d,", registers_I[i]);
-	}
-	printf("]\n");*/ 
-
 	int len;
 	if (_type == flotante){
 		len = sizeof(registers_F)/sizeof(registers_I[0]);
@@ -1183,14 +1107,6 @@ void lib_reg(struct varPack* reg){
 	free(reg);
 }
 
-/*int main (int argc, char **argv){
-	yydebug = 1; //debugging
-	//Antes del análisis
-	printf("Comienza el análisis\n");
-	yyparse();
-	//Después del análisis
-	printf("Análisis finalizado\n");
-}*/
 int main (int argc, char **argv){
 	errno = 0;
 	if (argc != 2){
@@ -1206,11 +1122,6 @@ int main (int argc, char **argv){
 		perror("Failed to open source file");
 		exit(1);
 	}
-
-	/*if (access(fname, F_OK) != 0) {
-	    // file doesn't exist
-
-	}*/
 
 	//Q File
 	qfile = fopen(qfileName,"w");
