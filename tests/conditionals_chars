@@ -1,0 +1,22 @@
+char letra1 = 'c'
+char letra2 = 'd'
+
+print(letra1)
+print(letra2)
+
+
+if (letra1 == letra2){
+	print("letra1 igual que letra2")
+}
+
+if (letra1 == 'c'){
+	print("letra1 es c")
+}
+
+if (letra1 != letra2) {
+	print("letra1 distinta de letra2")
+}
+
+if (letra1 < letra2) {
+	print("letra1 es menor que letra2")
+}

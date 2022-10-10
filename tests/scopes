@@ -1,5 +1,0 @@
-if (true){
-	int a = 15
-}
-
-print(a)
