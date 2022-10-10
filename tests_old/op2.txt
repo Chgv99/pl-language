@@ -1,0 +1,9 @@
+int a = 13
+int b = a + 20
+int c = a
+int d
+
+print(a)
+print(b)
+print(c)
+print(d)

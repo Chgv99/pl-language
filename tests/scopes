@@ -1,7 +1,5 @@
-int a = 33
-
-if (a) {
-char b = 22
+if (true){
+	int a = 15
 }
 
-int c = 80
+print(a)

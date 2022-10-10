@@ -1,0 +1,9 @@
+int a = 17
+
+meth test(): int {
+	print(a)
+	return
+	print("Código no alcanzable")
+}
+
+test()

@@ -1,0 +1,7 @@
+int a = 17
+
+meth test(): int {
+	print(a)
+}
+
+test()

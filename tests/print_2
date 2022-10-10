@@ -1,0 +1,10 @@
+int a = 3
+int b = 5
+print(a)
+int c = 3 + 5
+print(b)
+bool d = true
+bool e = true and false
+print(c)
+print(d)
+print(e)

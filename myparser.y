@@ -705,7 +705,9 @@ void initializeVar(struct varPack *pack){
 		return;
 	}
 
-	printf("initializeVar for %d", pack->varType);
+	//printf("initializeVar for %d", pack->varType);
+	snprintf(line, lineSize, "//Initializing %d variable at line %d\n", pack->varType, lines); 
+	gc(line);
 	if (var->cat == v_global){
 		snprintf(line,lineSize, "// pack->varType = %d, initializeVar%d\n", pack->varType, lines); // 
 		gc(line);

@@ -1,0 +1,11 @@
+int a = 3
+int b = 18
+
+if (true){
+	int b = 5
+	print(a)
+	print(b)
+}
+
+print(a)
+print(b)

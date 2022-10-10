@@ -1,0 +1,22 @@
+int a = 3
+int b = 10
+
+if (a == b){
+	print("a igual que b")
+}
+
+if (a < b){
+	print("a menor que b")
+}
+
+if (a > b){
+	print("a mayor que b")
+}
+
+if (b >= 10){
+	print("a mayor o igual que 10")
+}
+
+if (b >= 9){
+	print("a mayor o igual que 9")
+}

@@ -1,0 +1,24 @@
+if (true) {
+	print("if 1")
+	if (true) {
+		print("if 2")
+		if (true) {
+			print("if 3")
+			if (true) {
+				print("if 4")
+				if (true) {
+					print("if 5")
+					if (true) {
+						print("if 6")
+						if (true) {
+							print("if 7")
+							if (true) {
+								print("if 8")
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
