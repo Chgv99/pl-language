@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "table.h" /* symbol table */
 
@@ -43,7 +44,12 @@ struct varPack * arithmetical(struct varPack*, char, struct varPack*);
 struct varPack * logical(struct varPack*, char, struct varPack*);
 struct varPack * relational(struct varPack*, char, struct varPack*);
 
+void methReturn();
+int checkCondition(struct varPack*);
+
+void lib_reg_num(int, int);
 void lib_reg(struct varPack*);
+int assign_reg_num(int, int);
 int assign_reg();
 
 struct varPack * storeOperand(struct varPack*);
@@ -226,12 +232,6 @@ statement: initialization			{
 |   NAME '=' expression  			{
 										packInitializer($<id>1, $<my_pack>3);										
 									}
-| 	initialization INC expression
-|   NAME INC expression  
-| 	initialization DEC expression
-|   NAME DEC expression   
-|   return 
-|	return expression
 |	END 
 |	NEXT
 |	TERM
@@ -242,17 +242,13 @@ initialization: type 			{
 									_type = $<my_type>1; 
 								} 
 				nameContainer	{ 
-										$<id>$ = $<id>3;
-										//printf("init\n");
-										//printf("_z(d) - r7gap = %d\n", _z - r7gap);
-										//printf("_z(0x) - r7gap = %05x\n", _z - r7gap);
+									$<id>$ = $<id>3;
 								}
 ;
 
-
 nameContainer: NAME 							{
 													declareVar($<id>1);	
-													$$ = $<id>1;
+													$<id>$ = $<id>1;
 												}
 |	NAME ',' nameContainer 						{ 
 													declareVar($<id>1);
@@ -260,50 +256,33 @@ nameContainer: NAME 							{
 												}//insertIntoVarStack($<id>1); }
 ;
 
-param: type NAME
-|	type NAME ',' param
-;
-
-/*expression: DIGIT
-|	DIGIT '+' expression
-|	DIGIT '-' expression
-|	DIGIT '*' expression
-|	DIGIT '/' expression
-;*/
-
 expression: expressionArithmetical	{ $$ = $<my_pack>1; }
 |	expressionLogical				{ $$ = $<my_pack>1; }
 |	expressionRelational			{ $$ = $<my_pack>1; }
 ;
 
-expressionArithmetical: operandArithmetical			{ if ($1->varCat){ $$ = storeOperand($1);}; }
-|	expressionArithmetical '+' expressionArithmetical  { $$ = arithmetical($1,'+',$3); }
+expressionArithmetical: operandArithmetical				{ if ($1->varCat){ $$ = storeOperand($1);}; }
+|	expressionArithmetical '+' expressionArithmetical  	{ $$ = arithmetical($1,'+',$3); }
 |	expressionArithmetical '-' expressionArithmetical	{ $$ = arithmetical($1,'-',$3); }
 |	expressionArithmetical '*' expressionArithmetical	{ $$ = arithmetical($1,'*',$3); }
 |	expressionArithmetical '/' expressionArithmetical	{ $$ = arithmetical($1,'/',$3); }
 |	expressionArithmetical '%' expressionArithmetical	{ $$ = arithmetical($1,'%',$3); }
-|	expressionArithmetical '^' expressionArithmetical	{ $$ = arithmetical($1,'^',$3); } //deleteable
-|	len
-//|	'{' list '}'
+|	expressionArithmetical '^' expressionArithmetical	{ $$ = arithmetical($1,'^',$3); }
 ;
 
 expressionLogical: operandLogical			{ if ($1->varCat){ $$ = storeOperand($1);}; }
-|	expressionLogical AND expressionLogical  { $$ = logical($1,'&',$3); }
+|	expressionLogical AND expressionLogical { $$ = logical($1,'&',$3); }
 |	expressionLogical OR expressionLogical	{ $$ = logical($1,'|',$3); }
-|	NOT expressionLogical	{ $$ = logical($2,'!',$2); }
+|	NOT expressionLogical					{ $$ = logical($2,'!',$2); }
 ;
 
-expressionRelational: operandRelational			{ if ($1->varCat){ $$ = storeOperand($1);}; }
-|	expressionRelational EQ expressionRelational  { $$ = relational($1,'e',$3); }
+expressionRelational: operandRelational				{ if ($1->varCat){ $$ = storeOperand($1);}; }
+|	expressionRelational EQ expressionRelational  	{ $$ = relational($1,'e',$3); }
 |	expressionRelational NEQ expressionRelational	{ $$ = relational($1,'n',$3); }
 |	expressionRelational '<' expressionRelational	{ $$ = relational($1,'<',$3); }
 |	expressionRelational '>' expressionRelational	{ $$ = relational($1,'>',$3); }
 |	expressionRelational GTE expressionRelational	{ $$ = relational($1,'g',$3); }
 |	expressionRelational LTE expressionRelational	{ $$ = relational($1,'l',$3); }
-
-;
-
-expressionArray: '{' digitContainer '}'
 ;
 
 operandArithmetical: DIGIT 	{
@@ -354,9 +333,6 @@ operandArithmetical: DIGIT 	{
 
 								$<my_pack>$ = pack;
 							}
-//|	NAME '[' DIGIT ']'
-//|	NAME '[' NAME ']' //multidimensionales?
-|	NAME '(' paramContainer ')' //function call
 ;
 
 operandLogical: TRUE 	{
@@ -423,10 +399,9 @@ operandRelational: 	CARACTER 			{
 										pack->varReg = $<my_pack>1->varReg;
 										$<my_pack>$ = pack;
 									}
-
 ;
 
-paramContainer: type NAME 		{
+paramContainer: type NAME 	{
 								printf("inside paramContainer");
 								_routineParamCounter++;
 								declareVar($<id>1);
@@ -437,56 +412,51 @@ paramContainer: type NAME 		{
 |	NAME ',' paramContainer
 ;
 
-digitContainer: DIGIT
-|	DIGIT ',' digitContainer
-;
-
-/*
-L 0:
-	R0 = i(0x11FF0);	// digit
-	R1 = R0 > 0;			// loop digit times
-	R0 = R0 - 1;		// negativo (?)
-	IF (!R1) GT(1);
-	#content
-	GT(0);
-L 1:					//while salida
-*/
-
-
-controlStructure: IF '(' expressionLogical ')' 	{
-													$<my_int>$ = checkCondition($3);
-													lib_reg($3);
-												} 
-increaseScope content decreaseScope 
-							{
-								snprintf(line, lineSize, "\t//if content\n//end if()\nL %d: \n", $<my_int>5);
-								gc(line);
-							}
-|	IF '(' expressionRelational ')' 			{
-													$<my_int>$ = checkCondition($3);
-													lib_reg($3);
-												} 
+controlStructure:	IF '(' expressionRelational ')' {
+														$<my_int>$ = checkCondition($3);
+														lib_reg($3);
+													} 
 increaseScope content decreaseScope 
 							{
 								snprintf(line, lineSize, "\t//if content\n//end if()\nL %d: \n", $<my_int>5);
 								gc(line);
 							}
 |		LOOP 				{
-								$<my_int>$ = tag(); 
-								//snprintf(line, lineSize, "L %d:\n", $<my_int>$);		//L N1:
-								gc(line);
+								$<my_int>$ = tag();
 							}
 		'(' DIGIT ')'		{//may implement to be able to use varibles
-								$<my_int>$ = tag(); 
-								//snprintf(line, lineSize, "R1 = R0 > 0;\nIF(!R1) GT(%d);\n",$<my_int>$); 	//R1 = R0 > 0; 		condición	
+								$<my_int>$ = tag();
+								int reg = assign_reg();
+								snprintf(line, lineSize, "\tR%d = %d;\n", reg, $<my_int>4);		
 								gc(line);
-							}																				//IF (!R1) GT(N2);	condición
+								snprintf(line, lineSize, "L %d:\n", $<my_int>2);		//L N1:
+								gc(line);
+								//asdf
+								int comp = assign_reg();
+								snprintf(line, lineSize, "\tR%d = R%d > 0;\n", comp, reg);
+								gc(line);
+								snprintf(line, lineSize, "\tIF (!R%d) GT(%d);\n", comp, $<my_int>$);
+								gc(line);
+								snprintf(line, lineSize, "\tR%d = R%d - %d;\n", reg, reg, 1);		
+								gc(line);
+
+								snprintf(line, lineSize, "\tR7 = R7 - 4;\n");		
+								gc(line);
+								snprintf(line, lineSize, "\tI(R6 - %d) = R%d;\n", 4*_localdir++, reg);		
+								gc(line);
+								//insertar();
+								
+							}																				
 		increaseScope		{}
 		content 			{/*gc("%s", $7);*/} 															//subárbol
 		decreaseScope		{
-								//snprintf(line, lineSize, "GT(%d);\n", $<my_int>1);	//GT(N1);
+								/**snprintf(line, lineSize, "\tI(R6 + %d) = R%d;\n", , reg, 1);		
 								gc(line);
-								//snprintf(line, lineSize, "L %d:\n",$<my_int>3);		//L N2:
+								snprintf(line, lineSize, "\tR7 = R7 + 4;\n", reg, reg, 1);		
+								gc(line);*/
+								snprintf(line, lineSize, "\tGT(%d);\n", $<my_int>2);		//L N1:
+								gc(line);
+								snprintf(line, lineSize, "L %d:\n", $<my_int>6);		//L N1:
 								gc(line);
 							}
 																											//L N2:
@@ -532,9 +502,6 @@ print: PRINT '(' V_STR ')'		{
 									//printStr(pack);
 									//lib_reg(pack);
 								}
-|	PRINT '(' expression ')' 	{
-
-								}
 |	PRINT '(' NAME ')' 	{ 
 							snprintf(line,lineSize, "//printing an ID: %s\n", $3); // R1 = 0x... STR dir
 							gc(line);
@@ -545,10 +512,6 @@ print: PRINT '(' V_STR ')'		{
 							print($<id>3);
 						}
 ;
-
-/*print: LEN '(' NAME ')'
-|	LEN '(' expression ')'
-;*/
 
 methodCall: NAME '(' paramContainer ')' {
 									gc("//function call\n");
@@ -565,60 +528,51 @@ methodCall: NAME '(' paramContainer ')' {
 									struct node * var = buscar($1);
 
 									if (var->cat == rutina){
-										/** SAVE R0, R1, R2
-										 * 	R0: RET tag
-										 *  R1: METH dir
-										 * 	R2: Return VALUE
-										 */
-										/*{
-											snprintf(line, lineSize, "\tR7 = R7 - 12;\t//Generated by meth CALL at line: %d\n", lines);
-											gc(line);
-											snprintf(line, lineSize, "\tI(R6 - 4) = R0;\t//Generated by meth CALL at line: %d\n", lines);
-											gc(line);
-											snprintf(line, lineSize, "\tI(R6 - 8) = R1;\t//Generated by meth CALL at line: %d\n", lines);
-											gc(line);
-											snprintf(line, lineSize, "\tI(R6 - 12) = R2;\t//Generated by meth CALL at line: %d\n", lines);
-											gc(line);
-										}*/
+										int localdir = 4*_localdir++;
+										snprintf(line, lineSize, "\tI(R6 - %d) = R5;\t//Generated by print at line: %d\n", localdir, lines);	//I(R7 - 8) = R2;
+										gc(line);
+										snprintf(line, lineSize, "\tR7 = R7 - 4;\t//Generated by print at line: %d\n", lines);	//R7 = R7 - 12;
+										gc(line);
+										lib_reg_num(entero, 0);
 
-										/*unsigned int dir = var->dir;
-										int r0 = assign_reg();
-										int r1 = assign_reg();
-										int r2 = assign_reg();
-										snprintf(line, lineSize, "R%d = I(0x%05x);\t// Generated by meth CALL (no params) at %d\n", r1, dir, lines);
-										gc(line);*/
+										int retTag = tag();
 
+										// GUARDAR EN R5 LA TAG DE RETORNO
+										snprintf(line, lineSize, "\tR5 = %d;\t// Generated by methReturn (no params) at %d\n", retTag, lines);
+										gc(line);
+										snprintf(line, lineSize, "\tGT(%d);\t// Generated by methodCall (no params) at %d\n", var->dir, lines);
+										gc(line);
+										snprintf(line, lineSize, "L %d:\t// Generated by methodCall (no params) at %d\n", retTag, lines);
+										gc(line);
+
+										snprintf(line, lineSize, "\tR5 = I(R6 - %d);\t//Generated by print at line: %d\n", localdir, lines);	//I(R7 - 8) = R2;
+										gc(line);
+										snprintf(line, lineSize, "\tR7 = R7 + 4;\t//Generated by print at line: %d\n", lines);	//R7 = R7 - 12;
+										gc(line);
+										assign_reg_num(entero, 0);
+
+										//insertar("__RET", v_local, entero, localdir);
+										/*
 										int returnTag = tag();
 										
 										// ALMACENAR TAG DE REGRESO A LLAMADA DE FUNCIÓN EN MEMORIA
 										struct node * ret = buscar("__RET");
 										int reg = assign_reg();
-										snprintf(line, lineSize, "\tR%d = I(0x%05x);\t\t// Generated by meth (no params) at %d\n", reg, ret->dir, lines);
-										gc(line);
-										snprintf(line, lineSize, "L R%d:\t// Generated by meth (no params) at %d\n", reg, lines);
+										//snprintf(line, lineSize, "\tR%d = I(0x%05x);\t\t// Generated by methodCall (no params) at %d\n", reg, ret->dir, lines);
+										//gc(line);
+										//snprintf(line, lineSize, "L R%d:\t// Generated by methodCall (no params) at %d\n", reg, lines);
+										snprintf(line, lineSize, "\tGT(%d);\t// Generated by methodCall (no params) at %d\n", var->dir, lines);
 										gc(line);
 
-										//lib_reg_num(entero, r0); //no pack was made for this register
-										//lib_reg_num(entero, r1); //no pack was made for this register
-										//lib_reg_num(entero, r2); //no pack was made for this register
-
-										// LOAD R0, R1, R2
-										/*{
-											snprintf(line, lineSize, "\tR7 = R7 + 12;\t//Generated by meth CALL at line: %d\n", lines);
-											gc(line);
-											snprintf(line, lineSize, "\tI(R6 - 4) = R0;\t//Generated by meth CALL at line: %d\n", lines);
-											gc(line);
-											snprintf(line, lineSize, "\tI(R6 - 8) = R1;\t//Generated by meth CALL at line: %d\n", lines);
-											gc(line);
-											snprintf(line, lineSize, "\tI(R6 - 12) = R2;\t//Generated by meth CALL at line: %d\n", lines);
-											gc(line);
-										}*/
+										snprintf(line, lineSize, "L %d:\t// Generated by methodCall (no params) at %d\n", ret->dir, lines);
+										gc(line);
+										*/
 									}
 								
 								}
 ;
 
-method: METH NAME 				{
+method: /**METH NAME 				{
 									
 								}
 		'('paramContainer')'	{	// (see increaseScope) Add params to inner scope
@@ -629,30 +583,51 @@ method: METH NAME 				{
 								}
 		increaseScope //add local variables AFTER increasing scope
 		contentMeth decreaseScope 	// RETURN isnt forced to be use
-|	METH NAME '('')'':' type	{
+|*/	METH NAME '('')'':' type	{
 									gc("//inside method (no params)\n");
 									/*struct varPack *pack =  malloc(sizeof(struct varPack));
 									pack->varReg = assign_reg();
 									pack->varType = $<my_type>6; //int
 									pack->varCat = rutina;*/
 									//$<my_pack>$ = pack;
-
-									int meth = tag();
+									
+									//snprintf(line, lineSize, "I(R6 - %d) = %d;\t// Generated by meth (no params) at %d\n", meth, lines);
+									//gc(line);	
+									//insertar(id, v_local, _type, methdir);								
+									
 
 									int skipMeth = tag();
 									snprintf(line, lineSize, "\tGT(%d);\t\t// Generated by meth (no params) at %d\n", skipMeth, lines);
 									gc(line);
 									$<my_int>$ = skipMeth;
 
-									
-
+									/*
+									int meth = tag();
 									snprintf(line, lineSize, "L %d:\t// Generated by meth (no params) at %d\n", meth, lines);
+									insertar("__RET", v_global, nada, meth);
 									gc(line);
-									//$<my_pack>$ = pack;
 									
+									meth = tag();
 									_globalgap++;
 									unsigned int dir = _z - 4*_globalgap;
-									insertar($2, rutina, $<my_type>6, dir);
+									insertar($2, rutina, $<my_type>6, meth);
+									*/
+
+									//int ret = tag();
+									//insertar("__RET", v_global, nada, ret);
+									
+									int meth = tag();
+									snprintf(line, lineSize, "L %d:\t// Generated by meth (no params) at %d\n", meth, lines);
+									gc(line);									
+									//_globalgap++;
+									//unsigned int dir = _z - 4*_globalgap;
+									insertar($2, rutina, $<my_type>6, meth);
+
+									//struct node * ret = buscar("__RET");
+									/*int localdir = 4*_localdir++;
+									snprintf(line, lineSize, "I(R6 - %d) = R0;\n", localdir, lines);
+									gc(line);
+									insertar("__RET", v_local, entero, localdir);*/
 								}
 		increaseScope 			{
 
@@ -672,11 +647,16 @@ method: METH NAME 				{
 								}// RETURN isnt forced to be used
 //|	METH NAME '('initializations')'':' type'{'content'}'
 ;
-
+/**
 contentMeth: content
 |	content return content
 |	content return
 |	return content
+;
+*/
+contentMeth: content
+|	return
+|	contentMeth contentMeth
 ;
 
 return: RET  		{
@@ -688,11 +668,6 @@ return: RET  		{
 						methReturn();
 					}
 ;
-/*type: type { $$ = "1"; }
-|	type '[' ']'
-|	type '[' DIGIT ']'
-|	type '[' NAME ']'
-;*/
 
 type: INT 	{ $<my_int>$ = entero; }
 |   FLOAT 	{ $<my_int>$ = flotante; }
@@ -713,8 +688,8 @@ comparator: EQ
 |	'<'
 |	GTE
 |	LTE
-|	AND
-|	OR
+//|	AND
+//|	OR
 ;
 
 %%
@@ -739,21 +714,26 @@ void gc(char* str){
 	fputs(str, qfile);
 }
 
-void methReturn(struct varPack * pack){
-	if (pack != NULL) {
-		//check locality
-		//snprintf(line, lineSize, "\tR2 = I(R6 - %d);\t// Generated by meth (no params) at %d\n", pack->dir, lines);
-		//gc(line);
-	}
-
-	int meth = tag();
-	_globalgap++;
-	unsigned int dir = _z - 4*_globalgap;
-	snprintf(line, lineSize, "\tI(0x%05x) = %d;\t// Generated by meth (no params) at %d\n", dir, meth, lines);
-	gc(line);
-	insertar("__RET", v_global, nada, dir);
-
-	snprintf(line, lineSize, "\tGT(%d);\t// Generated by methReturn (no params) at %d\n", meth, lines);
+void methReturn(){
+	struct node * ret = buscar("__RET");
+	/*int meth;
+	if (ret == NULL) {
+		gc("//first return\n");
+		meth = tag();
+		insertar("__RET", v_global, nada, meth);
+	} else {
+		gc("//not first return\n");
+		meth = ret->dir;
+	}*/
+	//_globalgap++;
+	//unsigned int dir = _z - 4*_globalgap;
+	//snprintf(line, lineSize, "\tI(0x%05x) = %d;\t// Generated by meth (no params) at %d\n", dir, meth, lines);
+	//gc(line);
+	
+	// GET RET DIR FROM DYNAMIC MEMORY
+	//snprintf(line, lineSize, "\tR0 = I(R6 - %d);\t// Generated by methReturn (no params) at %d\n", ret->dir, lines);
+	//gc(line);
+	snprintf(line, lineSize, "\tGT(R5);\t// Generated by methReturn (no params) at %d\n", lines);
 	gc(line);
 }
 
@@ -817,7 +797,7 @@ void initializeVar(struct varPack *pack){
 		
 	} else if (var->cat == v_local){
 		if (pack->varType == flotante){
-			snprintf(line, lineSize, "\tF(R6 - %d) = RR%f;\t\t//Generated by line %d\n", var->dir, pack->varReg, lines); 
+			snprintf(line, lineSize, "\tF(R6 - %d) = RR%d;\t\t//Generated by line %d\n", var->dir, pack->varReg, lines); 
 		}else{
 			snprintf(line, lineSize, "\tI(R6 - %d) = R%d;\t\t//Generated by line %d\n", var->dir, pack->varReg, lines); 
 		}
@@ -864,7 +844,7 @@ void declareVar(char* id){
 void printStr(char* str){
 	int retTag = tag();
 	_globalgap++;
-	unsigned int strDir = _z - _globalgap++ * 4 * (strlen(str) + 1);
+	unsigned int strDir = _z - _globalgap++ * 4 * (strlen(str));
 	snprintf(line, lineSize, "STAT(%d)\t//Generated by print\n", _statcode);		//STAT(i);
 	gc(line);
 	snprintf(line,lineSize, "\tSTR(0x%05x,\"%s\\n\");\t\t//Generated by line %d\n", strDir, str, lines); // 
@@ -1057,7 +1037,7 @@ struct varPack * logical(struct varPack* op1, char sign, struct varPack* op2){
 struct varPack * relational(struct varPack* op1, char sign, struct varPack* op2){
 	struct varPack* result;
 	char *comment = malloc(lineSize);
-	snprintf(comment,lineSize,"\t\t\t// Logical - l:%d",lines);
+	snprintf(comment,lineSize,"\t\t\t// Relational - l:%d",lines);
 	char* signStr;
 	switch(sign){
 		case 'e':

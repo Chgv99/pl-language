@@ -1,7 +1,7 @@
-int a = 13
 
-meth test(): int{
-    print(a)
+int a
+loop(5){
+	a = a + 1
 }
+print(a)
 
-test()
