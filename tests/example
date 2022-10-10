@@ -1,0 +1,21 @@
+int a = 4
+int b = 2
+int c
+
+~~ Method that computes the product of two global variables
+meth multiplyInt(): int{
+	c = a * b
+	return
+}
+
+meth subtractInt(): int{
+	c = a - b
+	return
+}
+
+print(c)
+multiplyInt()
+print(c)
+subtractInt()
+print(c)
+

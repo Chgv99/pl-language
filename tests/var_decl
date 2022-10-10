@@ -5,3 +5,5 @@ float d = 5.
 float e = 3.5
 bool f = true
 bool g = true or false
+char h = 'Z'
+int i = 3.5
