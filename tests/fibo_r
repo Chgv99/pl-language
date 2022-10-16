@@ -1,0 +1,29 @@
+int a = 2
+int b = 2
+int c
+
+int n1
+int n2
+
+meth fibo(): int{
+	int x = a
+	bool t = x < 2
+	if (t){
+	  c = x
+	  return
+	}
+	a = x - 1
+	int y = a
+	fibo()
+	a = x - 2
+	int z = a
+	fibo()
+	c = z + y
+	~~return
+	print(c)
+}
+
+fibo()
+print("final")
+print(c)
+
