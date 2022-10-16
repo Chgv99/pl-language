@@ -1,0 +1,32 @@
+int a = 20
+int b = 2
+int c
+
+int n1
+int n2
+
+meth fibo(): int{
+	int x = a
+	bool t = x < 2
+	if (t){
+	  c = x
+	  return
+	}
+	a = x - 1
+	int y = a
+	a = x - 2
+	int z = a
+	c = n1 + n2
+	return
+}
+
+int i
+loop(20){
+  a = i
+  fibo()
+  n1 = n2
+  n2 = c
+  print(c)
+  i = i + 1
+}
+

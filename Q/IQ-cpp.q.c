@@ -18,157 +18,128 @@ STAT(1)
  DAT(0x11ffc,I,0);
 
 CODE(1)
- R0 = 'c';
-
-
+ R0 = 20;
  I(0x11ffc) = R0;
 STAT(2)
  DAT(0x11ff8,I,0);
 
 CODE(2)
- R0 = 'd';
-
-
+ R0 = 2;
  I(0x11ff8) = R0;
-
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 1;
- R2 = I(0x11ffc);
 STAT(3)
- STR(0x11ff4, "%c\n");
-CODE(3)
- R1 = 0x11ff4;
- R0 = 1;
- GT(-12);
-L 1:
- R0 = I(R7 + 12);
- R1 = I(R7 + 8);
- R2 = I(R7 + 4);
- R7 = R7 + 16;
+ DAT(0x11ff4,I,0);
 
+CODE(3)
+STAT(4)
+ DAT(0x11ff0,I,0);
+
+CODE(4)
+STAT(5)
+ DAT(0x11fec,I,0);
+
+CODE(5)
+
+ GT(1);
+L 2:
  I(R7 - 4) = R0;
  I(R7 - 8) = R1;
  I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 2;
- R2 = I(0x11ff8);
-STAT(4)
- STR(0x11fec, "%c\n");
-CODE(4)
- R1 = 0x11fec;
- R0 = 2;
- GT(-12);
-L 2:
- R0 = I(R7 + 12);
- R1 = I(R7 + 8);
- R2 = I(R7 + 4);
- R7 = R7 + 16;
+ I(R7 - 16) = R5;
+ R7 = R7 - 20;
+ R7 = R7 - 4;
  R0 = I(0x11ffc);
- R1 = I(0x11ff8);
- R0=R0==R1;
+ I(R6 - 8) = R0;
+ R7 = R7 - 4;
+ R0 = I(R6 - 8);
+ R1 = 2;
+ R1 = 2;
+
+ R0=R0<R1;
+ I(R6 - 12) = R0;
+ R0 = I(R6 - 12);
 
  R0 = R0 == 1;
  IF (!R0) GT(3);
+ R0 = I(R6 - 8);
+ I(0x11ff4) = R0;
 
-STAT(5)
- STR(0x11d7c,"letra1 igual que letra2\n");
-CODE(5)
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 4;
- R1 = 0x11d7c;
- R2 = 0;
- GT(-12);
-L 4:
- R0 = I(R7 + 12);
- R1 = I(R7 + 8);
- R2 = I(R7 + 4);
- R7 = R7 + 16;
+ GT(R5);
 
 
 L 3:
+ R0 = I(R6 - 8);
+ R1 = 1;
+ R0=R0-R1;
+ I(0x11ffc) = R0;
+ R7 = R7 - 4;
  R0 = I(0x11ffc);
- R1 = 'c';
- R0=R0==R1;
+ I(R6 - 16) = R0;
+ R0 = I(R6 - 8);
+ R1 = 2;
+ R0=R0-R1;
+ I(0x11ffc) = R0;
+ R7 = R7 - 4;
+ R0 = I(0x11ffc);
+ I(R6 - 20) = R0;
+ R0 = I(0x11ff0);
+ R1 = I(0x11fec);
+ R0=R0+R1;
+ I(0x11ff4) = R0;
 
- R0 = R0 == 1;
- IF (!R0) GT(5);
+ GT(R5);
+ R7 = R7 + 20;
+ R0 = I(R7 - 4);
+ R1 = I(R7 - 8);
+ R2 = I(R7 - 12);
+ R5 = I(R7 - 16);
 
+ GT(R5);
+L 1:
 STAT(6)
- STR(0x11e74,"letra1 es c\n");
+ DAT(0x11fe8,I,0);
+
 CODE(6)
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 6;
- R1 = 0x11e74;
- R2 = 0;
- GT(-12);
+ R4 = 20;
+ I(R6 - 4) = R4;
+L 4:
+ R4 = I(R6 - 4);
+ R1 = R4 > 0;
+ IF (!R1) GT(5);
+ R4 = R4 - 1;
+ R7 = R7 - 4;
+ I(R6 - 4) = R4;
+ R2 = I(0x11fe8);
+ I(0x11ffc) = R2;
+ R5 = 6;
+ GT(2);
 L 6:
- R0 = I(R7 + 12);
- R1 = I(R7 + 8);
- R2 = I(R7 + 4);
- R7 = R7 + 16;
+ R2 = I(0x11fec);
+ I(0x11ff0) = R2;
+ R2 = I(0x11ff4);
+ I(0x11fec) = R2;
 
-
-L 5:
- R0 = I(0x11ffc);
- R1 = I(0x11ff8);
- R0=R0!=R1;
-
- R0 = R0 == 1;
- IF (!R0) GT(7);
-
+ I(R7 - 4) = R0;
+ I(R7 - 8) = R1;
+ I(R7 - 12) = R2;
+ R7 = R7 - 16;
+ R0 = 7;
+ R2 = I(0x11ff4);
 STAT(7)
- STR(0x11bb4,"letra1 distinta de letra2\n");
+ STR(0x11fe4, "%i\n");
 CODE(7)
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 8;
- R1 = 0x11bb4;
- R2 = 0;
+ R1 = 0x11fe4;
+ R0 = 7;
  GT(-12);
-L 8:
- R0 = I(R7 + 12);
- R1 = I(R7 + 8);
- R2 = I(R7 + 4);
- R7 = R7 + 16;
-
-
 L 7:
- R0 = I(0x11ffc);
- R1 = I(0x11ff8);
- R0=R0<R1;
-
- R0 = R0 == 1;
- IF (!R0) GT(9);
-
-STAT(8)
- STR(0x11ab8,"letra1 es menor que letra2\n");
-CODE(8)
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 10;
- R1 = 0x11ab8;
- R2 = 0;
- GT(-12);
-L 10:
  R0 = I(R7 + 12);
  R1 = I(R7 + 8);
  R2 = I(R7 + 4);
  R7 = R7 + 16;
-
-
-L 9:
+ R2 = I(0x11fe8);
+ R3 = 1;
+ R2=R2+R3;
+ I(0x11fe8) = R2;
+ GT(4);
+L 5:
 GT(-2);
 END

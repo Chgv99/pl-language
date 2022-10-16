@@ -1,0 +1,17 @@
+bool a = true or false
+
+if (not true){
+	print("ey")
+}
+
+if (not false){
+	print("not ey")
+}
+
+if (true) {
+	print("truer")
+}
+
+if (false) {
+	print("faker")
+}

@@ -1,0 +1,31 @@
+int a = 4
+int b = 2
+int c
+
+~~ Method that computes the product of two global variables
+meth fibo(): int{
+	int x = a
+	bool t = x < 2
+	if (t){
+	  c = x
+	  ~~return
+	}
+	t = x >= 2
+	if (not x < 2) {
+	a = x - 1
+	~~fibo()
+	int y = c
+	a = x - 2
+	~~fibo()
+	int z = c
+	c = y + z
+	}
+	return
+}
+int i
+loop(10){
+  i = i + 1
+  a = i
+  fibo()
+  print(c)
+}
