@@ -25,7 +25,8 @@ struct node* buscar(char *id){ //busca el más reciente (local oculta global) (!
 
 void eliminar_scope(int scope){
 	struct node* p = top;
-	dump("eliminando scope");
+	printf("eliminando scope %d", scope);
+	dump("");
 	while (p->sig != NULL) {
 		if (p->scope < scope || p->cat == rutina){ //if (p->scope < scope && (p->cat == rutina || p->cat == v_local)){
 			top = p;

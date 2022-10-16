@@ -1,9 +1,7 @@
-int a = 2
+int a = 10
 int b = 2
 int c
 
-int n1
-int n2
 
 meth fibo(): int{
 	int x = a
@@ -13,14 +11,16 @@ meth fibo(): int{
 	  return
 	}
 	a = x - 1
-	int y = a
 	fibo()
-	a = x - 2
-	int z = a
+	~~print(c)
+	int y = c
+	a = x - 1
 	fibo()
+	~~print(c)
+	int z = c
 	c = z + y
 	~~return
-	print(c)
+	
 }
 
 fibo()

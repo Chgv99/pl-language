@@ -17,7 +17,6 @@ meth fibo(): int{
 	a = x - 2
 	int z = a
 	c = n1 + n2
-	return
 }
 
 int i

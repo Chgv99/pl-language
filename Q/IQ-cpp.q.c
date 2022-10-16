@@ -18,7 +18,7 @@ STAT(1)
  DAT(0x11ffc,I,0);
 
 CODE(1)
- R0 = 2;
+ R0 = 3;
  I(0x11ffc) = R0;
 STAT(2)
  DAT(0x11ff8,I,0);
@@ -30,126 +30,47 @@ STAT(3)
  DAT(0x11ff4,I,0);
 
 CODE(3)
+ R0 = I(0x11ffc);
+ R1 = I(0x11ff8);
+ R0=R0+R1;
+ I(0x11ff4) = R0;
 STAT(4)
  DAT(0x11ff0,I,0);
 
 CODE(4)
+ RR0 = 5.000000;
+ F(0x11ff0) = RR0;
 STAT(5)
  DAT(0x11fec,I,0);
 
 CODE(5)
-
- GT(1);
-L 2:
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- I(R7 - 16) = R5;
- R7 = R7 - 20;
- R0 = I(0x11ffc);
- I(R6 - 8) = R0;
- R0 = I(R6 - 8);
- R1 = 2;
- R1 = 2;
-
- R0=R0<R1;
- I(R6 - 12) = R0;
- R0 = I(R6 - 12);
-
- R0 = R0 == 1;
- IF (!R0) GT(3);
- R0 = I(R6 - 8);
- I(0x11ff4) = R0;
-
- GT(R5);
-
-
-L 3:
- R0 = I(R6 - 8);
- R1 = 1;
- R0=R0-R1;
- I(0x11ffc) = R0;
- R0 = I(0x11ffc);
- I(R6 - 16) = R0;
- R5 = 4;
- GT(2);
-L 4:
- R1 = I(R6 - 8);
- R2 = 2;
- R1=R1-R2;
- I(0x11ffc) = R1;
- R1 = I(0x11ffc);
- I(R6 - 24) = R1;
- R5 = 5;
- GT(2);
-L 5:
- R1 = I(R6 - 24);
- R2 = I(R6 - 16);
- R1=R1+R2;
- I(0x11ff4) = R1;
-
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 6;
- R2 = I(0x11ff4);
+ RR0 = 3.500000;
+ F(0x11fec) = RR0;
 STAT(6)
- STR(0x11fe8, "%i\n");
+ DAT(0x11fe8,I,0);
+
 CODE(6)
- R1 = 0x11fe8;
- R0 = 6;
- GT(-12);
-L 6:
- R0 = I(R7 + 12);
- R1 = I(R7 + 8);
- R2 = I(R7 + 4);
- R7 = R7 + 16;
- R7 = R7 + 20;
- R0 = I(R7 - 4);
- R1 = I(R7 - 8);
- R2 = I(R7 - 12);
- R5 = I(R7 - 16);
-
- GT(R5);
-L 1:
- R5 = 7;
- GT(2);
-L 7:
-
+ R0 = 1;
+ I(0x11fe8) = R0;
 STAT(7)
- STR(0x11f60,"final\n");
-CODE(7)
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 8;
- R1 = 0x11f60;
- R2 = 0;
- GT(-12);
-L 8:
- R0 = I(R7 + 12);
- R1 = I(R7 + 8);
- R2 = I(R7 + 4);
- R7 = R7 + 16;
+ DAT(0x11fe4,I,0);
 
- I(R7 - 4) = R0;
- I(R7 - 8) = R1;
- I(R7 - 12) = R2;
- R7 = R7 - 16;
- R0 = 9;
- R2 = I(0x11ff4);
+CODE(7)
+ R0 = 1;
+ R1 = 0;
+ R0=R0||R1;
+ I(0x11fe4) = R0;
 STAT(8)
- STR(0x11fd8, "%i\n");
+ DAT(0x11fe0,I,0);
+
 CODE(8)
- R1 = 0x11fd8;
- R0 = 9;
- GT(-12);
-L 9:
- R0 = I(R7 + 12);
- R1 = I(R7 + 8);
- R2 = I(R7 + 4);
- R7 = R7 + 16;
+ R0 = 'Z';
+ I(0x11fe0) = R0;
+STAT(9)
+ DAT(0x11fdc,I,0);
+
+CODE(9)
+ RR0 = 3.500000;
+
 GT(-2);
 END

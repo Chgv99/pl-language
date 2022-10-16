@@ -1,17 +1,17 @@
 bool a = true or false
 
 if (not true){
-	print("ey")
+	print("print1")
 }
 
 if (not false){
-	print("not ey")
+	print("print2")
 }
 
 if (true) {
-	print("truer")
+	print("print3")
 }
 
 if (false) {
-	print("faker")
+	print("print4")
 }
