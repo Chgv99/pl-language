@@ -17,7 +17,9 @@ extern struct node {
 
 struct node* buscar(char *id);
 
-void eliminar_scope(int scope);
+unsigned int ultima();
+
+int eliminar_scope(int scope);
 
 struct node* buscar_cat(char *id, enum category cat);
 

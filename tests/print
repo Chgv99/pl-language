@@ -1,5 +1,5 @@
-int a = 4
-int b = 2
-int c = a/b
+float a = 12.3
+int b = 5
+float c = b/a
 print("Result:")
 print(c)

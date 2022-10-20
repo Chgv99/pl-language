@@ -1,10 +1,11 @@
 bool a = true or false
+bool b = a and a
 
 if (not true){
 	print("print1")
 }
 
-if (not false){
+if (not b){
 	print("print2")
 }
 

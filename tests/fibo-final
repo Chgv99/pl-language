@@ -1,0 +1,28 @@
+int a = 4
+int b = 2
+int c
+
+
+meth fibo(): int{
+	~~bool t = x < 2
+	if (a < 2){
+		~~int gg = x
+	  c = a
+	  return
+	}
+	int x = a
+	a = a - 1
+	fibo()
+	a = x - 2
+	x = c
+	fibo()
+	~~int z = c
+	c = x + c
+}
+int i
+loop(10){
+  i = i + 1
+  a = i
+  fibo()
+  print(c)
+}

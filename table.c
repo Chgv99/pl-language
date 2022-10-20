@@ -23,18 +23,31 @@ struct node* buscar(char *id){ //busca el más reciente (local oculta global) (!
 	return p;
 }
 
-void eliminar_scope(int scope){
+unsigned int ultima(){ //busca el más reciente (local oculta global) (!?)
+	//if (top->cat == v_local) return top;
+	struct node* p = top;
+	while (p != NULL && p->cat != v_local) {
+		p = p->sig;
+	}
+	if (p == NULL) return 0;
+	return p->dir;
+}
+
+int eliminar_scope(int scope){
 	struct node* p = top;
 	printf("eliminando scope %d", scope);
 	dump("");
+	int i = 0;
 	while (p->sig != NULL) {
 		if (p->scope < scope || p->cat == rutina){ //if (p->scope < scope && (p->cat == rutina || p->cat == v_local)){
 			top = p;
 			dump("scope eliminado");
 			break;
 		}
+		i = i+1;
 		p = p->sig;
 	}
+	return i;
 }
 
 void eliminar(char *id){
